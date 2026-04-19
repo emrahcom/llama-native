@@ -18,13 +18,40 @@ export interface ClientOptions {
   apiKey?: string;
 }
 
-// Internal config used by submodules to avoid repeat logic.
+/** Internal config used by submodules to avoid repeat logic. */
 export interface Config {
   baseUrl: string;
   apiKey?: string;
 }
 
-// The health status of the llama.cpp server.
+/** The health status of the llama.cpp server. */
 export interface HealthResponse {
   status: string;
+}
+
+/** A single message in a chat conversation. */
+export interface ChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+/** Options for creating a chat completion. */
+export interface ChatOptions {
+  messages: ChatMessage[];
+  temperature?: number;
+  max_tokens?: number;
+  stream?: boolean;
+}
+
+/** The response from the chat completion endpoint. */
+export interface ChatResponse {
+  choices: {
+    message: ChatMessage;
+    finish_reason: "stop" | "length" | "content_filter" | "null" | string;
+  }[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
 }

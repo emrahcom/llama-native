@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { Client } from "../src/mod.ts";
 
 Deno.test("Client - baseUrl construction", () => {
