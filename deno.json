@@ -1,0 +1,9 @@
+{
+  "name": "@emrahcom/llama-native",
+  "version": "0.1.0",
+  "exports": "./src/mod.ts",
+  "license": "MIT",
+  "imports": {
+    "@std/streams": "jsr:@std/streams@^1.0.0"
+  }
+}
