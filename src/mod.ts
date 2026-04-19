@@ -1,21 +1,25 @@
-import type { InternalConfig, LlamaConfig } from "./types.ts";
+import type { ClientOptions, Config } from "./types.ts";
+import { Server } from "./server/mod.ts";
 
-export class LlamaClient {
-  #config: InternalConfig;
+export class Client {
+  #config: Config;
+  server: Server;
 
-  constructor(config: LlamaConfig = {}) {
-    const host = config.host?.replace(/\/+$/, "") || "http://localhost";
-    const port = config.port || 8080;
+  constructor(options: ClientOptions = {}) {
+    const host = options.host?.replace(/\/+$/, "") || "http://localhost";
+    const port = options.port || 8080;
 
     this.#config = {
       baseUrl: `${host}:${port}`,
-      apiKey: config.apiKey,
+      apiKey: options.apiKey,
     };
+
+    this.server = new Server(this.#config);
   }
 
-  get config(): InternalConfig {
+  get config(): Config {
     return this.#config;
   }
 }
 
-export type { LlamaConfig };
+export type { ClientOptions };

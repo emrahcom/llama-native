@@ -1,5 +1,5 @@
-/** Configuration for the LlamaClient. */
-export interface LlamaConfig {
+/** Options for initializing the llama.cpp client. */
+export interface ClientOptions {
   /**
    * The server host.
    * @default "http://localhost"
@@ -8,7 +8,7 @@ export interface LlamaConfig {
 
   /**
    * The server port.
-   *  @default 8080
+   * @default 8080
    */
   port?: number;
 
@@ -18,8 +18,13 @@ export interface LlamaConfig {
   apiKey?: string;
 }
 
-// Internal version used by submodules to avoid repeat logic.
-export interface InternalConfig {
+// Internal config used by submodules to avoid repeat logic.
+export interface Config {
   baseUrl: string;
   apiKey?: string;
+}
+
+// The health status of the llama.cpp server.
+export interface HealthResponse {
+  status: string;
 }
