@@ -57,7 +57,7 @@ export interface ChatResponse {
 }
 
 /** A chunk of a streaming chat completion. */
-export interface ChatResponseChunk {
+export interface ChatChunk {
   choices: {
     delta: {
       content?: string;
@@ -75,9 +75,7 @@ export interface ChatResponseChunk {
 
 /** Options for creating embeddings. */
 export interface EmbeddingOptions {
-  /** The input text to embed. Can be a string or an array of strings. */
   input: string | string[];
-  /** The ID of the model to use. */
   model?: string;
 }
 
@@ -86,7 +84,6 @@ export interface EmbeddingResponse {
   object: "list";
   data: {
     object: "embedding";
-    /** The vector representation of the input. */
     embedding: number[];
     index: number;
   }[];
@@ -112,58 +109,50 @@ export interface ModelsResponse {
 }
 
 /** Native completion options unique to llama.cpp */
-export interface NativeCompletionOptions {
-  /** The prompt to generate text from. */
+export interface NativeOptions {
   prompt: string;
-  /** Force the output to follow a specific GBNF grammar. */
   grammar?: string;
-  /** Number of tokens to predict. -1 = infinity, -2 = until context filled. */
   n_predict?: number;
-  /** Whether to stream the response. */
   stream?: boolean;
-  /** Temperature for sampling. */
   temp?: number;
-  /** Stop sequences to end generation. */
   stop?: string[];
-  /** Penalty for repeating tokens. */
   repeat_penalty?: number;
-  /** Only sample from the top K options. */
   top_k?: number;
-  /** Only sample from the top P options. */
   top_p?: number;
-  /** Other native parameters (n_probs, min_p, etc.) */
   [key: string]: unknown;
 }
 
+/** Timings interface for native responses */
+export interface NativeTimings {
+  predicted_ms: number;
+  predicted_n: number;
+  predicted_per_token_ms: number;
+  predicted_per_second: number;
+  prompt_ms: number;
+  prompt_n: number;
+  prompt_per_token_ms: number;
+  prompt_per_second: number;
+}
+
 /** The detailed response from the native completion */
-export interface NativeCompletionResponse {
-  /** The generated text result. */
+export interface NativeResponse {
   content: string;
   model: string;
   prompt: string;
-  /** Indicates if generation stopped due to EOS token. */
   stopped_eos: boolean;
-  /** Indicates if generation stopped due to token limit. */
   stopped_limit: boolean;
-  /** Indicates if generation stopped due to a stop word. */
   stopped_word: boolean;
-  /** The word that triggered the stop. */
   stopping_word: string;
-  /** Detailed performance metrics. */
-  timings: {
-    predicted_ms: number;
-    predicted_n: number;
-    predicted_per_token_ms: number;
-    predicted_per_second: number;
-    prompt_ms: number;
-    prompt_n: number;
-    prompt_per_token_ms: number;
-    prompt_per_second: number;
-  };
-  /** Whether the context size was exceeded. */
+  timings: NativeTimings;
   truncated: boolean;
-  /** Number of tokens evaluated from the prompt. */
   tokens_evaluated: number;
+}
+
+/** A single chunk of a native completion stream. */
+export interface NativeChunk {
+  content: string;
+  stop: boolean;
+  timings?: NativeTimings;
 }
 
 /** The response for the tokenize endpoint */

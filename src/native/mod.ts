@@ -1,8 +1,8 @@
 import type {
   Config,
   DetokenizeResponse,
-  NativeCompletionOptions,
-  NativeCompletionResponse,
+  NativeOptions,
+  NativeResponse,
   TokenizeResponse,
 } from "../types.ts";
 
@@ -13,9 +13,7 @@ export class Native {
     this.#config = config;
   }
 
-  async completion(
-    options: NativeCompletionOptions,
-  ): Promise<NativeCompletionResponse> {
+  async completion(options: NativeOptions): Promise<NativeResponse> {
     const url = `${this.#config.baseUrl}/completion`;
 
     const res = await fetch(url, {
@@ -42,7 +40,12 @@ export class Native {
 
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.#config.apiKey
+          ? { "Authorization": `Bearer ${this.#config.apiKey}` }
+          : {}),
+      },
       body: JSON.stringify({ content }),
     });
 
@@ -59,7 +62,12 @@ export class Native {
 
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.#config.apiKey
+          ? { "Authorization": `Bearer ${this.#config.apiKey}` }
+          : {}),
+      },
       body: JSON.stringify({ tokens }),
     });
 
