@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: test-${{ matrix.deno }}
+    name: test
     runs-on: ubuntu-latest
 
     steps:
