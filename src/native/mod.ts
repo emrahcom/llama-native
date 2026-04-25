@@ -1,6 +1,8 @@
+import { TextLineStream } from "@std/streams";
 import type {
   Config,
   DetokenizeResponse,
+  NativeChunk,
   NativeOptions,
   NativeResponse,
   TokenizeResponse,
@@ -13,7 +15,7 @@ export class Native {
     this.#config = config;
   }
 
-  async completion(options: NativeOptions): Promise<NativeResponse> {
+  async create(options: NativeOptions): Promise<NativeResponse> {
     const url = `${this.#config.baseUrl}/completion`;
 
     const res = await fetch(url, {
@@ -24,7 +26,7 @@ export class Native {
           ? { "Authorization": `Bearer ${this.#config.apiKey}` }
           : {}),
       },
-      body: JSON.stringify(options),
+      body: JSON.stringify({ ...options, stream: false }),
     });
 
     if (!res.ok) {
@@ -32,6 +34,42 @@ export class Native {
     }
 
     return await res.json();
+  }
+
+  async *stream(options: NativeOptions): AsyncGenerator<NativeChunk> {
+    const url = `${this.#config.baseUrl}/completion`;
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.#config.apiKey
+          ? { "Authorization": `Bearer ${this.#config.apiKey}` }
+          : {}),
+      },
+      body: JSON.stringify({ ...options, stream: true }),
+    });
+
+    if (!res.ok || !res.body) {
+      throw new Error(`Native streaming failed: ${res.status}`);
+    }
+
+    const lines = res.body
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TextLineStream());
+
+    for await (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      try {
+        const data = JSON.parse(trimmed) as NativeChunk;
+        yield data;
+        if (data.stop) break;
+      } catch {
+        // Skip partial chunks
+      }
+    }
   }
 
   // Converts a string into a list of token IDs specific to the loaded model.

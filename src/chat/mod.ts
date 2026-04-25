@@ -29,7 +29,7 @@ export class Chat {
     return await res.json();
   }
 
-  async *createStream(options: ChatOptions): AsyncIterableIterator<ChatChunk> {
+  async *stream(options: ChatOptions): AsyncIterableIterator<ChatChunk> {
     const url = `${this.#config.baseUrl}/v1/chat/completions`;
 
     const res = await fetch(url, {
@@ -44,10 +44,9 @@ export class Chat {
     });
 
     if (!res.ok || !res.body) {
-      throw new Error(`Streaming failed: ${res.status}`);
+      throw new Error(`Chat streaming failed: ${res.status}`);
     }
 
-    // Transform the raw bytes into lines of text
     const lines = res.body
       .pipeThrough(new TextDecoderStream())
       .pipeThrough(new TextLineStream());
