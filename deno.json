@@ -6,5 +6,8 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/streams": "jsr:@std/streams@^1.0.0"
+  },
+  "publish": {
+    "exclude": [".git", ".github", ".gitignore"]
   }
 }
