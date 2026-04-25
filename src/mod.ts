@@ -35,5 +35,6 @@ export class Llama {
 }
 
 export { Llama as Client };
+export { Grammar } from "./utils/grammar.ts";
 export * from "./types.ts";
 export type { ClientOptions };
