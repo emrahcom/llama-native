@@ -32,6 +32,15 @@ export class Llama {
   get config(): Config {
     return this.#config;
   }
+
+  async health(): Promise<boolean> {
+    try {
+      const res = await this.server.health();
+      return res.status === "ok";
+    } catch {
+      return false;
+    }
+  }
 }
 
 export { Llama as Client };
