@@ -55,3 +55,20 @@ export interface ChatResponse {
     total_tokens: number;
   };
 }
+
+/** A chunk of a streaming chat completion. */
+export interface ChatResponseChunk {
+  choices: {
+    delta: {
+      content?: string;
+      role?: string;
+    };
+    finish_reason:
+      | "stop"
+      | "length"
+      | "content_filter"
+      | "null"
+      | string
+      | null;
+  }[];
+}
