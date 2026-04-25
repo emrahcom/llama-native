@@ -1,11 +1,13 @@
-import type { ClientOptions, Config } from "./types.ts";
-import { Server } from "./server/mod.ts";
 import { Chat } from "./chat/mod.ts";
+import { Embeddings } from "./embeddings/mod.ts";
+import { Server } from "./server/mod.ts";
+import type { ClientOptions, Config } from "./types.ts";
 
-export class Client {
+export class Llama {
   #config: Config;
-  server: Server;
   chat: Chat;
+  embeddings: Embeddings;
+  server: Server;
 
   constructor(options: ClientOptions = {}) {
     const host = options.host?.replace(/\/+$/, "") || "http://localhost";
@@ -16,8 +18,9 @@ export class Client {
       apiKey: options.apiKey,
     };
 
-    this.server = new Server(this.#config);
     this.chat = new Chat(this.#config);
+    this.embeddings = new Embeddings(this.#config);
+    this.server = new Server(this.#config);
   }
 
   get config(): Config {
@@ -25,4 +28,6 @@ export class Client {
   }
 }
 
+export { Llama as Client };
+export * from "./types.ts";
 export type { ClientOptions };

@@ -72,3 +72,27 @@ export interface ChatResponseChunk {
       | null;
   }[];
 }
+
+/** Options for creating embeddings. */
+export interface EmbeddingOptions {
+  /** The input text to embed. Can be a string or an array of strings. */
+  input: string | string[];
+  /** The ID of the model to use. */
+  model?: string;
+}
+
+/** The response from the embeddings endpoint. */
+export interface EmbeddingResponse {
+  object: "list";
+  data: {
+    object: "embedding";
+    /** The vector representation of the input. */
+    embedding: number[];
+    index: number;
+  }[];
+  model: string;
+  usage: {
+    prompt_tokens: number;
+    total_tokens: number;
+  };
+}
