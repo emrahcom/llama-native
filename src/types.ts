@@ -96,3 +96,17 @@ export interface EmbeddingResponse {
     total_tokens: number;
   };
 }
+
+/** Information about a loaded model. */
+export interface Model {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: string;
+}
+
+/** The response from the models list endpoint. */
+export interface ModelsResponse {
+  object: "list";
+  data: Model[];
+}

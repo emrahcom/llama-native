@@ -1,5 +1,6 @@
 import { Chat } from "./chat/mod.ts";
 import { Embeddings } from "./embeddings/mod.ts";
+import { Models } from "./models/mod.ts";
 import { Server } from "./server/mod.ts";
 import type { ClientOptions, Config } from "./types.ts";
 
@@ -7,6 +8,7 @@ export class Llama {
   #config: Config;
   chat: Chat;
   embeddings: Embeddings;
+  models: Models;
   server: Server;
 
   constructor(options: ClientOptions = {}) {
@@ -20,6 +22,7 @@ export class Llama {
 
     this.chat = new Chat(this.#config);
     this.embeddings = new Embeddings(this.#config);
+    this.models = new Models(this.#config);
     this.server = new Server(this.#config);
   }
 
