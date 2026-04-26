@@ -1,1 +1,2 @@
-export { Grammar } from "./grammar.ts";
+export * from "./grammar.ts";
+export * from "./math.ts";
