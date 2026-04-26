@@ -1,20 +1,27 @@
-import { Llama } from "@emrahcom/llama-native";
+import { Llama, utils } from "@emrahcom/llama-native";
 
 const llama = new Llama({
   baseUrl: "http://localhost:8080",
 });
 
 try {
-  // Generate embeddings for a text string
-  const res = await llama.embeddings.create({
-    input: "Llama is an amazing animal.",
+  // Get the first vector
+  const res1 = await llama.embeddings.create({
+    input: "The cat is sleeping on the couch.",
   });
+  const vectorA = res1.data[0].embedding;
 
-  // Access the embedding vector from the first result
-  const vector = res.data[0].embedding;
+  // Get the second vector
+  const res2 = await llama.embeddings.create({
+    input: "A feline is resting on the sofa.",
+  });
+  const vectorB = res2.data[0].embedding;
 
-  console.log("Vector (first 5 values):", vector.slice(0, 5));
-  console.log("Total dimensions:", vector.length);
+  // Compare the two vectors to see how similar they are
+  const score = utils.cosineSimilarity(vectorA, vectorB);
+
+  // A score near 1.0 means the meanings are very close
+  console.log(`Similarity: ${score.toFixed(4)}`);
 } catch (e) {
   console.error(e);
 }
