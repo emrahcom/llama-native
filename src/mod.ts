@@ -46,6 +46,6 @@ export class Llama {
 }
 
 export { Llama as Client };
-export { Grammar } from "./utils/grammar.ts";
-export * from "./types.ts";
+export * as utils from "./utils/mod.ts";
 export type { ClientOptions };
+export type * from "./types.ts";
