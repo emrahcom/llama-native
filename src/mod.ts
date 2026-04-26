@@ -14,11 +14,13 @@ export class Llama {
   server: Server;
 
   constructor(options: ClientOptions = {}) {
-    const host = options.host?.replace(/\/+$/, "") || "http://localhost";
-    const port = options.port || 8080;
+    const url = (options.baseUrl || "http://localhost:8080").replace(
+      /\/+$/,
+      "",
+    );
 
     this.#config = {
-      baseUrl: `${host}:${port}`,
+      baseUrl: url,
       apiKey: options.apiKey,
     };
 

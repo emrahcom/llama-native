@@ -1,16 +1,10 @@
 /** Options for initializing the llama.cpp client. */
 export interface ClientOptions {
   /**
-   * The server host.
-   * @default "http://localhost"
+   * The full base URL of the llama.cpp server.
+   * @default "http://localhost:8080"
    */
-  host?: string;
-
-  /**
-   * The server port.
-   * @default 8080
-   */
-  port?: number;
+  baseUrl?: string;
 
   /**
    * Optional API Key if using a proxy or protected server.
