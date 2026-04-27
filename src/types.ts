@@ -113,7 +113,7 @@ export interface ModelsResponse {
 
 /** Native completion options unique to llama.cpp */
 export interface NativeOptions {
-  prompt: string;
+  prompt: string | number[];
   grammar?: string;
   n_predict?: number;
   stream?: boolean;
@@ -122,6 +122,8 @@ export interface NativeOptions {
   repeat_penalty?: number;
   top_k?: number;
   top_p?: number;
+  min_p?: number;
+  seed?: number;
   [key: string]: unknown;
 }
 
