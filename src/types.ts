@@ -39,9 +39,14 @@ export interface ChatOptions {
 
 /** The response from the chat completion endpoint. */
 export interface ChatResponse {
+  id: string;
+  object: "chat.completion";
+  created: number;
+  model: string;
   choices: {
+    index: number;
     message: ChatMessage;
-    finish_reason: "stop" | "length" | "content_filter" | "null" | string;
+    finish_reason: "stop" | "length" | "content_filter" | string | null;
   }[];
   usage: {
     prompt_tokens: number;
@@ -52,16 +57,20 @@ export interface ChatResponse {
 
 /** A chunk of a streaming chat completion. */
 export interface ChatChunk {
+  id: string;
+  object: "chat.completion.chunk";
+  created: number;
+  model: string;
   choices: {
+    index: number;
     delta: {
+      role?: "assistant";
       content?: string;
-      role?: string;
     };
     finish_reason:
       | "stop"
       | "length"
       | "content_filter"
-      | "null"
       | string
       | null;
   }[];
