@@ -20,7 +20,16 @@ export interface Config {
 
 /** The health status of the llama.cpp server. */
 export interface HealthResponse {
-  status: string;
+  status: "ok";
+}
+
+/** The error response from the llama.cpp server. */
+export interface ErrorResponse {
+  error: {
+    code: number;
+    message: string;
+    type: string;
+  };
 }
 
 /** A single message in a chat conversation. */

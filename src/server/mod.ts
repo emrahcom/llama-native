@@ -9,7 +9,15 @@ export class Server {
 
   async health(): Promise<HealthResponse> {
     const url = `${this.#config.baseUrl}/health`;
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.#config.apiKey
+          ? { "Authorization": `Bearer ${this.#config.apiKey}` }
+          : {}),
+      },
+    });
 
     if (!res.ok) {
       throw new Error(`Health check failed: ${res.status}`);

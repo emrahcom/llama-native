@@ -47,5 +47,4 @@ export class Llama {
 
 export { Llama as Client };
 export * as utils from "./utils/mod.ts";
-export type { ClientOptions };
 export type * from "./types.ts";
