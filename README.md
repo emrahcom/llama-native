@@ -12,7 +12,9 @@ import { Llama } from "@emrahcom/llama-native";
 
 const llama = new Llama();
 const res = await llama.chat.create({
-  messages: [{ role: "user", content: "Hello!" }],
+  messages: [
+    { role: "user", content: "Hello!" },
+  ],
 });
 
 console.log(res.choices[0].message.content);
