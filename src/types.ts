@@ -56,28 +56,28 @@ export interface ModelsResponse {
 }
 
 /** A single message in a chat conversation. */
-export interface ChatMessage {
+export interface V1ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
 /** Options for creating a chat completion. */
-export interface ChatOptions {
-  messages: ChatMessage[];
+export interface V1ChatOptions {
+  messages: V1ChatMessage[];
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
 }
 
 /** The response from the chat completion endpoint. */
-export interface ChatResponse {
+export interface V1ChatResponse {
   id: string;
   object: "chat.completion";
   created: number;
   model: string;
   choices: {
     index: number;
-    message: ChatMessage;
+    message: V1ChatMessage;
     finish_reason: "stop" | "length" | "content_filter" | string | null;
   }[];
   usage: {
@@ -88,7 +88,7 @@ export interface ChatResponse {
 }
 
 /** A chunk of a streaming chat completion. */
-export interface ChatChunk {
+export interface V1ChatChunk {
   id: string;
   object: "chat.completion.chunk";
   created: number;

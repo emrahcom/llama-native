@@ -5,7 +5,7 @@ const llama = new Llama({
 });
 
 try {
-  const stream = await llama.chat.stream({
+  const stream = await llama.v1.chat.stream({
     messages: [
       { role: "user", content: "Tell me a short story about a mountain." },
     ],

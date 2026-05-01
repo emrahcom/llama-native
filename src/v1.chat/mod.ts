@@ -1,14 +1,19 @@
 import { TextLineStream } from "@std/streams";
-import type { ChatChunk, ChatOptions, ChatResponse, Config } from "../types.ts";
+import type {
+  Config,
+  V1ChatChunk,
+  V1ChatOptions,
+  V1ChatResponse,
+} from "../types.ts";
 
-export class Chat {
+export class V1Chat {
   #config: Config;
 
   constructor(config: Config) {
     this.#config = config;
   }
 
-  async create(options: ChatOptions): Promise<ChatResponse> {
+  async create(options: V1ChatOptions): Promise<V1ChatResponse> {
     const url = `${this.#config.baseUrl}/v1/chat/completions`;
 
     const res = await fetch(url, {
@@ -29,7 +34,7 @@ export class Chat {
     return await res.json();
   }
 
-  async *stream(options: ChatOptions): AsyncIterableIterator<ChatChunk> {
+  async *stream(options: V1ChatOptions): AsyncIterableIterator<V1ChatChunk> {
     const url = `${this.#config.baseUrl}/v1/chat/completions`;
 
     const res = await fetch(url, {
@@ -58,7 +63,7 @@ export class Chat {
       if (data === "[DONE]") break;
 
       try {
-        yield JSON.parse(data) as ChatChunk;
+        yield JSON.parse(data) as V1ChatChunk;
       } catch {
         // Ignore parsing errors for empty lines
       }

@@ -5,7 +5,7 @@ const llama = new Llama({
 });
 
 try {
-  const res = await llama.chat.create({
+  const res = await llama.v1.chat.create({
     messages: [
       { role: "system", content: "You are a helpful assistant." },
       { role: "user", content: "What is the capital of France?" },
