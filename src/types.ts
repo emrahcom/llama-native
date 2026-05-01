@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// Globals
+// -----------------------------------------------------------------------------
 /** Options for initializing the llama.cpp client. */
 export interface ClientOptions {
   /**
@@ -18,11 +21,6 @@ export interface Config {
   apiKey?: string;
 }
 
-/** The health status of the llama.cpp server. */
-export interface HealthResponse {
-  status: "ok";
-}
-
 /** The error response from the llama.cpp server. */
 export interface ErrorResponse {
   error: {
@@ -30,6 +28,31 @@ export interface ErrorResponse {
     message: string;
     type: string;
   };
+}
+
+// -----------------------------------------------------------------------------
+// Health
+// -----------------------------------------------------------------------------
+/** The health status of the llama.cpp server. */
+export interface HealthResponse {
+  status: "ok";
+}
+
+// -----------------------------------------------------------------------------
+// Model
+// -----------------------------------------------------------------------------
+/** Information about a loaded model. */
+export interface Model {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: string;
+}
+
+/** The response from the models list endpoint. */
+export interface ModelsResponse {
+  object: "list";
+  data: Model[];
 }
 
 /** A single message in a chat conversation. */
@@ -104,20 +127,6 @@ export interface EmbeddingResponse {
     prompt_tokens: number;
     total_tokens: number;
   };
-}
-
-/** Information about a loaded model. */
-export interface Model {
-  id: string;
-  object: "model";
-  created: number;
-  owned_by: string;
-}
-
-/** The response from the models list endpoint. */
-export interface ModelsResponse {
-  object: "list";
-  data: Model[];
 }
 
 /** Native completion options unique to llama.cpp */

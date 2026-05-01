@@ -10,11 +10,11 @@ try {
 
   console.log("Available models:");
   for (const model of res.data) {
+    const createdAt = new Date(model.created * 1000).toLocaleString();
+
     console.log(`- ID: ${model.id}`);
     console.log(`  Owned by: ${model.owned_by}`);
-    console.log(
-      `  Created: ${new Date(model.created * 1000).toLocaleString()}`,
-    );
+    console.log(`  Created: ${createdAt}`);
   }
 } catch (e) {
   console.error(e);
