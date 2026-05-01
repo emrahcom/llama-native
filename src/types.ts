@@ -21,15 +21,6 @@ export interface Config {
   apiKey?: string;
 }
 
-/** The error response from the llama.cpp server. */
-export interface ErrorResponse {
-  error: {
-    code: number;
-    message: string;
-    type: string;
-  };
-}
-
 // -----------------------------------------------------------------------------
 // Health
 // -----------------------------------------------------------------------------
@@ -44,21 +35,31 @@ export interface HealthResponse {
 /** Information about a loaded model. */
 export interface Model {
   id: string;
-  object: "model";
   created: number;
+  object: "model";
   owned_by: string;
 }
 
 /** The response from the models list endpoint. */
 export interface ModelsResponse {
-  object: "list";
   data: Model[];
+  object: "list";
 }
 
+// -----------------------------------------------------------------------------
+// V1 Chat
+// -----------------------------------------------------------------------------
 /** A single message in a chat conversation. */
 export interface V1ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
+}
+
+/** The chat completion choice. */
+export interface V1ChatChoice {
+  finish_reason: "stop" | "length" | "content_filter" | string | null;
+  index: number;
+  message: V1ChatMessage;
 }
 
 /** Options for creating a chat completion. */
@@ -72,14 +73,10 @@ export interface V1ChatOptions {
 /** The response from the chat completion endpoint. */
 export interface V1ChatResponse {
   id: string;
+  choices: V1ChatChoice[];
   object: "chat.completion";
   created: number;
   model: string;
-  choices: {
-    index: number;
-    message: V1ChatMessage;
-    finish_reason: "stop" | "length" | "content_filter" | string | null;
-  }[];
   usage: {
     prompt_tokens: number;
     completion_tokens: number;
