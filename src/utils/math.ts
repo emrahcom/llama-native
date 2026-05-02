@@ -1,3 +1,7 @@
+/**
+ * Calculates the cosine similarity between two vectors.
+ * Returns a value between -1 and 1, where 1 indicates identical direction.
+ */
 export function cosineSimilarity(vectorA: number[], vectorB: number[]): number {
   let dotProduct = 0;
   let sumSqA = 0;

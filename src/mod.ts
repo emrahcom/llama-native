@@ -5,6 +5,7 @@ import { Chat as ChatV1 } from "./v1/chat/mod.ts";
 import { Models as ModelsV1 } from "./v1/models/mod.ts";
 import type { ClientOptions, Config, HealthResponse } from "./types.ts";
 
+/** The main client for interacting with llama.cpp. */
 export class Llama {
   #config: Config;
   embeddings: Embeddings;
@@ -53,6 +54,7 @@ export class Llama {
   }
 }
 
-export { Llama as Client };
+/** Common utility functions */
 export * as utils from "./utils/mod.ts";
+
 export type * from "./types.ts";

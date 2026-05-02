@@ -27,4 +27,6 @@ export interface Config {
 export type * from "./embeddings/types.ts";
 export type * from "./native/types.ts";
 export type * from "./server/types.ts";
+
+/** OpenAI-compatible API types. */
 export type * as V1 from "./v1/types.ts";
