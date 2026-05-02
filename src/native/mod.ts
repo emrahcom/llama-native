@@ -1,12 +1,12 @@
 import { TextLineStream } from "@std/streams";
+import type { Config } from "../types.ts";
 import type {
-  Config,
   DetokenizeResponse,
   NativeChunk,
   NativeOptions,
   NativeResponse,
   TokenizeResponse,
-} from "../types.ts";
+} from "./types.ts";
 
 export class Native {
   #config: Config;

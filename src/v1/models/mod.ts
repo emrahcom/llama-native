@@ -1,4 +1,5 @@
-import type { Config, ModelsResponse } from "../types.ts";
+import type { Config } from "../../types.ts";
+import type { ModelsResponse } from "./types.ts";
 
 export class Models {
   #config: Config;

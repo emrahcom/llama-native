@@ -1,4 +1,5 @@
-import type { Config, HealthResponse } from "../types.ts";
+import type { Config } from "../types.ts";
+import type { HealthResponse } from "./types.ts";
 
 export class Server {
   #config: Config;

@@ -1,4 +1,5 @@
-import type { Config, EmbeddingOptions, EmbeddingResponse } from "../types.ts";
+import type { Config } from "../types.ts";
+import type { EmbeddingOptions, EmbeddingResponse } from "./types.ts";
 
 export class Embeddings {
   #config: Config;

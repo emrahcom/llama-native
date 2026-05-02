@@ -6,7 +6,7 @@ const llama = new Llama({
 
 try {
   // Fetch the list of available models
-  const res = await llama.models.list();
+  const res = await llama.v1.models.list();
 
   console.log("Available models:");
   for (const model of res.data) {
