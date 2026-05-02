@@ -5,7 +5,7 @@ const llama = new Llama({
 });
 
 try {
-  const isHealthy = await llama.health();
+  const isHealthy = await llama.isHealthy();
 
   if (isHealthy) {
     console.log("healthy");
