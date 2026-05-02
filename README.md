@@ -8,10 +8,10 @@ OpenAI-compatible chat and native GBNF grammar completions.
 ## Usage
 
 ```Typescript
-import { Llama } from "@emrahcom/llama-native";
+import { Llama } from "jsr:@emrahcom/llama-native";
 
 const llama = new Llama();
-const res = await llama.chat.create({
+const res = await llama.v1.chat.create({
   messages: [
     { role: "user", content: "Hello!" },
   ],
