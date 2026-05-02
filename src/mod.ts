@@ -3,7 +3,7 @@ import { Native } from "./native/mod.ts";
 import { Server } from "./server/mod.ts";
 import { Chat as ChatV1 } from "./v1/chat/mod.ts";
 import { Models as ModelsV1 } from "./v1/models/mod.ts";
-import type { ClientOptions, Config } from "./types.ts";
+import type { ClientOptions, Config, HealthResponse } from "./types.ts";
 
 export class Llama {
   #config: Config;
@@ -39,13 +39,17 @@ export class Llama {
     return this.#config;
   }
 
-  async health(): Promise<boolean> {
+  async isHealthy(): Promise<boolean> {
     try {
       const res = await this.server.health();
       return res.status === "ok";
     } catch {
       return false;
     }
+  }
+
+  async health(): Promise<HealthResponse> {
+    return await this.server.health();
   }
 }
 
