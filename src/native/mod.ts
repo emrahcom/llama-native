@@ -29,11 +29,14 @@ export class Native {
       body: JSON.stringify({ ...options, stream: false }),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.error(data);
       throw new Error(`Native completion failed: ${res.status}`);
     }
 
-    return await res.json();
+    return data as NativeResponse;
   }
 
   async *stream(options: NativeOptions): AsyncGenerator<NativeChunk> {
@@ -87,11 +90,14 @@ export class Native {
       body: JSON.stringify({ content }),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.error(data);
       throw new Error(`Tokenization failed: ${res.status}`);
     }
 
-    return await res.json();
+    return data as TokenizeResponse;
   }
 
   // Converts a list of token IDs back into human-readable text.
@@ -109,10 +115,13 @@ export class Native {
       body: JSON.stringify({ tokens }),
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.error(data);
       throw new Error(`Detokenization failed: ${res.status}`);
     }
 
-    return await res.json();
+    return data as DetokenizeResponse;
   }
 }

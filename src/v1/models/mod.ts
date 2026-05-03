@@ -20,10 +20,13 @@ export class Models {
       },
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.error(data);
       throw new Error(`Failed to list models: ${res.status}`);
     }
 
-    return await res.json();
+    return data as ModelsResponse;
   }
 }

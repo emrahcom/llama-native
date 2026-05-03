@@ -20,10 +20,13 @@ export class Server {
       },
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
+      console.error(data);
       throw new Error(`Health check failed: ${res.status}`);
     }
 
-    return await res.json();
+    return data as HealthResponse;
   }
 }
