@@ -23,7 +23,8 @@ export class Embeddings {
     });
 
     if (!res.ok) {
-      throw new Error(`Embedding creation failed: ${res.status}`);
+      console.error(await res.json());
+      throw new Error("Embedding creation failed");
     }
 
     return await res.json();

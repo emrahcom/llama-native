@@ -6,13 +6,13 @@ const llama = new Llama({
 
 try {
   // Get the first vector
-  const res1 = await llama.embeddings.create({
+  const res1 = await llama.v1.embeddings.create({
     input: "The cat is sleeping on the couch.",
   });
   const vectorA = res1.data[0].embedding;
 
   // Get the second vector
-  const res2 = await llama.embeddings.create({
+  const res2 = await llama.v1.embeddings.create({
     input: "A feline is resting on the sofa.",
   });
   const vectorB = res2.data[0].embedding;
