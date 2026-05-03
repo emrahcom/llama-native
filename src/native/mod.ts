@@ -1,4 +1,5 @@
 import { TextLineStream } from "@std/streams";
+import { ensureOk } from "../internal/http.ts";
 import type { Config } from "../types.ts";
 import type {
   DetokenizeResponse,
@@ -29,9 +30,7 @@ export class Native {
       body: JSON.stringify({ ...options, stream: false }),
     });
 
-    if (!res.ok) {
-      throw new Error(`Native completion failed: ${res.status}`);
-    }
+    await ensureOk(res, "Native completion failed");
 
     return await res.json() as NativeResponse;
   }
@@ -87,9 +86,7 @@ export class Native {
       body: JSON.stringify({ content }),
     });
 
-    if (!res.ok) {
-      throw new Error(`Tokenization failed: ${res.status}`);
-    }
+    await ensureOk(res, "Tokenization failed");
 
     return await res.json() as TokenizeResponse;
   }
@@ -109,9 +106,7 @@ export class Native {
       body: JSON.stringify({ tokens }),
     });
 
-    if (!res.ok) {
-      throw new Error(`Detokenization failed: ${res.status}`);
-    }
+    await ensureOk(res, "Detokenization failed");
 
     return await res.json() as DetokenizeResponse;
   }

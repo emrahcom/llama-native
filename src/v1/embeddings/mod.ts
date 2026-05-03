@@ -1,3 +1,4 @@
+import { ensureOk } from "../../internal/http.ts";
 import type { Config } from "../../types.ts";
 import type { EmbeddingOptions, EmbeddingResponse } from "./types.ts";
 
@@ -22,9 +23,7 @@ export class Embeddings {
       body: JSON.stringify(options),
     });
 
-    if (!res.ok) {
-      throw new Error(`Embedding creation failed: ${res.status}`);
-    }
+    await ensureOk(res, "Embedding creation failed");
 
     return await res.json() as EmbeddingResponse;
   }

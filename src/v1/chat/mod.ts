@@ -1,4 +1,5 @@
 import { TextLineStream } from "@std/streams";
+import { ensureOk } from "../../internal/http.ts";
 import type { Config } from "../../types.ts";
 import type { ChatChunk, ChatOptions, ChatResponse } from "./types.ts";
 
@@ -23,9 +24,7 @@ export class Chat {
       body: JSON.stringify({ ...options, stream: false }),
     });
 
-    if (!res.ok) {
-      throw new Error(`Chat completion failed: ${res.status}`);
-    }
+    await ensureOk(res, "Chat completion failed");
 
     return await res.json() as ChatResponse;
   }

@@ -1,3 +1,4 @@
+import { ensureOk } from "../internal/http.ts";
 import type { Config } from "../types.ts";
 import type { HealthResponse } from "./types.ts";
 
@@ -20,9 +21,7 @@ export class Server {
       },
     });
 
-    if (!res.ok) {
-      throw new Error(`Health check failed: ${res.status}`);
-    }
+    await ensureOk(res, "Health check failed");
 
     return await res.json() as HealthResponse;
   }
