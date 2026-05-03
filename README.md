@@ -7,7 +7,7 @@ OpenAI-compatible chat and native GBNF grammar completions.
 
 ## Usage
 
-Assuming that `llama-server` is running in your local environment
+Assuming that `llama-server` is running in your local environment...
 
 ```Typescript
 import { Llama } from "jsr:@emrahcom/llama-native";

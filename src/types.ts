@@ -22,9 +22,8 @@ export interface Config {
 }
 
 // -----------------------------------------------------------------------------
-// Module Exports
+// Submodule Exports
 // -----------------------------------------------------------------------------
-export type * from "./embeddings/types.ts";
 export type * from "./native/types.ts";
 export type * from "./server/types.ts";
 
