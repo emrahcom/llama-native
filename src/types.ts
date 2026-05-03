@@ -21,6 +21,18 @@ export interface Config {
   apiKey?: string;
 }
 
+/** Error detail in the standard ErrorResponse. */
+export interface ErrorDetail {
+  code: number;
+  message: string;
+  type: string;
+}
+
+/** Standard error response returned by the llama.cpp server. */
+export interface ErrorResponse {
+  error: ErrorDetail;
+}
+
 // -----------------------------------------------------------------------------
 // Submodule Exports
 // -----------------------------------------------------------------------------

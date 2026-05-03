@@ -58,4 +58,7 @@ export class Llama {
 /** Common utility functions */
 export * as utils from "./utils/mod.ts";
 
+/** Error classes */
+export * from "./errors.ts";
+
 export type * from "./types.ts";

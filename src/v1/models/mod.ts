@@ -1,3 +1,4 @@
+import { ensureOk } from "../../internal/http.ts";
 import type { Config } from "../../types.ts";
 import type { ModelsResponse } from "./types.ts";
 
@@ -21,9 +22,7 @@ export class Models {
       },
     });
 
-    if (!res.ok) {
-      throw new Error(`Failed to list models: ${res.status}`);
-    }
+    await ensureOk(res, "Failed to list models");
 
     return await res.json() as ModelsResponse;
   }
