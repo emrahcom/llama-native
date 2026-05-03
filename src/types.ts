@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Global Exports
+// Global
 // -----------------------------------------------------------------------------
 /** Options for initializing the llama.cpp client. */
 export interface ClientOptions {
@@ -21,6 +21,9 @@ export interface Config {
   apiKey?: string;
 }
 
+// -----------------------------------------------------------------------------
+// Error related
+// -----------------------------------------------------------------------------
 /** Error detail in the standard ErrorResponse. */
 export interface ErrorDetail {
   code: number;
@@ -34,7 +37,7 @@ export interface ErrorResponse {
 }
 
 // -----------------------------------------------------------------------------
-// Submodule Exports
+// Submodules
 // -----------------------------------------------------------------------------
 export type * from "./native/types.ts";
 export type * from "./server/types.ts";

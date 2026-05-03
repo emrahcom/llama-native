@@ -43,9 +43,7 @@ export class Chat {
       body: JSON.stringify({ ...options, stream: true }),
     });
 
-    if (!res.ok || !res.body) {
-      throw new Error(`Chat streaming failed: ${res.status}`);
-    }
+    await ensureOk(res, "Chat streaming failed");
 
     const lines = res.body
       .pipeThrough(new TextDecoderStream())

@@ -49,9 +49,7 @@ export class Native {
       body: JSON.stringify({ ...options, stream: true }),
     });
 
-    if (!res.ok || !res.body) {
-      throw new Error(`Native streaming failed: ${res.status}`);
-    }
+    await ensureOk(res, "Native streaming failed");
 
     const lines = res.body
       .pipeThrough(new TextDecoderStream())
