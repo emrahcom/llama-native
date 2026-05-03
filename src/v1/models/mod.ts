@@ -14,19 +14,17 @@ export class Models {
     const res = await fetch(url, {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         ...(this.#config.apiKey
           ? { "Authorization": `Bearer ${this.#config.apiKey}` }
           : {}),
       },
     });
 
-    const data = await res.json();
-
     if (!res.ok) {
-      console.error(data);
       throw new Error(`Failed to list models: ${res.status}`);
     }
 
-    return data as ModelsResponse;
+    return await res.json() as ModelsResponse;
   }
 }

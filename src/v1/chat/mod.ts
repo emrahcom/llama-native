@@ -23,14 +23,11 @@ export class Chat {
       body: JSON.stringify({ ...options, stream: false }),
     });
 
-    const data = await res.json();
-
     if (!res.ok) {
-      console.error(data);
       throw new Error(`Chat completion failed: ${res.status}`);
     }
 
-    return data as ChatResponse;
+    return await res.json() as ChatResponse;
   }
 
   async *stream(options: ChatOptions): AsyncIterableIterator<ChatChunk> {

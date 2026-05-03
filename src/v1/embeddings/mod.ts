@@ -22,13 +22,10 @@ export class Embeddings {
       body: JSON.stringify(options),
     });
 
-    const data = await res.json();
-
     if (!res.ok) {
-      console.error(data);
       throw new Error(`Embedding creation failed: ${res.status}`);
     }
 
-    return data as EmbeddingResponse;
+    return await res.json() as EmbeddingResponse;
   }
 }
