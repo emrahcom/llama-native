@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// Run llama-server with a pooling type to test this example. e.g.
+//
+//  llama-server --embeddings --pooling mean
+//
+// -----------------------------------------------------------------------------
 import { Llama, utils } from "@emrahcom/llama-native";
 
 const llama = new Llama({
