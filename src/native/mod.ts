@@ -50,6 +50,7 @@ export class Native {
     });
 
     await ensureOk(res, "Native streaming failed");
+    if (!res.body) throw new Error("Native streaming failed: no body");
 
     const lines = res.body
       .pipeThrough(new TextDecoderStream())

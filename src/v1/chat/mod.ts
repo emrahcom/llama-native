@@ -44,6 +44,7 @@ export class Chat {
     });
 
     await ensureOk(res, "Chat streaming failed");
+    if (!res.body) throw new Error("Chat streaming failed: no body");
 
     const lines = res.body
       .pipeThrough(new TextDecoderStream())
