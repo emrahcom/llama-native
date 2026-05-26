@@ -19,6 +19,15 @@ Rules that every spec and the implementation inherit.
   Required by JSR's no-slow-types rule. Applies to every exported function,
   method, and getter.
 
+## Structure
+
+- **Components live in folders under `src/`**\
+  Each folder contains `mod.ts` as its entry point.
+
+- **Public surface re-exported from `src/mod.ts`**\
+  Anything intended to be visible to consumers of the module is re-exported from
+  the top-level `src/mod.ts`.
+
 ## Runtime
 
 - **Web Standards only in `src/`**\

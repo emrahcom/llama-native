@@ -2,6 +2,10 @@
 
 The top-level entry point of the module.
 
+## Location
+
+- `src/client/`
+
 ## TypeScript surface
 
 The module exports:

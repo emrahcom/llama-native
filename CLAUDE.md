@@ -38,8 +38,8 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 - Run the formatter, linter, and tests before considering any change done.
 - To change behavior, update the spec first, then the code, then tests.
 - Flag any change that would break Node compatibility before applying it.
-- Update `TASKS.md` after completing a task with its new status and a summary of
-  the changes applied.
+- Update `TASKS.md` after completing a task. Follow `specs/tasks.md` for the
+  format.
 
 ## Where things live
 
