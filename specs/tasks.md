@@ -21,4 +21,12 @@ status: done
 
 - change 1
 - change 2
+
+findings:
+- observation 1
+- observation 2
 ```
+
+The `findings:` section is optional. Use it for observations made during the
+task that were out of scope: bugs noticed, improvements suggested, missing
+pieces, anything worth recording without implementing.

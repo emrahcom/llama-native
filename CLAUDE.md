@@ -34,6 +34,9 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 ## Workflow rules
 
 - Read the relevant spec section before implementing.
+- Do only what the task defines. Adjacent work (tests, examples, refactors)
+  belongs to its own task; note observations or suggestions as findings when
+  completing the task instead of implementing them.
 - Make changes small and reversible.
 - Run the formatter, linter, and tests before considering any change done.
 - To change behavior, update the spec first, then the code, then tests.
