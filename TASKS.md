@@ -16,3 +16,11 @@ status: done
 ## T-002: Client tests
 
 Per `specs/client.md`.
+
+status: done
+
+- Added `tests/client.test.ts` covering the `Llama` constructor behavior defined
+  in the spec: `baseUrl` default for missing/undefined/falsy options, trailing
+  slash normalization (single and multiple), `baseUrl` left as-is when it has no
+  trailing slash, `apiKey` undefined by default and preserved when provided, and
+  `config` being frozen after construction.
