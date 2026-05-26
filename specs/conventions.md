@@ -22,10 +22,10 @@ Rules that every spec and the implementation inherit.
 ## Runtime
 
 - **Web Standards only in `src/`**\
-  Allowed: `fetch`, `ReadableStream`, `TextDecoderStream`, `AsyncIterable`,
-  `AbortController`, `TextEncoder`, `TextDecoder`, `URL`, `JSON`, `Error`. No
-  runtime-specific globals.
+  Use Web Standards available in both Deno and Node. Common examples: `fetch`,
+  `ReadableStream`, `TextDecoderStream`, `AsyncIterable`, `AbortController`,
+  `TextEncoder`, `TextDecoder`, `URL`, `JSON`, `Error`.
 
 - **No `Deno.*` in `src/`**\
-  Preserves Node compatibility. `tests/` and `examples/` may use Deno-specific
-  APIs freely.
+  Preserves Node compatibility.\
+  `tests/` and `examples/` may use Deno-specific APIs freely.

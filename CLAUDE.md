@@ -53,7 +53,7 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   Endpoint specs.
 
 - `specs/conventions.md`\
-  Naming, typing, and code-style rules.
+  Naming, typing, and runtime rules.
 
 - `specs/references.md`\
   Upstream documentation links.
