@@ -1,16 +1,13 @@
+import type { Config } from "../client/mod.ts";
+
 export interface HealthResponse {
   status: string;
 }
 
-interface ServerConfig {
-  readonly baseUrl: string;
-  readonly apiKey?: string;
-}
-
 export class Server {
-  #config: ServerConfig;
+  #config: Config;
 
-  constructor(config: ServerConfig) {
+  constructor(config: Config) {
     this.#config = config;
   }
 

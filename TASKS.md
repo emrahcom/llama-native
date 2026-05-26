@@ -51,3 +51,21 @@ findings:
 ## T-004: Align implementation with updated client spec
 
 Per `specs/client.md`.
+
+status: done
+
+- Added an exported `Config` interface to `src/client/mod.ts` and typed
+  `Llama.config` as `Config` instead of an inline object type, matching the
+  spec's named internal `Config`.
+- Removed the duplicate `ServerConfig` interface from `src/server/mod.ts`; the
+  `Server` sub-client now imports the shared `Config` via `import type` and uses
+  it directly without re-declaring its type, as the spec requires.
+- Left `Config` out of `src/mod.ts` so it stays internal to the package (the
+  spec shows it without `export` in the public surface).
+
+findings:
+
+- The `import type { Config }` in `src/server/mod.ts` introduces a type-only
+  cyclic import with `src/client/mod.ts`. It is erased at runtime so it is
+  harmless, but if more sub-clients adopt `Config` a dedicated internal
+  `config.ts` module might read more cleanly.

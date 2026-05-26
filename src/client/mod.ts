@@ -5,6 +5,11 @@ export interface ClientOptions {
   apiKey?: string;
 }
 
+export interface Config {
+  readonly baseUrl: string;
+  readonly apiKey?: string;
+}
+
 const DEFAULT_BASE_URL = "http://localhost:8080";
 
 function normalizeBaseUrl(baseUrl: string | undefined): string {
@@ -13,10 +18,7 @@ function normalizeBaseUrl(baseUrl: string | undefined): string {
 }
 
 export class Llama {
-  readonly config: {
-    readonly baseUrl: string;
-    readonly apiKey?: string;
-  };
+  readonly config: Config;
   readonly server: Server;
 
   constructor(options: ClientOptions = {}) {
