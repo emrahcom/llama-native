@@ -47,3 +47,7 @@ findings:
   may be worth a foundation spec once more endpoints land.
 - No tests for `server.health()` yet; per the workflow rules that is its own
   task (cf. T-002 covering the client).
+
+## T-004: Align implementation with updated client spec
+
+Per `specs/client.md`.
