@@ -12,3 +12,7 @@ status: done
   it cannot mutate after construction.
 - Added `src/mod.ts` re-exporting `Llama` and `ClientOptions` as the module's
   public surface.
+
+## T-002: Client tests
+
+Per `specs/client.md`.
