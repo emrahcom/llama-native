@@ -38,3 +38,8 @@ Rules that every spec and the implementation inherit.
 - **No `Deno.*` in `src/`**\
   Preserves Node compatibility.\
   `tests/` and `examples/` may use Deno-specific APIs freely.
+
+## Testing
+
+- **Test files live under `tests/`**\
+  Tests for `src/<component>/` go in `tests/<component>.test.ts`.
