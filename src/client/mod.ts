@@ -1,3 +1,5 @@
+import { Server } from "../server/mod.ts";
+
 export interface ClientOptions {
   baseUrl?: string;
   apiKey?: string;
@@ -15,11 +17,13 @@ export class Llama {
     readonly baseUrl: string;
     readonly apiKey?: string;
   };
+  readonly server: Server;
 
   constructor(options: ClientOptions = {}) {
     this.config = Object.freeze({
       baseUrl: normalizeBaseUrl(options.baseUrl),
       apiKey: options.apiKey,
     });
+    this.server = new Server(this.config);
   }
 }

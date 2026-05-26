@@ -28,3 +28,21 @@ status: done
 ## T-003: /health implementation
 
 Per `specs/endpoints/health.md`.
+
+status: done
+
+- Added `src/server/mod.ts` with the `HealthResponse` interface and a `Server`
+  sub-client. `health()` issues `GET /health`, adds an
+  `Authorization: Bearer <key>` header when `apiKey` is set, returns the parsed
+  JSON body on HTTP 200, and throws on non-2xx status (network and JSON parse
+  errors propagate from `fetch`/`response.json()`).
+- Wired the `Server` sub-client onto `Llama` as the readonly `server` property,
+  constructed with the frozen client config.
+- Re-exported `Server` and `HealthResponse` from `src/mod.ts`.
+
+findings:
+- The `/health` spec mentions "Standard headers" without defining them; only
+  `Authorization` is added explicitly here. A shared request-headers convention
+  may be worth a foundation spec once more endpoints land.
+- No tests for `server.health()` yet; per the workflow rules that is its own
+  task (cf. T-002 covering the client).
