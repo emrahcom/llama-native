@@ -2,6 +2,10 @@
 
 A readiness check for the llama-server.
 
+## Location
+
+- `src/server/`
+
 ## TypeScript surface
 
 ```ts
