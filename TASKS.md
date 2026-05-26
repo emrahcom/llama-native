@@ -24,3 +24,7 @@ status: done
   slash normalization (single and multiple), `baseUrl` left as-is when it has no
   trailing slash, `apiKey` undefined by default and preserved when provided, and
   `config` being frozen after construction.
+
+## T-003: /health implementation
+
+Per `specs/endpoints/health.md`.
