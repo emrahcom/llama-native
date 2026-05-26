@@ -41,6 +41,7 @@ status: done
 - Re-exported `Server` and `HealthResponse` from `src/mod.ts`.
 
 findings:
+
 - The `/health` spec mentions "Standard headers" without defining them; only
   `Authorization` is added explicitly here. A shared request-headers convention
   may be worth a foundation spec once more endpoints land.

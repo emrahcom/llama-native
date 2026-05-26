@@ -8,20 +8,20 @@ The top-level entry point of the module.
 
 ## TypeScript surface
 
-The module exports:
-
 ```ts
 export interface ClientOptions {
   baseUrl?: string;
   apiKey?: string;
 }
 
+interface Config {
+  readonly baseUrl: string;
+  readonly apiKey?: string;
+}
+
 export class Llama {
   constructor(options?: ClientOptions);
-  readonly config: {
-    readonly baseUrl: string;
-    readonly apiKey?: string;
-  };
+  readonly config: Config;
 }
 ```
 
@@ -48,5 +48,6 @@ create a new `Llama` instance.
 
 Sub-clients group related endpoint methods on the `Llama` class. Each endpoint
 spec defines which sub-client its method belongs to, creating a new sub-client
-or adding to an existing one. Sub-clients receive the configuration at
-construction and use it to build their requests.
+or adding to an existing one. Sub-clients receive the same internal `Config`
+instance from the `Llama` class at construction and use it directly without
+re-declaring its type.
