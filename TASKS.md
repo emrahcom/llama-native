@@ -106,3 +106,7 @@ findings:
   Deno types `fetch` as an overload union, which makes `init.method`/
   `init.headers` non-narrowable. A shared test helper for stubbing `fetch` could
   absorb this cast once more endpoints add tests.
+
+## T-007: /health example
+
+Per `specs/endpoints/health.md`.
