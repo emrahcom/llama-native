@@ -69,3 +69,7 @@ findings:
   cyclic import with `src/client/mod.ts`. It is erased at runtime so it is
   harmless, but if more sub-clients adopt `Config` a dedicated internal
   `config.ts` module might read more cleanly.
+
+## T-005: Move Config type to dedicated module
+
+Per `specs/conventions.md`.
