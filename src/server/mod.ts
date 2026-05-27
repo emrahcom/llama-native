@@ -1,4 +1,4 @@
-import type { Config } from "../client/mod.ts";
+import type { Config } from "../types/config.ts";
 
 export interface HealthResponse {
   status: string;

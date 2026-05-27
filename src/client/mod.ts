@@ -1,13 +1,9 @@
 import { Server } from "../server/mod.ts";
+import type { Config } from "../types/config.ts";
 
 export interface ClientOptions {
   baseUrl?: string;
   apiKey?: string;
-}
-
-export interface Config {
-  readonly baseUrl: string;
-  readonly apiKey?: string;
 }
 
 const DEFAULT_BASE_URL = "http://localhost:8080";

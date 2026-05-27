@@ -73,3 +73,14 @@ findings:
 ## T-005: Move Config type to dedicated module
 
 Per `specs/conventions.md`.
+
+status: done
+
+- Added `src/types/config.ts` holding the shared internal `Config` interface,
+  matching the `specs/conventions.md` rule that types used by more than one
+  component live in `src/types/<name>.ts` (the spec names `config.ts` directly).
+- Updated `src/client/mod.ts` to `import type { Config }` from
+  `../types/config.ts` instead of declaring it locally.
+- Updated `src/server/mod.ts` to import `Config` from `../types/config.ts`
+  instead of `../client/mod.ts`, removing the type-only cyclic import between the
+  client and server modules flagged in T-004's findings.
