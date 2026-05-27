@@ -49,3 +49,10 @@ Rules that every spec and the implementation inherit.
 
 - **Test files live under `tests/`**\
   Tests for `src/<component>/` go in `tests/<component>.test.ts`.
+
+## Examples
+
+- **One file per endpoint under `examples/`**\
+  The file name is the endpoint path with slashes replaced by hyphens (e.g.,
+  `/health` → `examples/health.ts`, `/v1/chat/completions` →
+  `examples/v1-chat-completions.ts`).
