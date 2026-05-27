@@ -22,6 +22,7 @@ interface Config {
 export class Llama {
   constructor(options?: ClientOptions);
   readonly config: Config;
+  readonly server: Server;
 }
 ```
 
@@ -51,3 +52,6 @@ spec defines which sub-client its method belongs to, creating a new sub-client
 or adding to an existing one. Sub-clients receive the same internal `Config`
 instance from the `Llama` class at construction and use it directly without
 re-declaring its type.
+
+When an endpoint spec creates a new sub-client, it adds the corresponding
+readonly property to the `Llama` class in the TypeScript surface above.
