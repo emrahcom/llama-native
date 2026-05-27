@@ -42,8 +42,9 @@ export class Llama {
   When set, sub-clients add an `Authorization: Bearer <key>` header to outbound
   requests.
 
-The configuration is fixed after construction. To change `baseUrl` or `apiKey`,
-create a new `Llama` instance.
+The configuration is frozen after construction; assignment to any field on
+`config` throws a `TypeError`. To change `baseUrl` or `apiKey`, create a new
+`Llama` instance.
 
 ## Sub-clients
 
