@@ -4,7 +4,7 @@ The top-level entry point of the module.
 
 ## Location
 
-- `src/client/`
+`src/client/`
 
 ## TypeScript surface
 
