@@ -141,3 +141,7 @@ status: done
   of the public surface.
 - `src/client/mod.ts` already imports `Server` directly from `../server/mod.ts`,
   so dropping the re-export does not affect construction of `Llama.server`.
+
+## T-010: Implement errors module
+
+Per `specs/core/errors.md`.
