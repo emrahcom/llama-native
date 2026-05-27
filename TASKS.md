@@ -163,3 +163,7 @@ findings:
   {method} {path}` message) and wrapping network/parse failures in `LlamaError`
   is out of scope here and would be its own task, including updated `/health`
   tests.
+
+## T-010: Tests for errors module
+
+Per `specs/core/errors.md`.
