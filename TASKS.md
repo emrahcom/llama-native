@@ -132,3 +132,12 @@ findings:
 ## T-008: Drop Server export from src/mod.ts
 
 Per `specs/endpoints/health.md`.
+
+status: done
+
+- Removed `export { Server } from "./server/mod.ts";` from `src/mod.ts`. The
+  `/health` spec's TypeScript surface exposes only `HealthResponse` and accesses
+  the sub-client through `llama.server.health()`, so `Server` need not be part
+  of the public surface.
+- `src/client/mod.ts` already imports `Server` directly from `../server/mod.ts`,
+  so dropping the re-export does not affect construction of `Llama.server`.
