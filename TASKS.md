@@ -84,3 +84,7 @@ status: done
 - Updated `src/server/mod.ts` to import `Config` from `../types/config.ts`
   instead of `../client/mod.ts`, removing the type-only cyclic import between the
   client and server modules flagged in T-004's findings.
+
+## T-006: /health tests
+
+Per `specs/endpoints/health.md`.
