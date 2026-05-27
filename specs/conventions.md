@@ -31,8 +31,8 @@ Rules that every spec and the implementation inherit.
 - **Public surface re-exported from `src/mod.ts`**\
   Re-export from `src/mod.ts` exactly the names that specs mark with the
   `export` keyword. Types or classes used in spec signatures but not marked
-  `export` stay internal, even if a consumer would need them to name the
-  type by hand.
+  `export` stay internal, even if a consumer would need them to name the type by
+  hand.
 
 ## Runtime
 
