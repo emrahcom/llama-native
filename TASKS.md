@@ -159,11 +159,24 @@ status: done
 findings:
 
 - The existing `server.health()` still throws a plain `Error` on non-2xx status.
-  Switching it to throw `LlamaHTTPError` (with the spec's `HTTP {status} from
-  {method} {path}` message) and wrapping network/parse failures in `LlamaError`
-  is out of scope here and would be its own task, including updated `/health`
-  tests.
+  Switching it to throw `LlamaHTTPError` (with the spec's
+  `HTTP {status} from {method} {path}` message) and wrapping network/parse
+  failures in `LlamaError` is out of scope here and would be its own task,
+  including updated `/health` tests.
 
 ## T-010: Tests for errors module
 
 Per `specs/core/errors.md`.
+
+status: done
+
+- Added `tests/errors.test.ts` covering both classes against the spec's
+  TypeScript surface. For `LlamaError`: it is an `instanceof Error` and
+  `LlamaError`, forwards the `message`, sets `name` to `"LlamaError"`, and
+  preserves `cause` passed via `options`. For `LlamaHTTPError`: it is an
+  `instanceof Error`, `LlamaError`, and `LlamaHTTPError` (so a single
+  `instanceof LlamaError` catches it), forwards the `message`, sets `name` to
+  `"LlamaHTTPError"`, exposes `status`, exposes the `body` when provided, leaves
+  `body` `undefined` when omitted, and preserves `cause` passed via `options`.
+- Imports `LlamaError` and `LlamaHTTPError` through the `@emrahcom/llama-native`
+  public surface, exercising the module as a consumer would.
