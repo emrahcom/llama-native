@@ -1,5 +1,10 @@
-import { assertEquals, assertRejects, assertStrictEquals } from "@std/assert";
-import { Llama } from "@emrahcom/llama-native";
+import {
+  assertEquals,
+  assertInstanceOf,
+  assertRejects,
+  assertStrictEquals,
+} from "@std/assert";
+import { Llama, LlamaError, LlamaHTTPError } from "@emrahcom/llama-native";
 
 const originalFetch = globalThis.fetch;
 
@@ -90,31 +95,77 @@ Deno.test("health adds Authorization: Bearer <key> when apiKey is set", async ()
   }
 });
 
-Deno.test("health throws on a non-2xx status", async () => {
+Deno.test("health throws LlamaHTTPError on a non-2xx status", async () => {
   stubFetch(() => Promise.resolve(new Response("nope", { status: 503 })));
   try {
     const llama = new Llama();
-    await assertRejects(() => llama.server.health(), Error);
+    const error = await assertRejects(
+      () => llama.server.health(),
+      LlamaHTTPError,
+      "HTTP 503 from GET /health",
+    );
+    assertEquals(error.status, 503);
+    assertEquals(error.body, "nope");
   } finally {
     restoreFetch();
   }
 });
 
-Deno.test("health propagates network errors", async () => {
-  stubFetch(() => Promise.reject(new TypeError("network down")));
+Deno.test("health exposes a JSON error body on LlamaHTTPError", async () => {
+  const errorBody = { error: { code: 503, message: "loading", type: "x" } };
+  stubFetch(() =>
+    Promise.resolve(new Response(JSON.stringify(errorBody), { status: 503 }))
+  );
   try {
     const llama = new Llama();
-    await assertRejects(() => llama.server.health(), TypeError, "network down");
+    const error = await assertRejects(
+      () => llama.server.health(),
+      LlamaHTTPError,
+    );
+    assertEquals(error.body, errorBody);
   } finally {
     restoreFetch();
   }
 });
 
-Deno.test("health throws on a JSON parse error", async () => {
+Deno.test("health wraps network errors in LlamaError with cause", async () => {
+  const cause = new TypeError("network down");
+  stubFetch(() => Promise.reject(cause));
+  try {
+    const llama = new Llama();
+    const error = await assertRejects(
+      () => llama.server.health(),
+      LlamaError,
+      "GET /health request failed",
+    );
+    assertStrictEquals(error.cause, cause);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("health propagates AbortError unchanged", async () => {
+  const abort = new DOMException("aborted", "AbortError");
+  stubFetch(() => Promise.reject(abort));
+  try {
+    const llama = new Llama();
+    const error = await assertRejects(() => llama.server.health());
+    assertStrictEquals(error, abort);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("health throws LlamaError on a JSON parse error", async () => {
   stubFetch(() => Promise.resolve(new Response("not json")));
   try {
     const llama = new Llama();
-    await assertRejects(() => llama.server.health());
+    const error = await assertRejects(
+      () => llama.server.health(),
+      LlamaError,
+      "Failed to parse GET /health response body",
+    );
+    assertInstanceOf(error, LlamaError);
   } finally {
     restoreFetch();
   }

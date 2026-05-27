@@ -185,3 +185,31 @@ status: done
 
 Per `specs/endpoints/health.md` and `specs/core/errors.md`. Includes updating
 `tests/server.test.ts`.
+
+status: done
+
+- `src/server/mod.ts` now imports `LlamaError` and `LlamaHTTPError` from
+  `../errors/mod.ts`. On a non-2xx response, `health()` throws a
+  `LlamaHTTPError` with the spec's `HTTP {status} from GET /health` message, the
+  response `status`, and a `body` read via a `readErrorBody` helper (parsed as
+  JSON when possible, falling back to raw text, and `undefined` when the body
+  cannot be read).
+- Wrapped the `fetch` call so network failures throw a `LlamaError` with the
+  original error attached via `cause`, while an `AbortError` (a `DOMException`
+  named `"AbortError"`) is re-thrown unchanged so cancellation propagates as in
+  plain fetch code.
+- Wrapped `response.json()` so a JSON parse failure on a 200 response throws a
+  `LlamaError` carrying the parse error as `cause`.
+- Updated `tests/server.test.ts`: the non-2xx case now asserts a
+  `LlamaHTTPError` with the expected message, `status`, and text `body`; a new
+  case asserts a JSON error body is exposed; network errors assert a
+  `LlamaError` whose `cause` is the original error; a new case asserts an
+  `AbortError` propagates unchanged; and the JSON parse case asserts a
+  `LlamaError`.
+
+findings:
+
+- `readErrorBody` will be needed by every endpoint that surfaces
+  `LlamaHTTPError`. Once a second endpoint lands, lifting it (and the
+  fetch/abort/parse error-handling shape in `health()`) into a shared request
+  helper would avoid duplicating this logic per method.
