@@ -56,3 +56,14 @@ Rules that every spec and the implementation inherit.
   The file name is the endpoint path with slashes replaced by hyphens (e.g.,
   `/health` → `examples/health.ts`, `/v1/chat/completions` →
   `examples/v1-chat-completions.ts`).
+
+## Publishing
+
+- **Exclude development-only files from the published package**\
+  `deno.json` `publish.exclude` lists:
+  - `CLAUDE.md`
+  - `TASKS.md`
+  - `specs`
+  - `tests`
+
+  `examples` ships as documentation.
