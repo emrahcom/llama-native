@@ -145,3 +145,21 @@ status: done
 ## T-009: Implement errors module
 
 Per `specs/core/errors.md`.
+
+status: done
+
+- Added `src/errors/mod.ts` with `LlamaError` and `LlamaHTTPError`. `LlamaError`
+  extends `Error`, forwards `message` and `options` (so `cause` is preserved),
+  and sets `this.name = "LlamaError"`. `LlamaHTTPError` extends `LlamaError`,
+  adds the readonly `status` and optional readonly `body` fields, and sets
+  `this.name = "LlamaHTTPError"`, matching the spec's TypeScript surface.
+- Re-exported `LlamaError` and `LlamaHTTPError` from `src/mod.ts`; both are
+  marked `export` in the spec so they belong on the public surface.
+
+findings:
+
+- The existing `server.health()` still throws a plain `Error` on non-2xx status.
+  Switching it to throw `LlamaHTTPError` (with the spec's `HTTP {status} from
+  {method} {path}` message) and wrapping network/parse failures in `LlamaError`
+  is out of scope here and would be its own task, including updated `/health`
+  tests.
