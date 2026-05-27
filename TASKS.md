@@ -128,3 +128,7 @@ findings:
   shows `examples/health.ts`). If examples should ship separately from the
   module, adding `examples` to `publish.exclude` in `deno.json` would be its own
   task.
+
+## T-008: Drop Server export from src/mod.ts
+
+Per `specs/endpoints/health.md`.
