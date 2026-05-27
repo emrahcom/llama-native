@@ -29,8 +29,10 @@ Rules that every spec and the implementation inherit.
   per concern (e.g., `src/types/config.ts`). No `mod.ts` is required.
 
 - **Public surface re-exported from `src/mod.ts`**\
-  Anything intended to be visible to consumers of the module is re-exported from
-  the top-level `src/mod.ts`.
+  Re-export from `src/mod.ts` exactly the names that specs mark with the
+  `export` keyword. Types or classes used in spec signatures but not marked
+  `export` stay internal, even if a consumer would need them to name the
+  type by hand.
 
 ## Runtime
 
