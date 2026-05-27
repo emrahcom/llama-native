@@ -82,9 +82,27 @@ status: done
 - Updated `src/client/mod.ts` to `import type { Config }` from
   `../types/config.ts` instead of declaring it locally.
 - Updated `src/server/mod.ts` to import `Config` from `../types/config.ts`
-  instead of `../client/mod.ts`, removing the type-only cyclic import between the
-  client and server modules flagged in T-004's findings.
+  instead of `../client/mod.ts`, removing the type-only cyclic import between
+  the client and server modules flagged in T-004's findings.
 
 ## T-006: /health tests
 
 Per `specs/endpoints/health.md`.
+
+status: done
+
+- Added `tests/server.test.ts` covering `server.health()` against the `/health`
+  spec: it issues `GET` to `<baseUrl>/health`, returns the parsed JSON body on
+  HTTP 200, passes through non-`"ok"` status strings, omits the `Authorization`
+  header when no `apiKey` is set and adds `Authorization: Bearer <key>` when it
+  is, and throws on a non-2xx status, a propagated network error, and a JSON
+  parse failure.
+- Tests stub `globalThis.fetch` with a typed `FetchHandler` and restore the
+  original in a `finally` block so each case is isolated.
+
+findings:
+
+- The handler type is cast to `typeof globalThis.fetch` on assignment because
+  Deno types `fetch` as an overload union, which makes `init.method`/
+  `init.headers` non-narrowable. A shared test helper for stubbing `fetch` could
+  absorb this cast once more endpoints add tests.
