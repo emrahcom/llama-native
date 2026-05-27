@@ -2,7 +2,7 @@
 
 ## T-001: Client implementation
 
-Per `specs/client.md`.
+Per `specs/core/client.md`.
 
 status: done
 
@@ -15,7 +15,7 @@ status: done
 
 ## T-002: Client tests
 
-Per `specs/client.md`.
+Per `specs/core/client.md`.
 
 status: done
 
@@ -50,7 +50,7 @@ findings:
 
 ## T-004: Align implementation with updated client spec
 
-Per `specs/client.md`.
+Per `specs/core/client.md`.
 
 status: done
 

@@ -51,10 +51,13 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   Task list with status and change notes.
 
 - `specs/`\
-  Foundation specs at the top level.
+  Cross-cutting rules at the top level.
+
+- `specs/core/`\
+  Library-wide specs (client class, error types).
 
 - `specs/endpoints/`\
-  Endpoint specs.
+  Per-endpoint specs.
 
 - `specs/conventions.md`\
   Naming, typing, structure, runtime, and testing rules.
