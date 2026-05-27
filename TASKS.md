@@ -110,3 +110,21 @@ findings:
 ## T-007: /health example
 
 Per `specs/endpoints/health.md`.
+
+status: done
+
+- Added `examples/health.ts`, the first entry in the `examples/` directory. It
+  constructs a `Llama` client and calls `server.health()`, printing the returned
+  `status`. `baseUrl` and `apiKey` are read from `LLAMA_BASE_URL` and
+  `LLAMA_API_KEY` so the example runs against the default
+  `http://localhost:8080` with no arguments and can be pointed at an
+  authenticated server via environment variables.
+- Imports the public surface through the `@emrahcom/llama-native` import-map
+  entry rather than a relative path, exercising the module as a consumer would.
+
+findings:
+
+- `examples/` is included in the published package (the `deno publish` file list
+  shows `examples/health.ts`). If examples should ship separately from the
+  module, adding `examples` to `publish.exclude` in `deno.json` would be its own
+  task.
