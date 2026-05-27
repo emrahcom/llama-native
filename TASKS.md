@@ -180,3 +180,8 @@ status: done
   `body` `undefined` when omitted, and preserves `cause` passed via `options`.
 - Imports `LlamaError` and `LlamaHTTPError` through the `@emrahcom/llama-native`
   public surface, exercising the module as a consumer would.
+
+## T-011: Switch `/health` to throw library error types
+
+Per `specs/endpoints/health.md` and `specs/core/errors.md`. Includes updating
+`tests/server.test.ts`.
