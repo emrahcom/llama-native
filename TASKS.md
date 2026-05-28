@@ -295,3 +295,22 @@ findings:
 Per `specs/endpoints/health.md` and `specs/core/request.md`. Includes updating
 `tests/server.test.ts` to drop cases that now overlap with
 `tests/request.test.ts`.
+
+status: done
+
+- `src/server/mod.ts` now imports `request` from `../request/mod.ts` and
+  delegates to it. `health()` is a single
+  `await request({ config, method:
+  "GET", path: "/health" })` call whose
+  result is cast to `HealthResponse`. Dropped the local `readErrorBody` helper,
+  the inline fetch/abort/parse error-handling, and the now-unused
+  `LlamaError`/`LlamaHTTPError` imports; the only header-, auth-, and
+  error-mapping logic now lives in `request`.
+- Pruned `tests/server.test.ts` to the three cases that remain /health-
+  specific: it issues `GET <baseUrl>/health`, returns the parsed JSON body on
+  HTTP 200, and passes non-`"ok"` `status` strings through unchanged. Dropped
+  the Authorization header, non-2xx `LlamaHTTPError`, JSON error body, network
+  error, AbortError, and JSON parse cases — they are all exercised by
+  `tests/request.test.ts` against `request` directly, where the behavior now
+  lives. Removed the unused `assertInstanceOf`, `assertRejects`,
+  `assertStrictEquals`, `LlamaError`, and `LlamaHTTPError` imports.
