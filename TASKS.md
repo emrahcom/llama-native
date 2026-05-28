@@ -360,3 +360,7 @@ findings:
   reinforced by the workflow rules, tokenize tests belong to their own task.
 - No `examples/tokenize.ts` yet; per the precedent set by T-003/T-007, the
   example belongs to its own task.
+
+## T-017: Tests for Server.tokenize
+
+Per `specs/endpoints/tokenize.md`.
