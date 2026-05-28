@@ -217,3 +217,32 @@ findings:
 ## T-012: Implement the request helper
 
 Per `specs/core/request.md`.
+
+status: done
+
+- Added `src/request/mod.ts` exporting the internal `RequestOptions` interface
+  and `request` function. `request` builds `${config.baseUrl}${path}`,
+  prepending a `/` when `path` does not start with one; adds
+  `Authorization: Bearer ${apiKey}` when `config.apiKey` is set; when `body` is
+  given, sets `Content-Type: application/json` and serializes the body with
+  `JSON.stringify`; forwards `signal` to `fetch` when provided; and returns
+  `await response.json()` as `unknown` on success.
+- Error mapping follows the spec: `AbortError` from `fetch` propagates
+  unchanged; other `fetch` rejections throw `LlamaError` with the original error
+  as `cause` and message `{method} {path} request failed`; non-2xx responses
+  throw `LlamaHTTPError` with message `HTTP {status} from {method} {path}`, the
+  response `status`, and a body read as JSON if parseable, raw text otherwise,
+  or `undefined` when the body cannot be read; a success response whose body
+  fails JSON parsing throws `LlamaError` with the parse error as `cause` and
+  message `Failed to parse {method} {path} response body`.
+- Left `request` and `RequestOptions` out of `src/mod.ts` as the spec specifies;
+  the helper is internal infrastructure.
+
+findings:
+
+- `src/server/mod.ts` still implements its own fetch/abort/parse error handling
+  and a local `readErrorBody`. Migrating `server.health()` to call `request`
+  (and dropping the duplicated helper) is a natural follow-up but belongs to its
+  own task per the workflow rules, alongside any test updates it requires.
+- Tests for `src/request/mod.ts` are not part of this task; per the precedent
+  set by T-001/T-002 and T-003/T-006, request tests belong to their own task.
