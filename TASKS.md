@@ -394,3 +394,16 @@ findings:
 ## T-018: Example for /tokenize
 
 Per `specs/conventions.md` Examples section.
+
+status: done
+
+- Added `examples/tokenize.ts`, named per the Examples convention (`/tokenize` →
+  `examples/tokenize.ts`). It constructs a `Llama` client and calls
+  `server.tokenize()` with a sample `content` and `add_special: true`, then
+  prints the returned `tokens` array. `baseUrl` and `apiKey` are read from
+  `LLAMA_BASE_URL` and `LLAMA_API_KEY` so the example runs against the default
+  `http://localhost:8080` with no arguments and can be pointed at an
+  authenticated server via environment variables, matching the pattern set by
+  `examples/health.ts`.
+- Imports the public surface through the `@emrahcom/llama-native` import-map
+  entry rather than a relative path, exercising the module as a consumer would.
