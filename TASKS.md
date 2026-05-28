@@ -314,3 +314,8 @@ status: done
   `tests/request.test.ts` against `request` directly, where the behavior now
   lives. Removed the unused `assertInstanceOf`, `assertRejects`,
   `assertStrictEquals`, `LlamaError`, and `LlamaHTTPError` imports.
+
+## T-015: Expose signal on Server.health
+
+Per `specs/endpoints/health.md`. Includes adding an abort-case test to
+`tests/server.test.ts`.
