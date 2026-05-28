@@ -327,10 +327,36 @@ status: done
   forwards `options?.signal` to the `request` helper, which already handles
   forwarding to `fetch` and propagating `AbortError` unchanged per
   `specs/core/request.md`.
-- `tests/server.test.ts`: added a case asserting `llama.server.health({ signal })`
-  forwards the exact `AbortSignal` instance through to the underlying `fetch`
-  call's `init.signal`. Existing /health-specific cases are unchanged.
+- `tests/server.test.ts`: added a case asserting
+  `llama.server.health({ signal })` forwards the exact `AbortSignal` instance
+  through to the underlying `fetch` call's `init.signal`. Existing
+  /health-specific cases are unchanged.
 
 ## T-016: Implement Server.tokenize
 
 Per `specs/endpoints/tokenize.md`.
+
+status: done
+
+- `src/server/mod.ts`: added the `TokenizeRequest` (`content: string`,
+  `add_special?: boolean`) and `TokenizeResponse` (`tokens: number[]`)
+  interfaces and a `tokenize(request, options?)` method on `Server`. The method
+  delegates to the shared `request` helper as `POST /tokenize` with the
+  `TokenizeRequest` as the JSON body and forwards `options?.signal`; the result
+  is cast to `TokenizeResponse`. All wire fields use snake_case per
+  `specs/conventions.md`; auth, error mapping, and abort handling come from
+  `specs/core/request.md` unchanged.
+- Renamed the `request` import to `sendRequest` in `src/server/mod.ts` so the
+  new `tokenize(request, ...)` parameter can keep the name the spec uses in the
+  call signature without shadowing the helper. Updated the existing `health()`
+  call site to use the renamed import; no behavior change.
+- `src/mod.ts`: re-exported `TokenizeRequest` and `TokenizeResponse` alongside
+  `HealthResponse`, matching the conventions rule that names marked `export` in
+  a spec belong on the public surface.
+
+findings:
+
+- No tests for `server.tokenize()` yet; per the precedent set by T-003/T-006 and
+  reinforced by the workflow rules, tokenize tests belong to their own task.
+- No `examples/tokenize.ts` yet; per the precedent set by T-003/T-007, the
+  example belongs to its own task.
