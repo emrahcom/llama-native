@@ -319,3 +319,14 @@ status: done
 
 Per `specs/endpoints/health.md`. Includes adding an abort-case test to
 `tests/server.test.ts`.
+
+status: done
+
+- `src/server/mod.ts`: `health()` now accepts an optional
+  `{ signal?: AbortSignal }` argument matching the spec's call signature and
+  forwards `options?.signal` to the `request` helper, which already handles
+  forwarding to `fetch` and propagating `AbortError` unchanged per
+  `specs/core/request.md`.
+- `tests/server.test.ts`: added a case asserting `llama.server.health({ signal })`
+  forwards the exact `AbortSignal` instance through to the underlying `fetch`
+  call's `init.signal`. Existing /health-specific cases are unchanged.

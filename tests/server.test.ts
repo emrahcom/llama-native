@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertStrictEquals } from "@std/assert";
 import { Llama } from "@emrahcom/llama-native";
 
 const originalFetch = globalThis.fetch;
@@ -55,6 +55,22 @@ Deno.test("health returns non-ok status strings unchanged", async () => {
     const llama = new Llama();
     const result = await llama.server.health();
     assertEquals(result.status, "loading model");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("health forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(new Response(JSON.stringify({ status: "ok" })));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.server.health({ signal: controller.signal });
+    assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();
   }

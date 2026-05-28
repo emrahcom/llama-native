@@ -12,11 +12,14 @@ export class Server {
     this.#config = config;
   }
 
-  async health(): Promise<HealthResponse> {
+  async health(
+    options?: { signal?: AbortSignal },
+  ): Promise<HealthResponse> {
     return await request({
       config: this.#config,
       method: "GET",
       path: "/health",
+      signal: options?.signal,
     }) as HealthResponse;
   }
 }
