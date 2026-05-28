@@ -330,3 +330,7 @@ status: done
 - `tests/server.test.ts`: added a case asserting `llama.server.health({ signal })`
   forwards the exact `AbortSignal` instance through to the underlying `fetch`
   call's `init.signal`. Existing /health-specific cases are unchanged.
+
+## T-016: Implement Server.tokenize
+
+Per `specs/endpoints/tokenize.md`.
