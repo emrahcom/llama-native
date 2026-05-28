@@ -246,3 +246,7 @@ findings:
   own task per the workflow rules, alongside any test updates it requires.
 - Tests for `src/request/mod.ts` are not part of this task; per the precedent
   set by T-001/T-002 and T-003/T-006, request tests belong to their own task.
+
+## T-013: Tests for the request helper
+
+Per `specs/core/request.md`.
