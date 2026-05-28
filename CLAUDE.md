@@ -15,9 +15,10 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   now.
 
 - **Spec-first**\
-  Every area has a spec under `specs/`. No code is written for an area before
-  its spec is in the repo. Specs are implementation-complete: someone with no
-  access to prior code can produce a working implementation from the spec alone.
+  Every area has a spec under `specs/`, written before its code. The spec is
+  authoritative: code follows it. Specs are implementation-complete: someone
+  with no access to prior code can produce a working implementation from the
+  spec alone.
 
 ## Hard constraints
 
@@ -33,6 +34,8 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 
 ## Workflow rules
 
+- Push back on questionable specs or tasks; raise findings during implementation
+  rather than silently agreeing.
 - Read the relevant spec section before implementing.
 - Do only what the task defines. Adjacent work (tests, examples, refactors)
   belongs to its own task; note observations or suggestions as findings when
