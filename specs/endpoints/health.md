@@ -25,16 +25,8 @@ state.
 
 ## Request
 
-`GET /health`
-
-- No body.
-- Standard headers.
-- When `apiKey` is set on the client, adds `Authorization: Bearer <key>`.
+`GET /health` with no body.
 
 ## Response
 
-- On HTTP 200\
-  the body is parsed as JSON and returned as a `HealthResponse`.
-
-- On any non-2xx status, network error, or JSON parse error\
-  the method throws.
+Parsed JSON as `HealthResponse`. Errors handled per `specs/core/request.md`.
