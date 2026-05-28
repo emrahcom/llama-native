@@ -289,3 +289,9 @@ findings:
   call `request` (and dropping the duplicated logic and the `server.test.ts`
   cases that overlap with `request.test.ts`) remains the follow-up noted in
   T-012's findings.
+
+## T-014: Refactor /health to use the request helper
+
+Per `specs/endpoints/health.md` and `specs/core/request.md`. Includes updating
+`tests/server.test.ts` to drop cases that now overlap with
+`tests/request.test.ts`.
