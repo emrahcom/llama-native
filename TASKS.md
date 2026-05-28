@@ -364,3 +364,29 @@ findings:
 ## T-017: Tests for Server.tokenize
 
 Per `specs/endpoints/tokenize.md`.
+
+status: done
+
+- Added `tokenize` cases to `tests/server.test.ts` covering the /tokenize-
+  specific surface from `specs/endpoints/tokenize.md`: it issues
+  `POST <baseUrl>/tokenize`, serializes the `TokenizeRequest` as the JSON body
+  preserving the snake_case `add_special` field when provided, omits
+  `add_special` from the body when not provided (so the optional field is not
+  forced onto the wire as `undefined`), returns the parsed JSON body as
+  `TokenizeResponse` on HTTP 200, and forwards the `signal` option to the
+  underlying `fetch` call.
+- Followed the precedent established by T-014: shared HTTP behavior (auth, error
+  mapping, abort propagation, JSON parse failures) is exercised in
+  `tests/request.test.ts` against the `request` helper directly and is not
+  duplicated here.
+- Reused the `stubFetch`/`restoreFetch` pattern already present in
+  `tests/server.test.ts`; no new helpers or imports were needed.
+
+findings:
+
+- No `examples/tokenize.ts` yet; per the precedent set by T-003/T-007 and noted
+  in T-016's findings, the example belongs to its own task.
+- The `stubFetch` / `restoreFetch` / `FetchHandler` trio is now duplicated in
+  both `tests/server.test.ts` and `tests/request.test.ts`. Lifting it into a
+  shared `tests/_fetch.ts` helper remains the follow-up flagged in T-013's
+  findings.

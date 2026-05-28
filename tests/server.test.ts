@@ -75,3 +75,85 @@ Deno.test("health forwards the signal option to fetch", async () => {
     restoreFetch();
   }
 });
+
+Deno.test("tokenize issues POST /tokenize against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(new Response(JSON.stringify({ tokens: [] })));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.server.tokenize({ content: "hello" });
+    assertEquals(seenUrl, "http://example.com:9000/tokenize");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("tokenize sends the TokenizeRequest as the JSON body, preserving add_special", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify({ tokens: [] })));
+  });
+  try {
+    const llama = new Llama();
+    await llama.server.tokenize({ content: "hello", add_special: true });
+    assertEquals(
+      seenBody,
+      JSON.stringify({ content: "hello", add_special: true }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("tokenize omits add_special from the body when not provided", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify({ tokens: [] })));
+  });
+  try {
+    const llama = new Llama();
+    await llama.server.tokenize({ content: "hello" });
+    assertEquals(seenBody, JSON.stringify({ content: "hello" }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("tokenize returns the parsed JSON body as TokenizeResponse on HTTP 200", async () => {
+  stubFetch(() =>
+    Promise.resolve(new Response(JSON.stringify({ tokens: [1, 2, 3] })))
+  );
+  try {
+    const llama = new Llama();
+    const result = await llama.server.tokenize({ content: "hello" });
+    assertEquals(result, { tokens: [1, 2, 3] });
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("tokenize forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(new Response(JSON.stringify({ tokens: [] })));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.server.tokenize({ content: "hello" }, {
+      signal: controller.signal,
+    });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
