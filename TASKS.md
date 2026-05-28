@@ -390,3 +390,7 @@ findings:
   both `tests/server.test.ts` and `tests/request.test.ts`. Lifting it into a
   shared `tests/_fetch.ts` helper remains the follow-up flagged in T-013's
   findings.
+
+## T-018: Example for /tokenize
+
+Per `specs/conventions.md` Examples section.
