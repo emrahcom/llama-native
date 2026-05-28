@@ -40,7 +40,7 @@ Thrown directly when no more specific class applies: network failures (with the
 original error attached via `cause`), response bodies that cannot be parsed, and
 similar.
 
-`AbortError` is not wrapped. When a caller aborts a request, the original
+`AbortError` is not wrapped. When a consumer aborts a request, the original
 `AbortError` from `fetch` propagates unchanged so cancellation can be detected
 the way it normally is in fetch-based code.
 

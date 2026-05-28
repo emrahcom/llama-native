@@ -17,7 +17,9 @@ export interface HealthResponse {
 Called as
 
 ```
-llama.server.health(): Promise<HealthResponse>
+llama.server.health(
+  options?: { signal?: AbortSignal },
+): Promise<HealthResponse>
 ```
 
 `status` is typically `"ok"` but other strings are possible depending on server

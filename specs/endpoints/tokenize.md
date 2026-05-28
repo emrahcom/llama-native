@@ -22,7 +22,10 @@ export interface TokenizeResponse {
 Called as
 
 ```
-llama.server.tokenize(request: TokenizeRequest): Promise<TokenizeResponse>
+llama.server.tokenize(
+  request: TokenizeRequest,
+  options?: { signal?: AbortSignal },
+): Promise<TokenizeResponse>
 ```
 
 `content` is the input text. `add_special` (default `false`) controls whether

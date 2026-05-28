@@ -42,7 +42,7 @@ The helper translates failures into the library's error types per
 `specs/core/errors.md`:
 
 - **`fetch` rejection that is `AbortError`**\
-  Re-thrown unchanged. The caller's `AbortController` semantics are preserved.
+  Re-thrown unchanged. The consumer's `AbortController` semantics are preserved.
 
 - **`fetch` rejection that is not `AbortError`**\
   Wrapped in `LlamaError` with the original error attached via `cause`. Message:
