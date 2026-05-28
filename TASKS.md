@@ -250,3 +250,42 @@ findings:
 ## T-013: Tests for the request helper
 
 Per `specs/core/request.md`.
+
+status: done
+
+- Added `tests/request.test.ts` covering the `request` helper against the spec.
+  Behavior cases: it sends `method` to `${baseUrl}${path}`, prepends a `/` when
+  `path` does not start with one and leaves it unchanged when it does, omits
+  `Authorization` when no `apiKey` and adds `Authorization: Bearer <key>` when
+  set, sets `Content-Type: application/json` and serializes the body with
+  `JSON.stringify` when `body` is given, omits both `Content-Type` and the
+  request body when no `body` is given, forwards `signal` to `fetch` when
+  provided, and returns the parsed JSON body on success.
+- Error-mapping cases: an `AbortError` from `fetch` propagates unchanged; a
+  non-`AbortError` fetch rejection is wrapped in `LlamaError` with the original
+  error attached via `cause` and message `{method} {path} request failed`; a
+  non-2xx response throws `LlamaHTTPError` with the message
+  `HTTP {status} from {method} {path}` and the response `status`, exposing a
+  JSON-parseable error body as the parsed value, a non-JSON body as the raw
+  text, and leaving `body` `undefined` when the body cannot be read (a
+  `ReadableStream` that errors on read); a success response with an unparseable
+  JSON body throws `LlamaError` with the parse error as `cause` and message
+  `Failed to parse {method} {path} response body`.
+- Imports `LlamaError` and `LlamaHTTPError` through the public surface and
+  imports the internal `request` and `Config` via relative paths into `src/`,
+  since neither is re-exported from `src/mod.ts`.
+- Reuses the `stubFetch`/`restoreFetch` pattern from `tests/server.test.ts`.
+
+findings:
+
+- The `stubFetch` / `restoreFetch` pair and `FetchHandler` type are now
+  duplicated between `tests/request.test.ts` and `tests/server.test.ts`. Once a
+  third endpoint adds tests, lifting them into a `tests/_fetch.ts` helper (with
+  the `typeof globalThis.fetch` cast that the T-006 finding called out) would
+  centralize the cast and reduce per-file boilerplate. That belongs to its own
+  task.
+- `src/server/mod.ts` still implements its own fetch/abort/parse error handling
+  alongside the now well-tested `request` helper. Migrating `server.health()` to
+  call `request` (and dropping the duplicated logic and the `server.test.ts`
+  cases that overlap with `request.test.ts`) remains the follow-up noted in
+  T-012's findings.
