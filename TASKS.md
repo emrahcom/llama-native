@@ -213,3 +213,7 @@ findings:
   `LlamaHTTPError`. Once a second endpoint lands, lifting it (and the
   fetch/abort/parse error-handling shape in `health()`) into a shared request
   helper would avoid duplicating this logic per method.
+
+## T-012: Implement the request helper
+
+Per `specs/core/request.md`.
