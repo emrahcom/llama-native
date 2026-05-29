@@ -577,3 +577,7 @@ findings:
 - No `examples/v1-completions.ts` yet; per the precedent set by T-022/T-023 and
   the Examples convention (`/v1/completions` → `examples/v1-completions.ts`),
   the example belongs to its own task.
+
+## T-025: Tests for v1.completions
+
+Per `specs/endpoints/v1-completions.md`.
