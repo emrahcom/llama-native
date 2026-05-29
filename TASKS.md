@@ -486,8 +486,8 @@ status: done
   handling come from `specs/core/request.md` unchanged.
 - `src/llama/mod.ts`: added the readonly `v1` property to `Llama`, constructed
   with `this.config` (the frozen `Config`) per the sub-group rule in
-  `specs/core/llama.md`. `/v1/models` is a two-segment path, so `models` lives on
-  the `v1` sub-group rather than directly on `Llama`.
+  `specs/core/llama.md`. `/v1/models` is a two-segment path, so `models` lives
+  on the `v1` sub-group rather than directly on `Llama`.
 - `src/mod.ts`: re-exported `Model` and `ModelsResponse` as types. The `V1`
   class is not marked `export` in the spec's surface (it is reached through
   `llama.v1`), so it stays internal, matching how the dissolved `Server`
@@ -500,3 +500,7 @@ findings:
 - No `examples/v1-models.ts` yet; per the precedent set by T-017/T-018 and the
   Examples convention (`/v1/models` → `examples/v1-models.ts`), the example
   belongs to its own task.
+
+## T-022: Tests for v1.models
+
+Per `specs/endpoints/v1-models.md`.
