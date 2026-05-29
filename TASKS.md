@@ -682,3 +682,7 @@ findings:
   mapping share the same `AbortError`-unwrap shape but differ only in message
   (`stream failed` vs `request failed`); they are kept separate because the spec
   distinguishes the two phases. No refactor is warranted.
+
+## T-028: Tests for streaming helper and LlamaStreamError
+
+Per `specs/core/streaming.md` and `specs/core/errors.md`.
