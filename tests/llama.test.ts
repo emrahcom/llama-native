@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
-import { Llama } from "@emrahcom/llama-native";
+import { type CompletionsResponse, Llama } from "@emrahcom/llama-native";
 
 Deno.test("baseUrl defaults to llama-server's default when no options", () => {
   const llama = new Llama();
@@ -269,6 +269,178 @@ Deno.test("v1.models forwards the signal option to fetch", async () => {
     const llama = new Llama();
     const controller = new AbortController();
     await llama.v1.models({ signal: controller.signal });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions issues POST /v1/completions against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "cmpl-1",
+          object: "text_completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.v1.completions({ prompt: "Hello" });
+    assertEquals(seenUrl, "http://example.com:9000/v1/completions");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions sends the CompletionsRequest as the JSON body, preserving optional fields", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "cmpl-1",
+          object: "text_completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.completions({
+      prompt: "Hello",
+      model: "my-model",
+      max_tokens: 16,
+      stop: ["\n"],
+      temperature: 0.7,
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        prompt: "Hello",
+        model: "my-model",
+        max_tokens: 16,
+        stop: ["\n"],
+        temperature: 0.7,
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions omits optional fields from the body when not provided", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "cmpl-1",
+          object: "text_completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.completions({ prompt: "Hello" });
+    assertEquals(seenBody, JSON.stringify({ prompt: "Hello" }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions returns the parsed JSON body as CompletionsResponse on HTTP 200", async () => {
+  const payload: CompletionsResponse = {
+    id: "cmpl-1",
+    object: "text_completion",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        text: " world",
+        logprobs: null,
+        finish_reason: "stop",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+    system_fingerprint: "b9300",
+  };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.v1.completions({ prompt: "Hello" });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "cmpl-1",
+          object: "text_completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.v1.completions({ prompt: "Hello" }, {
+      signal: controller.signal,
+    });
     assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();

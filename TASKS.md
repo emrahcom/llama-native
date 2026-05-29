@@ -581,3 +581,34 @@ findings:
 ## T-025: Tests for v1.completions
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- Added `v1.completions` cases to `tests/llama.test.ts` covering the
+  /v1/completions-specific surface from `specs/endpoints/v1-completions.md`: it
+  issues `POST <baseUrl>/v1/completions`, serializes the `CompletionsRequest` as
+  the JSON body preserving the snake_case optional fields (`max_tokens`, plus
+  `model`/`stop`/`temperature`) when provided, omits the optional fields from
+  the body when not provided (so they are not forced onto the wire as
+  `undefined`), returns the parsed JSON body as `CompletionsResponse` on HTTP
+  200 (a fully-formed response including a `Choice`, `Usage`, and
+  `system_fingerprint`), and forwards the `signal` option to the underlying
+  `fetch` call.
+- Followed the precedent established by T-014/T-017/T-022: shared HTTP behavior
+  (auth, error mapping, abort propagation, JSON parse failures) is exercised in
+  `tests/request.test.ts` against the `request` helper directly and is not
+  duplicated here.
+- Imported `CompletionsResponse` as a type alongside `Llama` from the public
+  surface to annotate the HTTP-200 case's expected payload, so the response
+  literal's `object`/`finish_reason` fields keep their narrow types for
+  `assertEquals`. Reused the existing `stubFetch`/`restoreFetch` pattern; no new
+  helpers were needed.
+
+findings:
+
+- No `examples/v1-completions.ts` yet; per the precedent set by T-022/T-023 and
+  the Examples convention (`/v1/completions` → `examples/v1-completions.ts`),
+  the example belongs to its own task (already flagged in T-024's findings).
+- The `stubFetch`/`restoreFetch`/`FetchHandler` trio remains duplicated between
+  `tests/llama.test.ts` and `tests/request.test.ts`. Lifting it into a shared
+  `tests/_fetch.ts` helper remains the follow-up flagged in T-013's findings.
