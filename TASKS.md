@@ -617,3 +617,15 @@ findings:
 
 Per `specs/endpoints/v1-completions.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/v1-completions.ts`, the per-endpoint example for
+  `/v1/completions` (path-to-filename mapping per the Examples convention).
+- Followed the precedent of `examples/v1-models.ts` and `examples/tokenize.ts`:
+  same header comment (purpose, run command, env-var overrides), same `Llama`
+  construction from `LLAMA_BASE_URL`/`LLAMA_API_KEY`, importing via the
+  `@emrahcom/llama-native` map entry.
+- Calls `llama.v1.completions({ prompt, max_tokens })` with a single-string
+  prompt and prints the first choice's `text`, exercising only the required
+  field plus one optional field.
