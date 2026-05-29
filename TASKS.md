@@ -414,3 +414,31 @@ Per updated `specs/core/client.md`, `specs/endpoints/health.md`, and
 `specs/endpoints/tokenize.md`. Includes dissolving the `Server` class, moving
 `health` and `tokenize` to `Llama`, relocating tests from `tests/server.test.ts`
 into `tests/client.test.ts`, and updating `examples/`.
+
+status: done
+
+- `src/client/mod.ts`: the `Llama` class now exposes `health()` and
+  `tokenize()` directly, matching the updated specs whose endpoint-access rule
+  makes single-segment paths (`/health`, `/tokenize`) methods on `Llama`. Both
+  methods delegate to the shared `request` helper exactly as before, using
+  `this.config` instead of the dissolved sub-client's `#config`. Moved the
+  `HealthResponse`, `TokenizeRequest`, and `TokenizeResponse` interfaces here.
+  Kept the `request as sendRequest` import alias so `tokenize`'s `request`
+  parameter does not shadow the helper.
+- Deleted `src/server/mod.ts` (the `Server` class and its readonly `server`
+  property on `Llama`); the `Server` sub-client no longer exists.
+- `src/mod.ts`: the `HealthResponse`, `TokenizeRequest`, and `TokenizeResponse`
+  type re-exports now come from `./client/mod.ts` instead of `./server/mod.ts`.
+- Relocated all fetch-stubbed `health`/`tokenize` cases from
+  `tests/server.test.ts` into `tests/client.test.ts` (alongside the existing
+  constructor cases) and deleted `tests/server.test.ts`. Call sites updated from
+  `llama.server.health()`/`llama.server.tokenize()` to `llama.health()`/
+  `llama.tokenize()`; assertions are otherwise unchanged.
+- `examples/health.ts` and `examples/tokenize.ts`: updated the calls to
+  `llama.health()` and `llama.tokenize()`.
+
+findings:
+
+- The `stubFetch`/`restoreFetch`/`FetchHandler` trio is now duplicated between
+  `tests/client.test.ts` and `tests/request.test.ts`. Lifting it into a shared
+  `tests/_fetch.ts` helper remains the follow-up flagged in T-013's findings.

@@ -17,5 +17,5 @@ const llama = new Llama({
   apiKey: Deno.env.get("LLAMA_API_KEY"),
 });
 
-const health = await llama.server.health();
+const health = await llama.health();
 console.log(health.status);

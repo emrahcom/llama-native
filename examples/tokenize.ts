@@ -17,7 +17,7 @@ const llama = new Llama({
   apiKey: Deno.env.get("LLAMA_API_KEY"),
 });
 
-const result = await llama.server.tokenize({
+const result = await llama.tokenize({
   content: "Hello, world!",
   add_special: true,
 });
