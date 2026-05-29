@@ -10,7 +10,10 @@ Custom error classes thrown by the library.
 
 ```ts
 export class LlamaError extends Error {
-  constructor(message: string, options?: ErrorOptions);
+  constructor(
+    message: string,
+    options?: ErrorOptions,
+  );
 }
 
 export class LlamaHTTPError extends LlamaError {
@@ -22,6 +25,13 @@ export class LlamaHTTPError extends LlamaError {
   );
   readonly status: number;
   readonly body?: unknown;
+}
+
+export class LlamaStreamError extends LlamaError {
+  constructor(
+    message: string,
+    options?: ErrorOptions,
+  );
 }
 ```
 
@@ -63,3 +73,14 @@ Message format:
 ```
 HTTP {status} from {method} {path}
 ```
+
+## LlamaStreamError
+
+Thrown for failures specific to consuming an SSE stream from llama-server:
+
+- when a `data:` payload cannot be parsed as JSON
+- when the response body ends without the `data: [DONE]` terminator.
+
+See `specs/core/streaming.md` for the conditions under which each case applies.
+
+No additional fields beyond what `LlamaError` provides.
