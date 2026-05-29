@@ -4,7 +4,7 @@ Tokenizes input text into model token IDs.
 
 ## Location
 
-`src/client/`
+`src/llama/`
 
 ## TypeScript surface
 

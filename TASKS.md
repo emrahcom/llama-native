@@ -450,3 +450,23 @@ Rename `specs/core/client.md` → `specs/core/llama.md`, `src/client/` →
 spec title from `# Client` to `# Llama`. Update all internal imports. Update the
 `Location` lines in `specs/endpoints/health.md` and
 `specs/endpoints/tokenize.md` from `src/client/` to `src/llama/`.
+
+status: done
+
+- Renamed `specs/core/client.md` → `specs/core/llama.md` (via `git mv`) and
+  updated its title from `# Client` to `# Llama` and its `Location` from
+  `src/client/` to `src/llama/`.
+- Renamed `src/client/` → `src/llama/` and `tests/client.test.ts` →
+  `tests/llama.test.ts` (via `git mv`). `src/llama/mod.ts` only imports siblings
+  via `../` paths, so no internal import edits were needed there.
+- Updated `src/mod.ts`'s two re-exports from `./client/mod.ts` to
+  `./llama/mod.ts`.
+- Updated the `Location` lines in `specs/endpoints/health.md` and
+  `specs/endpoints/tokenize.md` from `src/client/` to `src/llama/`.
+
+findings:
+
+- Remaining `client` references elsewhere are out of scope and left as-is:
+  `README.md` and `CLAUDE.md` describe the module as a "client", and
+  `specs/conventions.md` / `specs/core/llama.md` use "sub-client" and
+  "client-only types" as domain terminology rather than file/path references.

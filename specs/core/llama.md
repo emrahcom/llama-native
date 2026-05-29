@@ -1,10 +1,10 @@
-# Client
+# Llama
 
 The top-level entry point of the module.
 
 ## Location
 
-`src/client/`
+`src/llama/`
 
 ## TypeScript surface
 

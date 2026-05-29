@@ -4,7 +4,7 @@ A readiness check for the llama-server.
 
 ## Location
 
-`src/client/`
+`src/llama/`
 
 ## TypeScript surface
 

@@ -1,8 +1,8 @@
-export { Llama } from "./client/mod.ts";
+export { Llama } from "./llama/mod.ts";
 export type {
   ClientOptions,
   HealthResponse,
   TokenizeRequest,
   TokenizeResponse,
-} from "./client/mod.ts";
+} from "./llama/mod.ts";
 export { LlamaError, LlamaHTTPError } from "./errors/mod.ts";
