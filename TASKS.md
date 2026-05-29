@@ -544,3 +544,7 @@ status: done
   pattern set by `examples/health.ts` and `examples/tokenize.ts`.
 - Imports the public surface through the `@emrahcom/llama-native` import-map
   entry rather than a relative path, exercising the module as a consumer would.
+
+## T-024: Implement /v1/completions
+
+Per `specs/endpoints/v1-completions.md`.
