@@ -1,5 +1,9 @@
 import { assert, assertEquals, assertStrictEquals } from "@std/assert";
-import { LlamaError, LlamaHTTPError } from "@emrahcom/llama-native";
+import {
+  LlamaError,
+  LlamaHTTPError,
+  LlamaStreamError,
+} from "@emrahcom/llama-native";
 
 Deno.test("LlamaError is an Error and a LlamaError", () => {
   const error = new LlamaError("boom");
@@ -64,5 +68,28 @@ Deno.test("LlamaHTTPError preserves the cause from options", () => {
     undefined,
     { cause },
   );
+  assertStrictEquals(error.cause, cause);
+});
+
+Deno.test("LlamaStreamError extends LlamaError and Error", () => {
+  const error = new LlamaStreamError("Stream ended without [DONE] marker");
+  assert(error instanceof Error);
+  assert(error instanceof LlamaError);
+  assert(error instanceof LlamaStreamError);
+});
+
+Deno.test("LlamaStreamError forwards the message", () => {
+  const error = new LlamaStreamError("Failed to parse stream chunk");
+  assertEquals(error.message, "Failed to parse stream chunk");
+});
+
+Deno.test("LlamaStreamError sets its name to LlamaStreamError", () => {
+  const error = new LlamaStreamError("Stream ended without [DONE] marker");
+  assertEquals(error.name, "LlamaStreamError");
+});
+
+Deno.test("LlamaStreamError preserves the cause from options", () => {
+  const cause = new SyntaxError("bad json");
+  const error = new LlamaStreamError("Failed to parse stream chunk", { cause });
   assertStrictEquals(error.cause, cause);
 });

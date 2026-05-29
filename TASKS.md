@@ -686,3 +686,52 @@ findings:
 ## T-028: Tests for streaming helper and LlamaStreamError
 
 Per `specs/core/streaming.md` and `specs/core/errors.md`.
+
+status: done
+
+- `tests/errors.test.ts`: added `LlamaStreamError` cases mirroring the existing
+  `LlamaError`/`LlamaHTTPError` cases against the errors spec's surface — it is
+  an `instanceof Error`, `LlamaError`, and `LlamaStreamError` (so a single
+  `instanceof LlamaError` catches it), forwards the `message`, sets `name` to
+  `"LlamaStreamError"`, and preserves `cause` passed via `options`. Imported
+  `LlamaStreamError` alongside the others from the `@emrahcom/llama-native`
+  public surface.
+- `tests/request.test.ts`: added `requestStream` cases covering the streaming
+  spec. SSE parsing: yields parsed JSON payloads in order, buffers events split
+  across read chunks, joins multiple `data:` lines in one event with `\n`,
+  ignores non-`data:` lines (comments, `event:`, `id:`, `retry:`), and strips a
+  single leading space after `data:` (verified via `data: [DONE]` being treated
+  as the terminator rather than JSON-parsed). Termination: completes at `[DONE]`
+  and ignores events after it, throws `LlamaStreamError`
+  (`Stream ended without [DONE] marker`) when the body ends without `[DONE]` and
+  when the response has no body. Laziness: `fetch` does not run until the first
+  iteration. Error mapping: `LlamaStreamError` (`Failed to parse stream chunk`,
+  cause a `SyntaxError`) on an unparseable payload; `LlamaHTTPError` with the
+  spec's status/body/message on a non-2xx response before any value is yielded;
+  a fetch `AbortError` propagated unchanged; a non-`AbortError` fetch rejection
+  wrapped in `LlamaError` (`{method} {path} request failed`, cause preserved); a
+  mid-stream `AbortError` re-thrown unchanged after the prior value is yielded;
+  a mid-stream network error wrapped in `LlamaError`
+  (`{method} {path} stream failed`, cause preserved). Setup/cancellation: sends
+  method, path, and serialized body through the shared setup, forwards the
+  `signal` to `fetch`, and stops cleanly when the consumer breaks out early.
+- Per `specs/conventions.md` ("Tests for `src/<component>/` go in
+  `tests/<component>.test.ts`"), the streaming-helper cases live in
+  `tests/request.test.ts` alongside `request` (both are `src/request/`), and the
+  error-class cases live in `tests/errors.test.ts`. Reused the existing
+  `stubFetch`/`restoreFetch`/`FetchHandler` scaffolding; added local
+  `sseResponse`/`sseThenError`/`collect` helpers for building SSE bodies and
+  draining the iterator, per the convention that test duplication is acceptable.
+
+findings:
+
+- The streaming spec's "the response body reader is released so the underlying
+  connection can be closed" on early break is exercised indirectly (the
+  early-break case asserts iteration stops cleanly and runs the generator's
+  `finally`), but `reader.releaseLock()` itself is not directly observable from
+  a black-box test since the reader is internal to `requestStream`. No public
+  hook exists to assert it without reaching into implementation internals.
+- The mid-stream-error fixtures enqueue the chunk in `start` and raise the error
+  on the next `pull` so the chunk is delivered before the error; raising the
+  error in the same `start` turn drops the enqueued chunk through
+  `TextDecoderStream`, which would not reflect real mid-stream failures.
