@@ -474,3 +474,29 @@ findings:
 ## T-021: Implement /v1/models
 
 Per `specs/endpoints/v1-models.md` and `specs/core/llama.md`.
+
+status: done
+
+- Added `src/v1/mod.ts` with the `Model` and `ModelsResponse` interfaces and the
+  `V1` sub-group class. `V1` holds the parent's frozen `Config` in a private
+  `#config` field and exposes `models(options?)`, which delegates to the shared
+  `request` helper as `GET /v1/models` with no body, forwards `options?.signal`,
+  and casts the result to `ModelsResponse`. All response fields use snake_case
+  (`owned_by`) per `specs/conventions.md`; auth, error mapping, and abort
+  handling come from `specs/core/request.md` unchanged.
+- `src/llama/mod.ts`: added the readonly `v1` property to `Llama`, constructed
+  with `this.config` (the frozen `Config`) per the sub-group rule in
+  `specs/core/llama.md`. `/v1/models` is a two-segment path, so `models` lives on
+  the `v1` sub-group rather than directly on `Llama`.
+- `src/mod.ts`: re-exported `Model` and `ModelsResponse` as types. The `V1`
+  class is not marked `export` in the spec's surface (it is reached through
+  `llama.v1`), so it stays internal, matching how the dissolved `Server`
+  sub-client was handled.
+
+findings:
+
+- No tests for `llama.v1.models()` yet; per the precedent set by T-016/T-017,
+  v1-models tests belong to their own task.
+- No `examples/v1-models.ts` yet; per the precedent set by T-017/T-018 and the
+  Examples convention (`/v1/models` → `examples/v1-models.ts`), the example
+  belongs to its own task.

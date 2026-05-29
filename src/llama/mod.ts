@@ -1,5 +1,6 @@
 import type { Config } from "../types/config.ts";
 import { request as sendRequest } from "../request/mod.ts";
+import { V1 } from "../v1/mod.ts";
 
 export interface LlamaOptions {
   baseUrl?: string;
@@ -28,12 +29,14 @@ function normalizeBaseUrl(baseUrl: string | undefined): string {
 
 export class Llama {
   readonly config: Config;
+  readonly v1: V1;
 
   constructor(options: LlamaOptions = {}) {
     this.config = Object.freeze({
       baseUrl: normalizeBaseUrl(options.baseUrl),
       apiKey: options.apiKey,
     });
+    this.v1 = new V1(this.config);
   }
 
   async health(
