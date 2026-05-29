@@ -417,14 +417,14 @@ into `tests/client.test.ts`, and updating `examples/`.
 
 status: done
 
-- `src/client/mod.ts`: the `Llama` class now exposes `health()` and
-  `tokenize()` directly, matching the updated specs whose endpoint-access rule
-  makes single-segment paths (`/health`, `/tokenize`) methods on `Llama`. Both
-  methods delegate to the shared `request` helper exactly as before, using
-  `this.config` instead of the dissolved sub-client's `#config`. Moved the
-  `HealthResponse`, `TokenizeRequest`, and `TokenizeResponse` interfaces here.
-  Kept the `request as sendRequest` import alias so `tokenize`'s `request`
-  parameter does not shadow the helper.
+- `src/client/mod.ts`: the `Llama` class now exposes `health()` and `tokenize()`
+  directly, matching the updated specs whose endpoint-access rule makes
+  single-segment paths (`/health`, `/tokenize`) methods on `Llama`. Both methods
+  delegate to the shared `request` helper exactly as before, using `this.config`
+  instead of the dissolved sub-client's `#config`. Moved the `HealthResponse`,
+  `TokenizeRequest`, and `TokenizeResponse` interfaces here. Kept the
+  `request as sendRequest` import alias so `tokenize`'s `request` parameter does
+  not shadow the helper.
 - Deleted `src/server/mod.ts` (the `Server` class and its readonly `server`
   property on `Llama`); the `Server` sub-client no longer exists.
 - `src/mod.ts`: the `HealthResponse`, `TokenizeRequest`, and `TokenizeResponse`
@@ -442,3 +442,11 @@ findings:
 - The `stubFetch`/`restoreFetch`/`FetchHandler` trio is now duplicated between
   `tests/client.test.ts` and `tests/request.test.ts`. Lifting it into a shared
   `tests/_fetch.ts` helper remains the follow-up flagged in T-013's findings.
+
+## T-020: Rename client to llama
+
+Rename `specs/core/client.md` → `specs/core/llama.md`, `src/client/` →
+`src/llama/`, and `tests/client.test.ts` → `tests/llama.test.ts`. Update the
+spec title from `# Client` to `# Llama`. Update all internal imports. Update the
+`Location` lines in `specs/endpoints/health.md` and
+`specs/endpoints/tokenize.md` from `src/client/` to `src/llama/`.
