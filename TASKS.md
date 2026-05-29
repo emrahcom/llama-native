@@ -527,3 +527,8 @@ findings:
 - The `stubFetch`/`restoreFetch`/`FetchHandler` trio remains duplicated between
   `tests/llama.test.ts` and `tests/request.test.ts`. Lifting it into a shared
   `tests/_fetch.ts` helper remains the follow-up flagged in T-013's findings.
+
+## T-023: Example for v1.models
+
+Per `specs/endpoints/v1-models.md` and the Examples convention in
+`specs/conventions.md`.
