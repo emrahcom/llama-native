@@ -629,3 +629,7 @@ status: done
 - Calls `llama.v1.completions({ prompt, max_tokens })` with a single-string
   prompt and prints the first choice's `text`, exercising only the required
   field plus one optional field.
+
+## T-027: Implement streaming helper and LlamaStreamError
+
+Per `specs/core/streaming.md` and `specs/core/errors.md`.
