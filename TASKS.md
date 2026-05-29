@@ -532,3 +532,15 @@ findings:
 
 Per `specs/endpoints/v1-models.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/v1-models.ts`, named per the Examples convention (`/v1/models`
+  → `examples/v1-models.ts`). It constructs a `Llama` client and calls
+  `llama.v1.models()`, then prints each returned model's `id`. `baseUrl` and
+  `apiKey` are read from `LLAMA_BASE_URL` and `LLAMA_API_KEY` so the example
+  runs against the default `http://localhost:8080` with no arguments and can be
+  pointed at an authenticated server via environment variables, matching the
+  pattern set by `examples/health.ts` and `examples/tokenize.ts`.
+- Imports the public surface through the `@emrahcom/llama-native` import-map
+  entry rather than a relative path, exercising the module as a consumer would.
