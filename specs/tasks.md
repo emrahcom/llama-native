@@ -30,3 +30,7 @@ findings:
 The `findings:` section is optional. Use it for observations made during the
 task that were out of scope: bugs noticed, improvements suggested, missing
 pieces, anything worth recording without implementing.
+
+Do not record as findings behaviors that any spec explicitly permits or
+addresses. Repeating an observation the specs already settled is noise, not a
+finding.
