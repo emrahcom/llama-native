@@ -9,7 +9,7 @@ The top-level entry point of the module.
 ## TypeScript surface
 
 ```ts
-export interface ClientOptions {
+export interface LlamaOptions {
   baseUrl?: string;
   apiKey?: string;
 }
@@ -20,18 +20,18 @@ interface Config {
 }
 
 export class Llama {
-  constructor(options?: ClientOptions);
+  constructor(options?: LlamaOptions);
   readonly config: Config;
 }
 ```
 
-Endpoint specs add methods and sub-client properties to `Llama` per the endpoint
+Endpoint specs add methods and sub-group properties to `Llama` per the endpoint
 access rule below.
 
 ## Constructor
 
 ```
-new Llama(options?: ClientOptions)
+new Llama(options?: LlamaOptions)
 ```
 
 - **`baseUrl` default**\
@@ -53,7 +53,7 @@ The configuration is frozen after construction; assignment to any field on
 Endpoints are accessed via methods derived from their URL path:
 
 - Each URL path segment becomes a level in the JS access chain.
-- The last segment is the method name; earlier segments are sub-clients.
+- The last segment is the method name; earlier segments are sub-groups.
 - Hyphens in segment names are converted to camelCase for JS identifiers.
 
 Examples:
@@ -65,22 +65,22 @@ Examples:
 - `/v1/chat/completions` → `llama.v1.chat.completions()`
 
 Single-segment URLs become methods on `Llama` directly. Multi-segment URLs
-introduce sub-clients for each prefix segment.
+introduce sub-groups for each prefix segment.
 
-## Sub-clients
+## Sub-groups
 
-A sub-client is a class with the shape:
+A sub-group is a class with the shape:
 
 ```ts
-class  {
+class <SubGroupName> {
   constructor(config: Config);
-  // endpoint methods and nested sub-clients added by endpoint specs
+  // endpoint methods and nested sub-groups added by endpoint specs
 }
 ```
 
-Sub-clients receive the internal `Config` instance from their parent class
-(either `Llama` or a containing sub-client) at construction and use it directly
+Sub-groups receive the internal `Config` instance from their parent class
+(either `Llama` or a containing sub-group) at construction and use it directly
 without re-declaring its type.
 
-When an endpoint spec creates a new sub-client (top-level or nested), it adds
-the corresponding readonly property to the parent class.
+When an endpoint spec creates a new sub-group (top-level or nested), it adds the
+corresponding readonly property to the parent class.

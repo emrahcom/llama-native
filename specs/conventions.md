@@ -9,7 +9,7 @@ Rules that every spec and the implementation inherit.
   received from it match the server's JSON field names verbatim. Any field that
   crosses an HTTP boundary in either direction follows this rule.
 
-- **camelCase for client-only types**\
+- **camelCase for library-only types**\
   Types that never touch the wire (constructor options, internal config, error
   class fields, utility parameters) use camelCase.
 

@@ -59,7 +59,7 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   Cross-cutting rules at the top level.
 
 - `specs/core/`\
-  Library-wide specs (client class, error types).
+  Library-wide specs.
 
 - `specs/endpoints/`\
   Per-endpoint specs.

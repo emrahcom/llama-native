@@ -1,7 +1,7 @@
 import type { Config } from "../types/config.ts";
 import { request as sendRequest } from "../request/mod.ts";
 
-export interface ClientOptions {
+export interface LlamaOptions {
   baseUrl?: string;
   apiKey?: string;
 }
@@ -29,7 +29,7 @@ function normalizeBaseUrl(baseUrl: string | undefined): string {
 export class Llama {
   readonly config: Config;
 
-  constructor(options: ClientOptions = {}) {
+  constructor(options: LlamaOptions = {}) {
     this.config = Object.freeze({
       baseUrl: normalizeBaseUrl(options.baseUrl),
       apiKey: options.apiKey,
