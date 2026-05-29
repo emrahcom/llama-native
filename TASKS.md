@@ -548,3 +548,32 @@ status: done
 ## T-024: Implement /v1/completions
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- `src/v1/mod.ts`: added the `CompletionsRequest`, `CompletionsResponse`,
+  `Choice`, and `Usage` interfaces (in the spec's surface order) and a
+  `completions(request, options?)` method on the `V1` sub-group. The method
+  delegates to the shared `request` helper as `POST /v1/completions` with the
+  `CompletionsRequest` as the JSON body and forwards `options?.signal`; the
+  result is cast to `CompletionsResponse`. `/v1/completions` is a two-segment
+  path, so it lives on the `v1` sub-group alongside `models`. All wire fields
+  use snake_case (`max_tokens`, `prompt_tokens`, `finish_reason`,
+  `system_fingerprint`) per `specs/conventions.md`; auth, error mapping, and
+  abort handling come from `specs/core/request.md` unchanged.
+- Renamed the `request` import to `sendRequest` in `src/v1/mod.ts` (matching the
+  alias already used in `src/llama/mod.ts`) so the new `completions(request, …)`
+  parameter does not shadow the helper. Updated the existing `models()` call
+  site to the renamed import; no behavior change.
+- `src/mod.ts`: re-exported `CompletionsRequest`, `CompletionsResponse`,
+  `Choice`, and `Usage` as types alongside `Model`/`ModelsResponse`, matching
+  the conventions rule that names marked `export` in a spec belong on the public
+  surface.
+
+findings:
+
+- No tests for `llama.v1.completions()` yet; per the precedent set by
+  T-021/T-022, v1-completions tests belong to their own task.
+- No `examples/v1-completions.ts` yet; per the precedent set by T-022/T-023 and
+  the Examples convention (`/v1/completions` → `examples/v1-completions.ts`),
+  the example belongs to its own task.
