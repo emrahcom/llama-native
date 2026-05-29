@@ -50,6 +50,11 @@ Rules that every spec and the implementation inherit.
 - **Test files live under `tests/`**\
   Tests for `src/<component>/` go in `tests/<component>.test.ts`.
 
+- **Duplication between test files is acceptable**\
+  Shared test scaffolding (e.g. `fetch` stubs, helper types) may be repeated
+  across test files. Do not extract it into a shared helper and do not report
+  the duplication as a finding.
+
 ## Examples
 
 - **One file per endpoint under `examples/`**\
