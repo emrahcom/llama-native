@@ -21,3 +21,10 @@ export class LlamaHTTPError extends LlamaError {
     this.body = body;
   }
 }
+
+export class LlamaStreamError extends LlamaError {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = "LlamaStreamError";
+  }
+}

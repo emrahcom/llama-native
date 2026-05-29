@@ -13,4 +13,4 @@ export type {
   ModelsResponse,
   Usage,
 } from "./v1/mod.ts";
-export { LlamaError, LlamaHTTPError } from "./errors/mod.ts";
+export { LlamaError, LlamaHTTPError, LlamaStreamError } from "./errors/mod.ts";

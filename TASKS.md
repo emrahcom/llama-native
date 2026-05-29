@@ -633,3 +633,52 @@ status: done
 ## T-027: Implement streaming helper and LlamaStreamError
 
 Per `specs/core/streaming.md` and `specs/core/errors.md`.
+
+status: done
+
+- `src/errors/mod.ts`: added `LlamaStreamError extends LlamaError` with the
+  spec's `(message, options?)` constructor, setting
+  `this.name =
+  "LlamaStreamError"`. It adds no fields beyond `LlamaError`, so
+  a single `instanceof LlamaError` still catches it. Re-exported it from
+  `src/mod.ts` alongside `LlamaError`/`LlamaHTTPError`, since the errors spec
+  marks it `export`.
+- `src/request/mod.ts`: factored the shared setup that `request()` and
+  `requestStream()` both need into private helpers per the streaming spec's
+  Location section — `resolvePath` (leading-slash normalization), `buildInit`
+  (auth header, content-type, body serialization, signal forwarding),
+  `sendRequest` (fetch invocation plus `AbortError`-unwrapped /
+  `{method}
+  {path} request failed` mapping), and `httpError` (the shared
+  `LlamaHTTPError` construction). `request()` now composes these and is
+  otherwise unchanged in behavior.
+- Added the internal `requestStream<T>(options)` as an `async function*` so
+  iteration is lazy: the body (and thus `fetch`) does not run until the first
+  `next()`, so non-2xx, fetch, and parse errors all surface during iteration. It
+  reuses `sendRequest`/`httpError` for the initial request, then reads
+  `response.body` through `TextDecoderStream`, splits events on `\n\n`, collects
+  `data:` line payloads (stripping a single leading space, joining multiple with
+  `\n`, ignoring non-`data:` lines), completes cleanly on `data: [DONE]`, yields
+  `JSON.parse`d payloads otherwise, throws `LlamaStreamError` on an unparseable
+  chunk (`Failed to parse stream chunk`) and when the body ends without `[DONE]`
+  (`Stream ended without [DONE] marker`), re-throws mid-stream `AbortError`
+  unwrapped, wraps other mid-stream read failures in `LlamaError`
+  (`{method}
+  {path} stream failed`), and releases the reader lock in a
+  `finally` so an early consumer break closes the connection. `requestStream` is
+  not re-exported from `src/mod.ts`; it is internal infrastructure like
+  `request`.
+
+findings:
+
+- No endpoint consumes `requestStream` yet, so it is not exercised end-to-end by
+  any example or endpoint method. Wiring streaming into an endpoint (e.g. a
+  `stream: true` variant of `v1.completions`) belongs to its own task once a
+  streaming endpoint spec lands.
+- No tests for `requestStream` yet; per the precedent set by T-012/T-013
+  (`request` helper implemented, then tested in a separate task), streaming-
+  helper tests belong to their own task.
+- The mid-stream `read()` error mapping and the initial `sendRequest` fetch
+  mapping share the same `AbortError`-unwrap shape but differ only in message
+  (`stream failed` vs `request failed`); they are kept separate because the spec
+  distinguishes the two phases. No refactor is warranted.
