@@ -25,8 +25,8 @@ export class Llama {
 }
 ```
 
-Endpoint specs add methods and sub-client properties to `Llama` per the
-endpoint access rule below.
+Endpoint specs add methods and sub-client properties to `Llama` per the endpoint
+access rule below.
 
 ## Constructor
 
@@ -79,8 +79,8 @@ class  {
 ```
 
 Sub-clients receive the internal `Config` instance from their parent class
-(either `Llama` or a containing sub-client) at construction and use it
-directly without re-declaring its type.
+(either `Llama` or a containing sub-client) at construction and use it directly
+without re-declaring its type.
 
 When an endpoint spec creates a new sub-client (top-level or nested), it adds
 the corresponding readonly property to the parent class.

@@ -407,3 +407,10 @@ status: done
   `examples/health.ts`.
 - Imports the public surface through the `@emrahcom/llama-native` import-map
   entry rather than a relative path, exercising the module as a consumer would.
+
+## T-019: Move health and tokenize from Server to Llama
+
+Per updated `specs/core/client.md`, `specs/endpoints/health.md`, and
+`specs/endpoints/tokenize.md`. Includes dissolving the `Server` class, moving
+`health` and `tokenize` to `Llama`, relocating tests from `tests/server.test.ts`
+into `tests/client.test.ts`, and updating `examples/`.
