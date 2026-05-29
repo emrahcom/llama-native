@@ -504,3 +504,26 @@ findings:
 ## T-022: Tests for v1.models
 
 Per `specs/endpoints/v1-models.md`.
+
+status: done
+
+- Added `v1.models` cases to `tests/llama.test.ts` covering the /v1/models-
+  specific surface from `specs/endpoints/v1-models.md`: it issues
+  `GET <baseUrl>/v1/models` with no request body, returns the parsed JSON body
+  as `ModelsResponse` on HTTP 200 (a populated `data` list with a fully-formed
+  `Model`), and forwards the `signal` option to the underlying `fetch` call.
+- Followed the precedent established by T-014/T-017: shared HTTP behavior (auth,
+  error mapping, abort propagation, JSON parse failures) is exercised in
+  `tests/request.test.ts` against the `request` helper directly and is not
+  duplicated here.
+- Reused the `stubFetch`/`restoreFetch` pattern already present in
+  `tests/llama.test.ts`; no new helpers or imports were needed.
+
+findings:
+
+- No `examples/v1-models.ts` yet; per the precedent set by T-017/T-018 and the
+  Examples convention (`/v1/models` → `examples/v1-models.ts`), the example
+  belongs to its own task (already flagged in T-021's findings).
+- The `stubFetch`/`restoreFetch`/`FetchHandler` trio remains duplicated between
+  `tests/llama.test.ts` and `tests/request.test.ts`. Lifting it into a shared
+  `tests/_fetch.ts` helper remains the follow-up flagged in T-013's findings.

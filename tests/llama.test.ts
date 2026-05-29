@@ -211,3 +211,66 @@ Deno.test("tokenize forwards the signal option to fetch", async () => {
     restoreFetch();
   }
 });
+
+Deno.test("v1.models issues GET /v1/models against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  let seenBody: BodyInit | null | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    seenBody = init?.body;
+    return Promise.resolve(
+      new Response(JSON.stringify({ object: "list", data: [] })),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.v1.models();
+    assertEquals(seenUrl, "http://example.com:9000/v1/models");
+    assertEquals(seenMethod, "GET");
+    assertEquals(seenBody, undefined);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.models returns the parsed JSON body as ModelsResponse on HTTP 200", async () => {
+  const payload = {
+    object: "list",
+    data: [
+      {
+        id: "my-model",
+        object: "model",
+        created: 1700000000,
+        owned_by: "user",
+      },
+    ],
+  };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.v1.models();
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.models forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      new Response(JSON.stringify({ object: "list", data: [] })),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.v1.models({ signal: controller.signal });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
