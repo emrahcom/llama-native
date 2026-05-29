@@ -9,16 +9,16 @@ Lists the models available on the llama-server.
 ## TypeScript surface
 
 ```ts
+export interface ModelsResponse {
+  object: "list";
+  data: Model[];
+}
+
 export interface Model {
   id: string;
   object: "model";
   created: number;
   owned_by: string;
-}
-
-export interface ModelsResponse {
-  object: "list";
-  data: Model[];
 }
 ```
 
