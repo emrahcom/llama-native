@@ -470,3 +470,7 @@ findings:
   `README.md` and `CLAUDE.md` describe the module as a "client", and
   `specs/conventions.md` / `specs/core/llama.md` use "sub-client" and
   "client-only types" as domain terminology rather than file/path references.
+
+## T-021: Implement /v1/models
+
+Per `specs/endpoints/v1-models.md` and `specs/core/llama.md`.
