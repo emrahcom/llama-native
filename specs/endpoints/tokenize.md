@@ -4,7 +4,7 @@ Tokenizes input text into model token IDs.
 
 ## Location
 
-`src/server/`
+`src/client/`
 
 ## TypeScript surface
 
@@ -22,7 +22,7 @@ export interface TokenizeResponse {
 Called as
 
 ```
-llama.server.tokenize(
+llama.tokenize(
   request: TokenizeRequest,
   options?: { signal?: AbortSignal },
 ): Promise<TokenizeResponse>

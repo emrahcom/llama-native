@@ -4,7 +4,7 @@ A readiness check for the llama-server.
 
 ## Location
 
-`src/server/`
+`src/client/`
 
 ## TypeScript surface
 
@@ -17,7 +17,7 @@ export interface HealthResponse {
 Called as
 
 ```
-llama.server.health(
+llama.health(
   options?: { signal?: AbortSignal },
 ): Promise<HealthResponse>
 ```
