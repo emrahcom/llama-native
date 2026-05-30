@@ -1,0 +1,72 @@
+// Integration tests for /v1/chat/completions, one per mode (non-streaming and
+// streaming). Requires a running llama-server on the default local address.
+// Run with: deno test --allow-net integration/v1-chat-completions.test.ts
+import { assert, assertEquals } from "@std/assert";
+import {
+  type ChatCompletionsChunk,
+  type ChatCompletionsResponse,
+  Llama,
+} from "@emrahcom/llama-native";
+
+Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse from a running server", async () => {
+  const llama = new Llama();
+  const response: ChatCompletionsResponse = await llama.v1.chat.completions({
+    messages: [{ role: "user", content: "The capital of France is" }],
+    max_tokens: 16,
+  });
+  assertEquals(typeof response.id, "string");
+  assertEquals(response.object, "chat.completion");
+  assertEquals(typeof response.created, "number");
+  assertEquals(typeof response.model, "string");
+  assert(Array.isArray(response.choices));
+  assert(response.choices.length > 0);
+  for (const choice of response.choices) {
+    assertEquals(typeof choice.index, "number");
+    assertEquals(choice.message.role, "assistant");
+    assertEquals(typeof choice.message.content, "string");
+    assertEquals(choice.logprobs, null);
+    assert(
+      choice.finish_reason === "stop" || choice.finish_reason === "length",
+    );
+  }
+  assertEquals(typeof response.usage.prompt_tokens, "number");
+  assertEquals(typeof response.usage.completion_tokens, "number");
+  assertEquals(typeof response.usage.total_tokens, "number");
+});
+
+Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a running server", async () => {
+  const llama = new Llama();
+  const chunks: ChatCompletionsChunk[] = [];
+  for await (
+    const chunk of llama.v1.chat.completions({
+      messages: [{ role: "user", content: "The capital of France is" }],
+      max_tokens: 16,
+      stream: true,
+    })
+  ) {
+    chunks.push(chunk);
+  }
+  assert(chunks.length > 0);
+  for (const chunk of chunks) {
+    assertEquals(typeof chunk.id, "string");
+    assertEquals(chunk.object, "chat.completion.chunk");
+    assertEquals(typeof chunk.created, "number");
+    assertEquals(typeof chunk.model, "string");
+    assert(Array.isArray(chunk.choices));
+    for (const choice of chunk.choices) {
+      assertEquals(typeof choice.index, "number");
+      if (choice.delta.role !== undefined) {
+        assertEquals(choice.delta.role, "assistant");
+      }
+      if (choice.delta.content !== undefined) {
+        assertEquals(typeof choice.delta.content, "string");
+      }
+      assertEquals(choice.logprobs, null);
+      assert(
+        choice.finish_reason === null ||
+          choice.finish_reason === "stop" ||
+          choice.finish_reason === "length",
+      );
+    }
+  }
+});

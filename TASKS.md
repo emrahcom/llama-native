@@ -1016,3 +1016,38 @@ findings:
 - The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
   API), which is allowed for `examples/` per the conventions runtime rule, as
   already noted in T-032's findings for `examples/v1-completions.ts`.
+
+## T-038: Integration tests
+
+Per the "Integration tests live under `integration/`" rule in
+`specs/conventions.md`.
+
+status: done
+
+- Added the `integration/` directory with one file per endpoint, named by the
+  endpoint path with slashes replaced by hyphens: `integration/health.test.ts`,
+  `integration/tokenize.test.ts`, `integration/v1-models.test.ts`,
+  `integration/v1-completions.test.ts`, and
+  `integration/v1-chat-completions.test.ts`. Each exercises its endpoint against
+  a running llama-server via `new Llama()` with no arguments (the default local
+  server), not stubbed `fetch`, and asserts the real response matches the typed
+  shape from the public surface.
+- One test per endpoint case: single tests for `health`, `tokenize`, and
+  `v1.models`; two tests each for `v1.completions` and `v1.chat.completions`,
+  covering the non-streaming and streaming modes. The streaming cases drain the
+  returned `AsyncIterable` with `for await` and assert each chunk's shape.
+- Imports the public surface through the `@emrahcom/llama-native` import-map
+  entry, exercising the module as a consumer would, and annotates each response
+  with its exported type so the shape is checked at compile time as well as at
+  runtime.
+- Confirmed the default `deno test` run still covers only `tests/` (the
+  `test.include` in `deno.json` excludes `integration/`), so these stay out of
+  the default check, and `deno publish --dry-run` does not list `integration/`.
+
+findings:
+
+- The streaming chunk assertions pin `logprobs` to `null` and `finish_reason` to
+  `"stop" | "length" | null` to match the typed shapes; if a real server build
+  diverges (e.g. omits `logprobs` from chunks), that is a spec/type mismatch to
+  surface from an actual run, which is the purpose of these tests. They could
+  not be executed here as no llama-server was available.
