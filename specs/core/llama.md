@@ -77,7 +77,7 @@ introduce sub-groups for each prefix segment.
 A sub-group is a class with the shape:
 
 ```ts
-class <SubGroupName> {
+export class <SubGroupName> {
   /** @internal */
   constructor(config: Config);
   #config: Config;
