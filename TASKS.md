@@ -985,3 +985,8 @@ findings:
   `tests/llama.test.ts` and `tests/request.test.ts`. Lifting them into a shared
   `tests/_fetch.ts` helper remains the follow-up flagged in T-013's and T-031's
   findings.
+
+## T-037: Example for /v1/chat/completions
+
+Per `specs/endpoints/v1-chat-completions.md` and the Examples convention in
+`specs/conventions.md`.
