@@ -1052,6 +1052,6 @@ findings:
   surface from an actual run, which is the purpose of these tests. They could
   not be executed here as no llama-server was available.
 
-## T-038: Align chat types with live server shapes
+## T-039: Align chat types with live server shapes
 
 Per `specs/endpoints/v1-chat-completions.md`.
