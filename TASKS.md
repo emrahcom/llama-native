@@ -941,3 +941,47 @@ findings:
 ## T-036: Tests for /v1/chat/completions
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Added `v1.chat.completions` cases to `tests/llama.test.ts` covering the
+  /v1/chat/completions-specific surface from
+  `specs/endpoints/v1-chat-completions.md`. Non-streaming: it issues
+  `POST <baseUrl>/v1/chat/completions`, serializes the `ChatCompletionsRequest`
+  as the JSON body preserving the snake_case optional fields (`max_tokens`, plus
+  `model`/`stop`/`temperature`) and the `messages` list when provided, omits the
+  optional fields from the body when not provided (so they are not forced onto
+  the wire as `undefined`), returns the parsed JSON body as
+  `ChatCompletionsResponse` on HTTP 200 (a fully-formed response including a
+  `ChatChoice`, `AssistantMessage`, `Usage`, and `system_fingerprint`), and
+  forwards the `signal` option to the underlying `fetch` call.
+- Streaming: with `stream: true` it issues `POST <baseUrl>/v1/chat/completions`,
+  serializes the `ChatCompletionsRequest` including the `stream` field as the
+  JSON body, returns an `AsyncIterable<ChatCompletionsChunk>` that yields the
+  SSE `data:` chunks parsed in order (a first chunk with a `role`-bearing
+  `Delta` and `finish_reason: null`, followed by a final chunk with
+  `finish_reason: "stop"`, `usage`, and `system_fingerprint`), and forwards the
+  `signal` option to the underlying `fetch` call.
+- Followed the precedent established by T-025/T-031: shared HTTP and streaming
+  behavior (auth, error mapping, abort propagation, SSE parsing, `[DONE]`
+  termination, JSON parse failures) is exercised in `tests/request.test.ts`
+  against the `request`/`requestStream` helpers directly and is not duplicated
+  here.
+- Imported `ChatCompletionsResponse` and `ChatCompletionsChunk` as types
+  alongside the existing `CompletionsResponse`/`CompletionsChunk`/`Llama`
+  imports from the public surface to annotate the expected payloads. Reused the
+  existing `stubFetch`/`restoreFetch` pattern and the `sseResponse`/`collect`
+  SSE helpers already present in `tests/llama.test.ts`; no new helpers or
+  imports were needed.
+
+findings:
+
+- No `examples/v1-chat-completions.ts` yet; per the precedent set by T-025/T-026
+  and the Examples convention (`/v1/chat/completions` →
+  `examples/v1-chat-completions.ts`), the example belongs to its own task
+  (already flagged in T-035's findings).
+- The `stubFetch`/`restoreFetch`/`FetchHandler` trio and the SSE helpers
+  (`encoder`, `sseResponse`, `collect`) remain duplicated between
+  `tests/llama.test.ts` and `tests/request.test.ts`. Lifting them into a shared
+  `tests/_fetch.ts` helper remains the follow-up flagged in T-013's and T-031's
+  findings.

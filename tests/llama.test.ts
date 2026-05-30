@@ -1,5 +1,7 @@
 import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
 import {
+  type ChatCompletionsChunk,
+  type ChatCompletionsResponse,
   type CompletionsChunk,
   type CompletionsResponse,
   Llama,
@@ -583,6 +585,335 @@ Deno.test("v1.completions with stream: true forwards the signal option to fetch"
     const controller = new AbortController();
     await collect(
       llama.v1.completions({ prompt: "Hello", stream: true }, {
+        signal: controller.signal,
+      }),
+    );
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions issues POST /v1/chat/completions against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Hello" }],
+    });
+    assertEquals(seenUrl, "http://example.com:9000/v1/chat/completions");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions sends the ChatCompletionsRequest as the JSON body, preserving optional fields", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.chat.completions({
+      messages: [
+        { role: "system", content: "Be brief." },
+        { role: "user", content: "Hello" },
+      ],
+      model: "my-model",
+      max_tokens: 16,
+      stop: ["\n"],
+      temperature: 0.7,
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        messages: [
+          { role: "system", content: "Be brief." },
+          { role: "user", content: "Hello" },
+        ],
+        model: "my-model",
+        max_tokens: 16,
+        stop: ["\n"],
+        temperature: 0.7,
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions omits optional fields from the body when not provided", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Hello" }],
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({ messages: [{ role: "user", content: "Hello" }] }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions returns the parsed JSON body as ChatCompletionsResponse on HTTP 200", async () => {
+  const payload: ChatCompletionsResponse = {
+    id: "chatcmpl-1",
+    object: "chat.completion",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: "Hello there!",
+        },
+        logprobs: null,
+        finish_reason: "stop",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+    system_fingerprint: "b9300",
+  };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Hello" }],
+    });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Hello" }],
+    }, {
+      signal: controller.signal,
+    });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions with stream: true issues POST /v1/chat/completions against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await collect(
+      llama.v1.chat.completions({
+        messages: [{ role: "user", content: "Hello" }],
+        stream: true,
+      }),
+    );
+    assertEquals(seenUrl, "http://example.com:9000/v1/chat/completions");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions with stream: true sends the ChatCompletionsRequest including stream as the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama();
+    await collect(
+      llama.v1.chat.completions({
+        messages: [{ role: "user", content: "Hello" }],
+        max_tokens: 16,
+        stream: true,
+      }),
+    );
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        messages: [{ role: "user", content: "Hello" }],
+        max_tokens: 16,
+        stream: true,
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions with stream: true yields parsed ChatCompletionsChunk values in order", async () => {
+  const first: ChatCompletionsChunk = {
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          role: "assistant",
+          content: "Hello",
+        },
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  };
+  const second: ChatCompletionsChunk = {
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          content: " there!",
+        },
+        logprobs: null,
+        finish_reason: "stop",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+    system_fingerprint: "b9300",
+  };
+  stubFetch(() =>
+    Promise.resolve(
+      sseResponse([
+        `data: ${JSON.stringify(first)}\n\n`,
+        `data: ${JSON.stringify(second)}\n\n`,
+        "data: [DONE]\n\n",
+      ]),
+    )
+  );
+  try {
+    const llama = new Llama();
+    const chunks = await collect(
+      llama.v1.chat.completions({
+        messages: [{ role: "user", content: "Hello" }],
+        stream: true,
+      }),
+    );
+    assertEquals(chunks, [first, second]);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions with stream: true forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await collect(
+      llama.v1.chat.completions({
+        messages: [{ role: "user", content: "Hello" }],
+        stream: true,
+      }, {
         signal: controller.signal,
       }),
     );
