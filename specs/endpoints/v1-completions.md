@@ -1,6 +1,8 @@
 # /v1/completions
 
-Generates a text completion for a prompt.
+Generates a text completion for a prompt. Supports both non-streaming (`Promise`
+return) and streaming (`AsyncIterable` return) modes, selected by the `stream`
+field of the request.
 
 ## Location
 
@@ -15,6 +17,7 @@ export interface CompletionsRequest {
   max_tokens?: number;
   stop?: string | string[];
   temperature?: number;
+  stream?: boolean;
 }
 
 export interface CompletionsResponse {
@@ -34,6 +37,23 @@ export interface Choice {
   finish_reason: "stop" | "length";
 }
 
+export interface CompletionsChunk {
+  id: string;
+  object: "text_completion";
+  created: number;
+  model: string;
+  choices: ChunkChoice[];
+  usage?: Usage;
+  system_fingerprint?: string;
+}
+
+export interface ChunkChoice {
+  index: number;
+  text: string;
+  logprobs: null;
+  finish_reason: "stop" | "length" | null;
+}
+
 export interface Usage {
   prompt_tokens: number;
   completion_tokens: number;
@@ -45,26 +65,47 @@ Called as
 
 ```
 llama.v1.completions(
-  request: CompletionsRequest,
+  request: CompletionsRequest & { stream: true },
   options?: { signal?: AbortSignal },
-): Promise<CompletionsResponse>
+): AsyncIterable<CompletionsChunk>;
+
+llama.v1.completions(
+  request: CompletionsRequest & { stream?: false | undefined },
+  options?: { signal?: AbortSignal },
+): Promise<CompletionsResponse>;
 ```
+
+The overload selected depends on the literal type of `request.stream`:
+
+- `stream: true` selects the streaming overload, returning
+  `AsyncIterable<CompletionsChunk>`
+- `stream: false`, omitted, or `undefined` selects the non-streaming overload,
+  returning `Promise<CompletionsResponse>`
+- A `stream` value typed as `boolean` (not a literal) matches neither overload
+  and produces a compile error; consumers in that case narrow the value before
+  calling
 
 ### Request fields
 
-- `prompt` is the input to generate from; accepts a single string, an array of
-  strings (batch), an array of token IDs, or an array of token ID arrays (batch
-  over token sequences)
-- `model` is the model identifier; when omitted, llama-server uses its loaded
-  model
+- `prompt` is the input to generate from\
+  accepts:
+  - a single string
+  - an array of strings (batch)
+  - an array of token IDs
+  - an array of token ID arrays (batch over token sequences)
+- `model` is the model identifier\
+  when omitted, llama-server uses its loaded model
 - `max_tokens` is the upper bound on tokens generated
-- `stop` is a single string or array of strings; generation halts when any is
-  produced
+- `stop` is a single string or array of strings\
+  generation halts when any is produced
 - `temperature` is the sampling temperature
+- `stream`
+  - selects streaming mode when `true`
+  - non-streaming when `false`, omitted, or `undefined`
 
 Omitted optional fields use llama-server defaults.
 
-### Response fields
+### Non-streaming response fields
 
 - `id` is the request identifier assigned by the server
 - `object` is the discriminator (always `"text_completion"`)
@@ -89,12 +130,36 @@ Each `Usage` has:
 - a `completion_tokens` count (tokens in the generated text)
 - a `total_tokens` count (sum of the two)
 
+### Streaming chunk fields
+
+Each `CompletionsChunk` has the same top-level fields as `CompletionsResponse`,
+with `choices: ChunkChoice[]` instead of `Choice[]`, and `usage` optional
+(llama-server may include it on the final chunk depending on configuration).
+
+Each `ChunkChoice` has:
+
+- an `index`, `text`, and `logprobs` field with the same meaning as `Choice`
+- a `finish_reason` that is `null` while generation is in progress and becomes
+  `"stop"` or `"length"` on the final chunk
+
+The `text` field on each chunk is a _delta_: the new text generated since the
+previous chunk. Consumers reconstruct the full output by concatenating `text`
+values across chunks for each `index`.
+
 ## Request
 
 `POST /v1/completions` with `CompletionsRequest` as the JSON-serialized body.
 Optional fields are omitted from the body when not provided.
 
+When `stream: true` is set in the request body, llama-server responds with
+Server-Sent Events. When `stream` is `false`, omitted, or `undefined`, it
+responds with a single JSON document.
+
 ## Response
 
-Parsed JSON as `CompletionsResponse`. Errors handled per
+Non-streaming: parsed JSON as `CompletionsResponse`. Errors handled per
 `specs/core/request.md`.
+
+Streaming: an `AsyncIterable<CompletionsChunk>` produced by `requestStream` from
+`specs/core/streaming.md`. Each iteration yields the next chunk parsed from an
+SSE `data:` event. Errors handled per `specs/core/streaming.md`.
