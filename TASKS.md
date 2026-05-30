@@ -806,3 +806,33 @@ findings:
 ## T-031: Tests for streaming v1.completions
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- Added `v1.completions` streaming cases to `tests/llama.test.ts` covering the
+  /v1/completions-specific streaming surface from
+  `specs/endpoints/v1-completions.md`: with `stream: true` it issues
+  `POST <baseUrl>/v1/completions`, serializes the `CompletionsRequest` including
+  the `stream` field as the JSON body, returns an
+  `AsyncIterable<CompletionsChunk>` that yields the SSE `data:` chunks parsed in
+  order (a `null`-`finish_reason` delta chunk followed by a final chunk with
+  `finish_reason: "stop"`, `usage`, and `system_fingerprint`), and forwards the
+  `signal` option to the underlying `fetch` call.
+- Followed the precedent established by T-014/T-017/T-022/T-025: shared
+  streaming behavior (SSE parsing, buffering, `[DONE]` termination, error
+  mapping, abort propagation) is exercised in `tests/request.test.ts` against
+  the `requestStream` helper directly (T-028) and is not duplicated here.
+- Imported `CompletionsChunk` as a type alongside the existing
+  `CompletionsResponse`/`Llama` imports from the public surface to annotate the
+  expected chunk payloads. Added local `sseResponse`/`collect` helpers for
+  building SSE response bodies and draining the async iterable; reused the
+  existing `stubFetch`/`restoreFetch` pattern.
+
+findings:
+
+- The `stubFetch`/`restoreFetch`/`FetchHandler` trio and the SSE helpers
+  (`encoder`, `sseResponse`, `collect`) are now duplicated between
+  `tests/llama.test.ts` and `tests/request.test.ts`. Lifting the fetch-stub trio
+  into a shared `tests/_fetch.ts` helper remains the follow-up flagged in
+  T-013's findings; the SSE helpers could join it once a third streaming
+  endpoint adds tests.

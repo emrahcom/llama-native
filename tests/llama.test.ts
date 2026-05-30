@@ -1,5 +1,9 @@
 import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
-import { type CompletionsResponse, Llama } from "@emrahcom/llama-native";
+import {
+  type CompletionsChunk,
+  type CompletionsResponse,
+  Llama,
+} from "@emrahcom/llama-native";
 
 Deno.test("baseUrl defaults to llama-server's default when no options", () => {
   const llama = new Llama();
@@ -441,6 +445,147 @@ Deno.test("v1.completions forwards the signal option to fetch", async () => {
     await llama.v1.completions({ prompt: "Hello" }, {
       signal: controller.signal,
     });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+const encoder = new TextEncoder();
+
+// Builds a streaming Response whose body emits the given chunks in order,
+// then closes.
+function sseResponse(chunks: string[]): Response {
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      for (const chunk of chunks) {
+        controller.enqueue(encoder.encode(chunk));
+      }
+      controller.close();
+    },
+  });
+  return new Response(body);
+}
+
+async function collect<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+  const values: T[] = [];
+  for await (const value of iterable) {
+    values.push(value);
+  }
+  return values;
+}
+
+Deno.test("v1.completions with stream: true issues POST /v1/completions against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await collect(llama.v1.completions({ prompt: "Hello", stream: true }));
+    assertEquals(seenUrl, "http://example.com:9000/v1/completions");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions with stream: true sends the CompletionsRequest including stream as the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama();
+    await collect(
+      llama.v1.completions({
+        prompt: "Hello",
+        max_tokens: 16,
+        stream: true,
+      }),
+    );
+    assertEquals(
+      seenBody,
+      JSON.stringify({ prompt: "Hello", max_tokens: 16, stream: true }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions with stream: true yields parsed CompletionsChunk values in order", async () => {
+  const first: CompletionsChunk = {
+    id: "cmpl-1",
+    object: "text_completion",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        text: " world",
+        logprobs: null,
+        finish_reason: null,
+      },
+    ],
+  };
+  const second: CompletionsChunk = {
+    id: "cmpl-1",
+    object: "text_completion",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        text: "!",
+        logprobs: null,
+        finish_reason: "stop",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+    system_fingerprint: "b9300",
+  };
+  stubFetch(() =>
+    Promise.resolve(
+      sseResponse([
+        `data: ${JSON.stringify(first)}\n\n`,
+        `data: ${JSON.stringify(second)}\n\n`,
+        "data: [DONE]\n\n",
+      ]),
+    )
+  );
+  try {
+    const llama = new Llama();
+    const chunks = await collect(
+      llama.v1.completions({ prompt: "Hello", stream: true }),
+    );
+    assertEquals(chunks, [first, second]);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.completions with stream: true forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(sseResponse(["data: [DONE]\n\n"]));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await collect(
+      llama.v1.completions({ prompt: "Hello", stream: true }, {
+        signal: controller.signal,
+      }),
+    );
     assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();
