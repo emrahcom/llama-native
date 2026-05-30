@@ -860,3 +860,7 @@ findings:
 
 - The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
   API), which is allowed for `examples/` per the conventions runtime rule.
+
+## T-033: Fix null-body streaming message
+
+Per `specs/core/streaming.md`.
