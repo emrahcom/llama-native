@@ -735,3 +735,7 @@ findings:
   on the next `pull` so the chunk is delivered before the error; raising the
   error in the same `start` turn drops the enqueued chunk through
   `TextDecoderStream`, which would not reflect real mid-stream failures.
+
+## T-029: Fix stream cancellation to close the connection
+
+Per `specs/core/streaming.md`.
