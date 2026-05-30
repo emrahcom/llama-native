@@ -140,6 +140,11 @@ export class V1 {
   /** The `/v1/chat/*` sub-group, accessed as `llama.v1.chat`. */
   readonly chat: Chat;
 
+  /**
+   * Constructed by the parent {@link Llama} client, never by consumers.
+   *
+   * @internal
+   */
   constructor(config: Config) {
     this.#config = config;
     this.chat = new Chat(config);

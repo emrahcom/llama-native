@@ -22,6 +22,7 @@ export type {
   TokenizeRequest,
   TokenizeResponse,
 } from "./llama/mod.ts";
+export { V1 } from "./v1/mod.ts";
 export type {
   Choice,
   ChunkChoice,
@@ -31,6 +32,7 @@ export type {
   Model,
   ModelsResponse,
 } from "./v1/mod.ts";
+export { Chat } from "./v1/chat/mod.ts";
 export type {
   AssistantMessage,
   ChatChoice,

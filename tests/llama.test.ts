@@ -1,65 +1,12 @@
-import { assertEquals, assertStrictEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
   type ChatCompletionsChunk,
   type ChatCompletionsResponse,
   type CompletionsChunk,
   type CompletionsResponse,
   Llama,
+  type LlamaOptions,
 } from "@emrahcom/llama-native";
-
-Deno.test("baseUrl defaults to llama-server's default when no options", () => {
-  const llama = new Llama();
-  assertEquals(llama.config.baseUrl, "http://localhost:8080");
-});
-
-Deno.test("baseUrl defaults when options is empty", () => {
-  const llama = new Llama({});
-  assertEquals(llama.config.baseUrl, "http://localhost:8080");
-});
-
-Deno.test("baseUrl defaults when undefined", () => {
-  const llama = new Llama({ baseUrl: undefined });
-  assertEquals(llama.config.baseUrl, "http://localhost:8080");
-});
-
-Deno.test("baseUrl defaults when falsy (empty string)", () => {
-  const llama = new Llama({ baseUrl: "" });
-  assertEquals(llama.config.baseUrl, "http://localhost:8080");
-});
-
-Deno.test("baseUrl is used as given when no trailing slash", () => {
-  const llama = new Llama({ baseUrl: "http://example.com:9000" });
-  assertEquals(llama.config.baseUrl, "http://example.com:9000");
-});
-
-Deno.test("baseUrl strips a single trailing slash", () => {
-  const llama = new Llama({ baseUrl: "http://example.com:9000/" });
-  assertEquals(llama.config.baseUrl, "http://example.com:9000");
-});
-
-Deno.test("baseUrl strips multiple trailing slashes", () => {
-  const llama = new Llama({ baseUrl: "http://example.com:9000///" });
-  assertEquals(llama.config.baseUrl, "http://example.com:9000");
-});
-
-Deno.test("apiKey is undefined when not provided", () => {
-  const llama = new Llama();
-  assertStrictEquals(llama.config.apiKey, undefined);
-});
-
-Deno.test("apiKey is kept when provided", () => {
-  const llama = new Llama({ apiKey: "secret" });
-  assertEquals(llama.config.apiKey, "secret");
-});
-
-Deno.test("config is frozen after construction", () => {
-  const llama = new Llama();
-  assertEquals(Object.isFrozen(llama.config), true);
-  assertThrows(() => {
-    // deno-lint-ignore no-explicit-any
-    (llama.config as any).baseUrl = "http://other:8080";
-  }, TypeError);
-});
 
 const originalFetch = globalThis.fetch;
 
@@ -75,6 +22,85 @@ function stubFetch(handler: FetchHandler): void {
 function restoreFetch(): void {
   globalThis.fetch = originalFetch;
 }
+
+// The configuration is held privately, so it is observed through the request it
+// produces: a GET /health with a stubbed fetch reveals the resolved URL and the
+// headers (including any Authorization bearer token).
+async function captureHealthRequest(
+  options?: LlamaOptions,
+): Promise<{ url: string; headers: Headers }> {
+  let seenUrl = "";
+  let seenHeaders: HeadersInit | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenHeaders = init?.headers;
+    return Promise.resolve(new Response(JSON.stringify({ status: "ok" })));
+  });
+  try {
+    await new Llama(options).health();
+  } finally {
+    restoreFetch();
+  }
+  return { url: seenUrl, headers: new Headers(seenHeaders) };
+}
+
+Deno.test("baseUrl defaults to llama-server's default when no options", async () => {
+  const { url } = await captureHealthRequest();
+  assertEquals(url, "http://localhost:8080/health");
+});
+
+Deno.test("baseUrl defaults when options is empty", async () => {
+  const { url } = await captureHealthRequest({});
+  assertEquals(url, "http://localhost:8080/health");
+});
+
+Deno.test("baseUrl defaults when undefined", async () => {
+  const { url } = await captureHealthRequest({ baseUrl: undefined });
+  assertEquals(url, "http://localhost:8080/health");
+});
+
+Deno.test("baseUrl defaults when falsy (empty string)", async () => {
+  const { url } = await captureHealthRequest({ baseUrl: "" });
+  assertEquals(url, "http://localhost:8080/health");
+});
+
+Deno.test("baseUrl is used as given when no trailing slash", async () => {
+  const { url } = await captureHealthRequest({
+    baseUrl: "http://example.com:9000",
+  });
+  assertEquals(url, "http://example.com:9000/health");
+});
+
+Deno.test("baseUrl strips a single trailing slash", async () => {
+  const { url } = await captureHealthRequest({
+    baseUrl: "http://example.com:9000/",
+  });
+  assertEquals(url, "http://example.com:9000/health");
+});
+
+Deno.test("baseUrl strips multiple trailing slashes", async () => {
+  const { url } = await captureHealthRequest({
+    baseUrl: "http://example.com:9000///",
+  });
+  assertEquals(url, "http://example.com:9000/health");
+});
+
+Deno.test("apiKey is sent as a bearer token when provided", async () => {
+  const { headers } = await captureHealthRequest({ apiKey: "secret" });
+  assertEquals(headers.get("Authorization"), "Bearer secret");
+});
+
+Deno.test("no Authorization header when apiKey not provided", async () => {
+  const { headers } = await captureHealthRequest();
+  assertStrictEquals(headers.get("Authorization"), null);
+});
+
+Deno.test("apiKey is not exposed on the public surface nor serialized", () => {
+  const llama = new Llama({ apiKey: "secret" });
+  // deno-lint-ignore no-explicit-any
+  assertStrictEquals((llama as any).config, undefined);
+  assertEquals(JSON.stringify(llama).includes("secret"), false);
+});
 
 Deno.test("health issues GET /health against the configured baseUrl", async () => {
   let seenUrl: string | undefined;

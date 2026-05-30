@@ -1121,3 +1121,28 @@ findings:
 ## T-041: Export sub-groups and privatize config
 
 Per `specs/core/llama.md` and the Documentation rule in `specs/conventions.md`.
+
+status: done
+
+- Privatized configuration on `Llama`: replaced the public `readonly config:
+  Config` member with a private `#config` field and updated the internal
+  `health`/`tokenize`/`V1` construction call sites to read `this.#config`. The
+  configuration (and the `apiKey` it carries) is no longer readable through any
+  public member nor serialized by `JSON.stringify`. The freeze at construction
+  is retained.
+- Marked the `V1` and `Chat` sub-group constructors `@internal` so they are
+  excluded from the documented surface while the classes and their members stay
+  documented.
+- Re-exported the `V1` and `Chat` sub-group classes from `src/mod.ts` (as values
+  alongside their existing type re-exports), per the public-surface re-export
+  rule in `specs/conventions.md`, so consumers can name the sub-group types.
+- Rewrote the construction tests in `tests/llama.test.ts` to observe `baseUrl`
+  resolution and the `apiKey` bearer token through the request a `Llama`
+  produces (a stubbed `GET /health`) instead of the now-removed public `config`
+  member, and added a test asserting `apiKey` is neither exposed publicly nor
+  serialized.
+- Resolves the two `private-type-ref` errors recorded as findings under T-040
+  (`Llama.config` referencing internal `Config`, `Llama.v1` referencing internal
+  `V1`). `deno doc --lint src/mod.ts` now reports zero errors. `deno fmt`,
+  `deno lint`, `deno check src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.

@@ -146,6 +146,11 @@ export interface Delta {
 export class Chat {
   #config: Config;
 
+  /**
+   * Constructed by the parent {@link V1} sub-group, never by consumers.
+   *
+   * @internal
+   */
   constructor(config: Config) {
     this.#config = config;
   }

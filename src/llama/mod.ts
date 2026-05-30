@@ -47,12 +47,11 @@ function normalizeBaseUrl(baseUrl: string | undefined): string {
 
 /** The top-level entry point of the module. */
 export class Llama {
-  /**
-   * The internal configuration, frozen after construction; assignment to any
-   * field throws a `TypeError`. To change `baseUrl` or `apiKey`, create a new
-   * `Llama` instance.
-   */
-  readonly config: Config;
+  // The internal configuration, frozen after construction. Held privately so it
+  // is never exposed on the public surface and the `apiKey` it carries is not
+  // readable through any public member nor serialized by `JSON.stringify`. To
+  // change `baseUrl` or `apiKey`, create a new `Llama` instance.
+  #config: Config;
   /** The `/v1/*` sub-group, accessed as `llama.v1`. */
   readonly v1: V1;
 
@@ -62,11 +61,11 @@ export class Llama {
    * resulting configuration is frozen.
    */
   constructor(options: LlamaOptions = {}) {
-    this.config = Object.freeze({
+    this.#config = Object.freeze({
       baseUrl: normalizeBaseUrl(options.baseUrl),
       apiKey: options.apiKey,
     });
-    this.v1 = new V1(this.config);
+    this.v1 = new V1(this.#config);
   }
 
   /**
@@ -79,7 +78,7 @@ export class Llama {
     options?: { signal?: AbortSignal },
   ): Promise<HealthResponse> {
     return await sendRequest({
-      config: this.config,
+      config: this.#config,
       method: "GET",
       path: "/health",
       signal: options?.signal,
@@ -98,7 +97,7 @@ export class Llama {
     options?: { signal?: AbortSignal },
   ): Promise<TokenizeResponse> {
     return await sendRequest({
-      config: this.config,
+      config: this.#config,
       method: "POST",
       path: "/tokenize",
       body: request,
