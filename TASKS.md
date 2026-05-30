@@ -802,3 +802,7 @@ findings:
 - `examples/v1-completions.ts` still demonstrates only the non-streaming call;
   adding a streaming variant (or a separate example) belongs to its own task per
   the Examples convention precedent.
+
+## T-031: Tests for streaming v1.completions
+
+Per `specs/endpoints/v1-completions.md`.
