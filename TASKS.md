@@ -990,3 +990,29 @@ findings:
 
 Per `specs/endpoints/v1-chat-completions.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/v1-chat-completions.ts`, named per the Examples convention
+  (`/v1/chat/completions` → `examples/v1-chat-completions.ts`).
+- Followed the precedent of `examples/v1-completions.ts`: same header comment
+  (purpose, run command, env-var overrides), same `Llama` construction from
+  `LLAMA_BASE_URL`/`LLAMA_API_KEY`, importing via the `@emrahcom/llama-native`
+  map entry, and demonstrating both the non-streaming and streaming variants in
+  a single file per endpoint.
+- The non-streaming variant calls
+  `llama.v1.chat.completions({ messages,
+  max_tokens })` with a system+user
+  `messages` list and prints the first choice's `message.content`. The streaming
+  variant passes `stream: true`, which selects the streaming overload returning
+  `AsyncIterable<ChatCompletionsChunk>`; it iterates with `for await`, writing
+  each chunk's `delta.content` to stdout (guarding the optional field, since
+  `delta` carries only `role` on the first chunk), and notes that the
+  `delta.content` fragments are concatenated to reconstruct the full reply,
+  matching the spec's "Streaming chunk fields" description.
+
+findings:
+
+- The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
+  API), which is allowed for `examples/` per the conventions runtime rule, as
+  already noted in T-032's findings for `examples/v1-completions.ts`.
