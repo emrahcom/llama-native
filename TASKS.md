@@ -739,3 +739,26 @@ findings:
 ## T-029: Fix stream cancellation to close the connection
 
 Per `specs/core/streaming.md`.
+
+status: done
+
+- `src/request/mod.ts`: `requestStream`'s `finally` now calls
+  `await reader.cancel().catch(() => {})` instead of `reader.releaseLock()`,
+  matching the streaming spec's updated Cancellation section. `releaseLock()`
+  only detached the reader, leaving `response.body` open until garbage
+  collection; `cancel()` propagates upstream through the `TextDecoderStream` to
+  `response.body` and closes the underlying connection. This covers the
+  early-consumer-break case (the generator's `finally` runs on `.return()`) as
+  well as clean `[DONE]` completion and error/`throw` paths.
+- The rejection is swallowed with `.catch(() => {})`: cancelling an already
+  errored stream rejects with the stream's stored error, which would otherwise
+  mask the error already thrown from the read loop above.
+
+findings:
+
+- The existing "stops cleanly when the consumer breaks out early" test still
+  passes but only asserts iteration halts; it cannot observe `cancel()` vs
+  `releaseLock()` from a black-box position (the reader is internal to
+  `requestStream`), the same limitation T-028's findings noted. No public hook
+  exists to assert the connection is closed without reaching into internals, so
+  no test change accompanies this fix.

@@ -172,6 +172,11 @@ export async function* requestStream<T>(
 
     throw new LlamaStreamError("Stream ended without [DONE] marker");
   } finally {
-    reader.releaseLock();
+    // Cancel (not just release) so an early consumer break propagates upstream
+    // through the TextDecoderStream to response.body and closes the underlying
+    // connection rather than leaving it open until garbage collection. On an
+    // errored stream cancel() rejects with the stored error; swallow it so it
+    // cannot mask the error already thrown from the loop above.
+    await reader.cancel().catch(() => {});
   }
 }
