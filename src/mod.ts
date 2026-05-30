@@ -13,6 +13,6 @@ export type {
   CompletionsResponse,
   Model,
   ModelsResponse,
-  Usage,
 } from "./v1/mod.ts";
+export type { Usage } from "./types/v1.ts";
 export { LlamaError, LlamaHTTPError, LlamaStreamError } from "./errors/mod.ts";

@@ -881,3 +881,18 @@ status: done
 ## T-034: Move Usage to src/types/v1.ts
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- Added `src/types/v1.ts` holding the `Usage` interface, following the
+  shared-internal-types rule in `specs/conventions.md` (`src/types/<name>.ts`,
+  one file per concern, no `mod.ts`). This matches the spec note in
+  `specs/endpoints/v1-completions.md` that `Usage` is a shared v1 type defined in
+  `src/types/v1.ts`, not in `src/v1/`.
+- `src/v1/mod.ts`: removed the local `Usage` interface and added
+  `import type { Usage } from "../types/v1.ts";`. The
+  `CompletionsResponse.usage` and `CompletionsChunk.usage` references are
+  unchanged.
+- `src/mod.ts`: moved the `Usage` re-export out of the `./v1/mod.ts` type group
+  into a new `export type { Usage } from "./types/v1.ts";`, keeping the public
+  surface identical.

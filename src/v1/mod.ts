@@ -1,4 +1,5 @@
 import type { Config } from "../types/config.ts";
+import type { Usage } from "../types/v1.ts";
 import {
   request as sendRequest,
   requestStream as sendRequestStream,
@@ -57,12 +58,6 @@ export interface ChunkChoice {
   text: string;
   logprobs: null;
   finish_reason: "stop" | "length" | null;
-}
-
-export interface Usage {
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
 }
 
 export class V1 {
