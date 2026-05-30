@@ -900,3 +900,40 @@ status: done
 ## T-035: Implement /v1/chat/completions
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Added `src/v1/chat/mod.ts` with the `Chat` sub-group and the spec's TypeScript
+  surface in order: `ChatCompletionsRequest`, `Message`,
+  `ChatCompletionsResponse`, `ChatChoice`, `AssistantMessage`,
+  `ChatCompletionsChunk`, `ChatChunkChoice`, and `Delta`. `Chat` holds the
+  parent's frozen `Config` in a private `#config` field and exposes the
+  overloaded `completions(request, options?)`: `stream: true` selects the
+  streaming overload returning `AsyncIterable<ChatCompletionsChunk>`,
+  `stream: false`/omitted/`undefined` selects the non-streaming overload
+  returning `Promise<ChatCompletionsResponse>`, and a non-literal `boolean`
+  matches neither (compile error). Mirrors the dispatch in `V1.completions`: the
+  streaming branch returns `requestStream<ChatCompletionsChunk>` without
+  awaiting (lazy iteration per `specs/core/streaming.md`); the non-streaming
+  branch returns the `request` helper's promise. Both send
+  `POST /v1/chat/completions` with the `ChatCompletionsRequest` as the JSON body
+  and forward `options?.signal`. Imports the shared `Usage` from
+  `../../types/v1.ts`; auth, error mapping, and abort handling come from
+  `specs/core/request.md`/`specs/core/streaming.md` unchanged. All wire fields
+  use snake_case (`max_tokens`, `finish_reason`, `system_fingerprint`).
+- `src/v1/mod.ts`: added the readonly `chat: Chat` property to `V1`, constructed
+  with the `Config` `V1` already holds, per the recursive sub-group template in
+  `specs/core/llama.md` (`/v1/chat/completions` is a three-segment path, so
+  `completions` lives on the `chat` sub-group under `v1`).
+- `src/mod.ts`: re-exported the eight `export`-marked chat types as types. The
+  `Chat` class is not marked `export` in the spec (reached through
+  `llama.v1.chat`), so it stays internal, matching how `V1` is handled.
+
+findings:
+
+- No tests for `llama.v1.chat.completions()` yet; per the precedent set by
+  T-024/T-025 and T-030/T-031, chat-completions tests (non-streaming and
+  streaming) belong to their own task.
+- No `examples/v1-chat-completions.ts` yet; per the precedent set by T-025/T-026
+  and the Examples convention (`/v1/chat/completions` →
+  `examples/v1-chat-completions.ts`), the example belongs to its own task.

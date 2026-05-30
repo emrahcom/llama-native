@@ -4,6 +4,7 @@ import {
   request as sendRequest,
   requestStream as sendRequestStream,
 } from "../request/mod.ts";
+import { Chat } from "./chat/mod.ts";
 
 export interface Model {
   id: string;
@@ -62,9 +63,11 @@ export interface ChunkChoice {
 
 export class V1 {
   #config: Config;
+  readonly chat: Chat;
 
   constructor(config: Config) {
     this.#config = config;
+    this.chat = new Chat(config);
   }
 
   async models(

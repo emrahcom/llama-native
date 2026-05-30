@@ -14,5 +14,15 @@ export type {
   Model,
   ModelsResponse,
 } from "./v1/mod.ts";
+export type {
+  AssistantMessage,
+  ChatChoice,
+  ChatChunkChoice,
+  ChatCompletionsChunk,
+  ChatCompletionsRequest,
+  ChatCompletionsResponse,
+  Delta,
+  Message,
+} from "./v1/chat/mod.ts";
 export type { Usage } from "./types/v1.ts";
 export { LlamaError, LlamaHTTPError, LlamaStreamError } from "./errors/mod.ts";
