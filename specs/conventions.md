@@ -64,10 +64,8 @@ Rules that every spec and the implementation inherit.
 ## Publishing
 
 - **Exclude development-only files from the published package**\
-  `deno.json` `publish.exclude` lists:
-  - `CLAUDE.md`
-  - `TASKS.md`
-  - `specs`
-  - `tests`
+  Development artifacts (`CLAUDE.md`, `TASKS.md`, `specs`, `tests`) and
+  repository metadata do not ship. `deno.json` `publish.exclude` is the
+  authoritative list.
 
   `examples` ships as documentation.
