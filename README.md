@@ -13,7 +13,7 @@ Assuming that `llama-server` is running in your local environment...
 import { Llama } from "jsr:@emrahcom/llama-native";
 
 const llama = new Llama();
-const res = await llama.v1.chat.create({
+const res = await llama.v1.chat.completions({
   messages: [
     { role: "user", content: "Hello!" },
   ],
