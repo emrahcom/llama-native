@@ -61,8 +61,10 @@ body ends without `[DONE]`, the iterator throws `LlamaStreamError`.
 When `options.signal` is provided and aborted, the underlying fetch is aborted
 and the iterator throws the original `AbortError` unwrapped, matching the
 non-streaming `request()` behavior. If the consumer breaks out of iteration
-early, the response body reader is released so the underlying connection can be
-closed.
+early, the response body stream is cancelled via the reader's `cancel()` method.
+Cancellation propagates upstream through the `TextDecoderStream` to
+`response.body` and closes the underlying connection, rather than leaving it
+open until garbage collection.
 
 ## Error mapping
 
