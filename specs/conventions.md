@@ -54,14 +54,20 @@ Rules that every spec and the implementation inherit.
 
 ## Documentation
 
-- Every exported symbol carries a JSDoc comment: classes, methods, interfaces,
+- **JSDoc on every exported symbol**\
+  Every exported symbol carries a JSDoc comment: classes, methods, interfaces,
   type aliases, and the public members of exported interfaces and classes.
-- The JSDoc text is the symbol's spec description rendered as a standalone
-  comment. The spec is the source: a description change is made in the spec
-  first, then the JSDoc follows. JSDoc introduces no description absent from the
-  spec.
-- The entrypoint `src/mod.ts` carries a module doc summarizing the public API.
-- `deno doc --lint src/mod.ts` reports exported symbols missing documentation
+
+- **JSDoc text comes from the spec**\
+  The JSDoc text is the symbol's spec description rendered as a standalone
+  comment. A description change is made in the spec first, then the JSDoc
+  follows. JSDoc introduces no description absent from the spec.
+
+- **Module doc on the entrypoint**\
+  `src/mod.ts` carries a module doc summarizing the public API.
+
+- **Doc coverage checked with `deno doc --lint`**\
+  `deno doc --lint src/mod.ts` reports exported symbols missing documentation
   and is the coverage check for this rule.
 
 ## Testing
