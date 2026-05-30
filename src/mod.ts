@@ -7,6 +7,8 @@ export type {
 } from "./llama/mod.ts";
 export type {
   Choice,
+  ChunkChoice,
+  CompletionsChunk,
   CompletionsRequest,
   CompletionsResponse,
   Model,

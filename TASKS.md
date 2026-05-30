@@ -766,3 +766,39 @@ findings:
 ## T-030: Add streaming to v1.completions
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- `src/v1/mod.ts`: added the `CompletionsChunk` and `ChunkChoice` interfaces (in
+  the spec's surface order, between `Choice` and `Usage`) and added the optional
+  `stream?: boolean` field to `CompletionsRequest`. All wire fields stay
+  snake_case (`finish_reason`, `system_fingerprint`) per `specs/conventions.md`.
+- `completions` is now overloaded per the spec's call signatures:
+  `request: CompletionsRequest & { stream: true }` returns
+  `AsyncIterable<CompletionsChunk>` and
+  `request: CompletionsRequest & { stream?: false | undefined }` returns
+  `Promise<CompletionsResponse>`. The overload is selected by the literal type
+  of `request.stream`, so a non-literal `boolean` matches neither and is a
+  compile error, as the spec requires.
+- The implementation dispatches on `request.stream === true` at runtime: the
+  streaming branch returns `requestStream<CompletionsChunk>` (imported as
+  `sendRequestStream`) without awaiting, keeping iteration lazy per
+  `specs/core/streaming.md`; the non-streaming branch returns the `request`
+  helper's promise cast to `Promise<CompletionsResponse>`, unchanged from
+  before. Both branches send `POST /v1/completions` with the
+  `CompletionsRequest` (including `stream`) as the JSON body and forward
+  `options?.signal`. The implementation signature is non-`async` so it can
+  return either an `AsyncIterable` or a `Promise`.
+- `src/mod.ts`: re-exported `CompletionsChunk` and `ChunkChoice` as types
+  alongside the existing `/v1/completions` types, matching the conventions rule
+  that names marked `export` in a spec belong on the public surface.
+
+findings:
+
+- No streaming-specific tests for `llama.v1.completions({ stream: true })` yet;
+  per the precedent set by T-024/T-025 (implement, then test in a separate
+  task), they belong to their own task. The streaming helper itself is already
+  covered by `tests/request.test.ts` (T-028).
+- `examples/v1-completions.ts` still demonstrates only the non-streaming call;
+  adding a streaming variant (or a separate example) belongs to its own task per
+  the Examples convention precedent.

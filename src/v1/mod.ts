@@ -1,5 +1,8 @@
 import type { Config } from "../types/config.ts";
-import { request as sendRequest } from "../request/mod.ts";
+import {
+  request as sendRequest,
+  requestStream as sendRequestStream,
+} from "../request/mod.ts";
 
 export interface Model {
   id: string;
@@ -19,6 +22,7 @@ export interface CompletionsRequest {
   max_tokens?: number;
   stop?: string | string[];
   temperature?: number;
+  stream?: boolean;
 }
 
 export interface CompletionsResponse {
@@ -36,6 +40,23 @@ export interface Choice {
   text: string;
   logprobs: null;
   finish_reason: "stop" | "length";
+}
+
+export interface CompletionsChunk {
+  id: string;
+  object: "text_completion";
+  created: number;
+  model: string;
+  choices: ChunkChoice[];
+  usage?: Usage;
+  system_fingerprint?: string;
+}
+
+export interface ChunkChoice {
+  index: number;
+  text: string;
+  logprobs: null;
+  finish_reason: "stop" | "length" | null;
 }
 
 export interface Usage {
@@ -62,16 +83,33 @@ export class V1 {
     }) as ModelsResponse;
   }
 
-  async completions(
+  completions(
+    request: CompletionsRequest & { stream: true },
+    options?: { signal?: AbortSignal },
+  ): AsyncIterable<CompletionsChunk>;
+  completions(
+    request: CompletionsRequest & { stream?: false | undefined },
+    options?: { signal?: AbortSignal },
+  ): Promise<CompletionsResponse>;
+  completions(
     request: CompletionsRequest,
     options?: { signal?: AbortSignal },
-  ): Promise<CompletionsResponse> {
-    return await sendRequest({
+  ): AsyncIterable<CompletionsChunk> | Promise<CompletionsResponse> {
+    if (request.stream === true) {
+      return sendRequestStream<CompletionsChunk>({
+        config: this.#config,
+        method: "POST",
+        path: "/v1/completions",
+        body: request,
+        signal: options?.signal,
+      });
+    }
+    return sendRequest({
       config: this.#config,
       method: "POST",
       path: "/v1/completions",
       body: request,
       signal: options?.signal,
-    }) as CompletionsResponse;
+    }) as Promise<CompletionsResponse>;
   }
 }
