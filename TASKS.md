@@ -1124,12 +1124,13 @@ Per `specs/core/llama.md` and the Documentation rule in `specs/conventions.md`.
 
 status: done
 
-- Privatized configuration on `Llama`: replaced the public `readonly config:
-  Config` member with a private `#config` field and updated the internal
-  `health`/`tokenize`/`V1` construction call sites to read `this.#config`. The
-  configuration (and the `apiKey` it carries) is no longer readable through any
-  public member nor serialized by `JSON.stringify`. The freeze at construction
-  is retained.
+- Privatized configuration on `Llama`: replaced the public
+  `readonly config:
+  Config` member with a private `#config` field and updated
+  the internal `health`/`tokenize`/`V1` construction call sites to read
+  `this.#config`. The configuration (and the `apiKey` it carries) is no longer
+  readable through any public member nor serialized by `JSON.stringify`. The
+  freeze at construction is retained.
 - Marked the `V1` and `Chat` sub-group constructors `@internal` so they are
   excluded from the documented surface while the classes and their members stay
   documented.
