@@ -841,3 +841,22 @@ findings:
 
 Per `specs/endpoints/v1-completions.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Extended `examples/v1-completions.ts` with a streaming variant alongside the
+  existing non-streaming call, keeping a single file per endpoint as the
+  Examples convention in `specs/conventions.md` requires (no separate file).
+- The streaming variant passes `stream: true`, which selects the streaming
+  overload returning an `AsyncIterable<CompletionsChunk>` per
+  `specs/endpoints/v1-completions.md`. It iterates with `for await`, writing
+  each chunk's `choices[0].text` delta to stdout, and notes that the `text`
+  fields are deltas concatenated to reconstruct the full output, matching the
+  spec's "Streaming chunk fields" description.
+- Labeled the existing call as the non-streaming variant for contrast; the run
+  instructions and `Llama` construction are unchanged.
+
+findings:
+
+- The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
+  API), which is allowed for `examples/` per the conventions runtime rule.

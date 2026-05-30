@@ -17,8 +17,21 @@ const llama = new Llama({
   apiKey: Deno.env.get("LLAMA_API_KEY"),
 });
 
+// Non-streaming: await a single CompletionsResponse.
 const result = await llama.v1.completions({
   prompt: "The capital of France is",
   max_tokens: 16,
 });
 console.log(result.choices[0].text);
+
+// Streaming: set stream: true to receive an AsyncIterable of chunks. Each
+// chunk's text is a delta; concatenate them to reconstruct the full output.
+const stream = llama.v1.completions({
+  prompt: "The capital of France is",
+  max_tokens: 16,
+  stream: true,
+});
+for await (const chunk of stream) {
+  await Deno.stdout.write(new TextEncoder().encode(chunk.choices[0].text));
+}
+console.log();
