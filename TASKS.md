@@ -877,3 +877,7 @@ status: done
   `Streaming response had no body` message. This is the only test that pins the
   null-body message; the end-without-`[DONE]` case keeps its own message
   unchanged.
+
+## T-034: Move Usage to src/types/v1.ts
+
+Per `specs/endpoints/v1-completions.md`.
