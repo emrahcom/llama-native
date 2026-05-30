@@ -43,13 +43,13 @@ export interface ChatCompletionsResponse {
 export interface ChatChoice {
   index: number;
   message: AssistantMessage;
-  logprobs: null;
   finish_reason: "stop" | "length";
 }
 
 export interface AssistantMessage {
   role: "assistant";
   content: string;
+  reasoning_content?: string;
 }
 
 export interface ChatCompletionsChunk {
@@ -65,13 +65,13 @@ export interface ChatCompletionsChunk {
 export interface ChatChunkChoice {
   index: number;
   delta: Delta;
-  logprobs: null;
   finish_reason: "stop" | "length" | null;
 }
 
 export interface Delta {
   role?: "assistant";
-  content?: string;
+  content?: string | null;
+  reasoning_content?: string;
 }
 ```
 
@@ -143,15 +143,17 @@ Each `ChatChoice` has:
 
 - an `index` (position in the choices array)
 - a `message` (the assistant's reply, an `AssistantMessage`)
-- a `logprobs` field, always `null` in the current scope (request-side
-  `logprobs` not yet supported)
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`)
 
 Each `AssistantMessage` has:
 
 - a `role`, always `"assistant"`
-- a `content`, the reply text
+- a `content`, the reply text; may be an empty string when the model produced no
+  reply text (for example, a reasoning model whose output was cut off during
+  reasoning)
+- an optional `reasoning_content`, the model's reasoning output; present for
+  reasoning models, absent otherwise
 
 ### Streaming chunk fields
 
@@ -162,7 +164,7 @@ chunk depending on configuration).
 
 Each `ChatChunkChoice` has:
 
-- an `index` and `logprobs` field with the same meaning as `ChatChoice`
+- an `index` with the same meaning as `ChatChoice`
 - a `delta` (a `Delta`: the incremental piece of the assistant's reply)
 - a `finish_reason` that is `null` while generation is in progress and becomes
   `"stop"` or `"length"` on the final chunk
@@ -171,10 +173,15 @@ Each `Delta` has:
 
 - an optional `role`, present only on the first chunk for a choice, always
   `"assistant"`
-- an optional `content`, the text fragment for this chunk
+- an optional `content`, the reply text fragment for this chunk; may be `null`
+  (the first chunk for a choice carries the `role` with `content: null` before
+  any text is produced)
+- an optional `reasoning_content`, the reasoning text fragment for this chunk;
+  present for reasoning models
 
-Consumers reconstruct the full reply by concatenating `delta.content` across
-chunks for each `index`.
+Consumers reconstruct the full reply by concatenating the non-null
+`delta.content` values across chunks for each `index`, and the reasoning trace
+by concatenating `delta.reasoning_content` the same way.
 
 ## Request
 
