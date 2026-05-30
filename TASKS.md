@@ -1117,3 +1117,7 @@ findings:
   decision (export `Config`/`V1`/`Chat`, or stop exposing the `config`/`v1`
   members publicly). That belongs to its own task. `deno publish --dry-run`'s
   slow-types check is unaffected and passes.
+
+## T-041: Export sub-groups and privatize config
+
+Per `specs/core/llama.md` and the Documentation rule in `specs/conventions.md`.
