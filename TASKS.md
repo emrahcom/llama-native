@@ -836,3 +836,8 @@ findings:
   into a shared `tests/_fetch.ts` helper remains the follow-up flagged in
   T-013's findings; the SSE helpers could join it once a third streaming
   endpoint adds tests.
+
+## T-032: Add streaming to the v1.completions example
+
+Per `specs/endpoints/v1-completions.md` and the Examples convention in
+`specs/conventions.md`.
