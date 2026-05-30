@@ -762,3 +762,7 @@ findings:
   `requestStream`), the same limitation T-028's findings noted. No public hook
   exists to assert the connection is closed without reaching into internals, so
   no test change accompanies this fix.
+
+## T-030: Add streaming to v1.completions
+
+Per `specs/endpoints/v1-completions.md`.
