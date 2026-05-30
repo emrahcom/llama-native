@@ -21,7 +21,7 @@ interface Config {
 
 export class Llama {
   constructor(options?: LlamaOptions);
-  readonly config: Config;
+  #config: Config;
 }
 ```
 
@@ -30,8 +30,9 @@ access rule below.
 
 `Config` is not exported. It is a shared internal type defined in
 `src/types/config.ts` (per the shared-types rule in `specs/conventions.md`), not
-in `src/llama/`. It is shown here because `Llama` exposes it through the
-readonly `config` property.
+in `src/llama/`. `Llama` holds it in a private `#config` field and never exposes
+it on the public surface; in particular, the `apiKey` it carries is not readable
+through any public member and is not serialized by `JSON.stringify`.
 
 ## Constructor
 
@@ -49,9 +50,8 @@ new Llama(options?: LlamaOptions)
 - **`apiKey` default**\
   Undefined when not provided.
 
-The configuration is frozen after construction; assignment to any field on
-`config` throws a `TypeError`. To change `baseUrl` or `apiKey`, create a new
-`Llama` instance.
+Configuration is fixed at construction; to use a different `baseUrl` or
+`apiKey`, create a new `Llama` instance.
 
 ## Endpoint access
 
@@ -78,14 +78,25 @@ A sub-group is a class with the shape:
 
 ```ts
 class <SubGroupName> {
+  /** @internal */
   constructor(config: Config);
+  #config: Config;
   // endpoint methods and nested sub-groups added by endpoint specs
 }
 ```
 
-Sub-groups receive the internal `Config` instance from their parent class
-(either `Llama` or a containing sub-group) at construction and use it directly
-without re-declaring its type.
+Sub-groups are exported, so each class and its methods appear on the public
+documented surface and consumers can name the type (`V1`, `Chat`, and any added
+later). They are constructed by their parent (`Llama` or a containing
+sub-group), never by consumers; the constructor is marked `@internal` so it is
+excluded from the documented surface and not advertised as a construction path.
+
+A sub-group receives the internal `Config` from its parent at construction and
+holds it in a private `#config` field (the shared `Config` type, not
+re-declared), the same way `Llama` does, so the `apiKey` it carries is never
+exposed or serialized at any level.
 
 When an endpoint spec creates a new sub-group (top-level or nested), it adds the
-corresponding readonly property to the parent class.
+corresponding readonly property to the parent class (e.g. `readonly v1: V1`).
+That property is part of the public surface and references the exported
+sub-group type.
