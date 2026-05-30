@@ -3,13 +3,13 @@
 **Still in alpha**
 
 A lightweight Deno client for llama.cpp with zero dependencies. Supports
-OpenAI-compatible chat and native GBNF grammar completions.
+OpenAI-compatible chat and text completions.
 
 ## Usage
 
 Assuming that `llama-server` is running in your local environment...
 
-```Typescript
+```ts
 import { Llama } from "jsr:@emrahcom/llama-native";
 
 const llama = new Llama();
