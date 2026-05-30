@@ -52,6 +52,18 @@ Rules that every spec and the implementation inherit.
   Preserves Node compatibility.\
   `tests/` and `examples/` may use Deno-specific APIs freely.
 
+## Documentation
+
+- Every exported symbol carries a JSDoc comment: classes, methods, interfaces,
+  type aliases, and the public members of exported interfaces and classes.
+- The JSDoc text is the symbol's spec description rendered as a standalone
+  comment. The spec is the source: a description change is made in the spec
+  first, then the JSDoc follows. JSDoc introduces no description absent from the
+  spec.
+- The entrypoint `src/mod.ts` carries a module doc summarizing the public API.
+- `deno doc --lint src/mod.ts` reports exported symbols missing documentation
+  and is the coverage check for this rule.
+
 ## Testing
 
 - **Test files live under `tests/`**\
