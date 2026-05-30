@@ -1075,3 +1075,7 @@ status: done
 - Confirmed `deno fmt`, `deno lint`, `deno check src/mod.ts`, `deno test`, and
   `deno publish --dry-run --allow-dirty` all pass; `deno check` of the
   integration file also passes.
+
+## T-040: Document the public surface
+
+Per the Documentation rule in `specs/conventions.md` and each symbol's spec.
