@@ -56,6 +56,9 @@ For each event with a data payload:
 The stream terminates cleanly only after a `data: [DONE]` event. If the response
 body ends without `[DONE]`, the iterator throws `LlamaStreamError`.
 
+Content remaining in the buffer at end of stream without a terminating `\n\n` is
+treated as an incomplete event and discarded.
+
 ### Cancellation
 
 When `options.signal` is provided and aborted, the underlying fetch is aborted
