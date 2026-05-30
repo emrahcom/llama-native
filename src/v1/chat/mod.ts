@@ -32,13 +32,13 @@ export interface ChatCompletionsResponse {
 export interface ChatChoice {
   index: number;
   message: AssistantMessage;
-  logprobs: null;
   finish_reason: "stop" | "length";
 }
 
 export interface AssistantMessage {
   role: "assistant";
   content: string;
+  reasoning_content?: string;
 }
 
 export interface ChatCompletionsChunk {
@@ -54,13 +54,13 @@ export interface ChatCompletionsChunk {
 export interface ChatChunkChoice {
   index: number;
   delta: Delta;
-  logprobs: null;
   finish_reason: "stop" | "length" | null;
 }
 
 export interface Delta {
   role?: "assistant";
-  content?: string;
+  content?: string | null;
+  reasoning_content?: string;
 }
 
 export class Chat {

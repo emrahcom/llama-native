@@ -1055,3 +1055,23 @@ findings:
 ## T-039: Align chat types with live server shapes
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Updated the chat types in `src/v1/chat/mod.ts` to match the revised spec:
+  removed the `logprobs: null` field from `ChatChoice` and `ChatChunkChoice`,
+  added an optional `reasoning_content?: string` to `AssistantMessage` and
+  `Delta`, and widened `Delta.content` from `string | undefined` to
+  `string | null | undefined` (the role-only first chunk carries
+  `content: null`).
+- Updated the unit-test fixtures in `tests/llama.test.ts` that mirror these
+  shapes, dropping `logprobs: null` from the chat (`chat.completion`) and chat
+  chunk (`chat.completion.chunk`) fixtures while leaving the completions
+  (`text_completion`) fixtures, which still carry `logprobs`, untouched.
+- Updated `integration/v1-chat-completions.test.ts` to stop asserting the
+  removed `logprobs` field and to accept a `null` `delta.content` (the
+  truthiness/`!= null` guard skips the `typeof` check for both `null` and
+  `undefined`), keeping the integration file compilable against the new types.
+- Confirmed `deno fmt`, `deno lint`, `deno check src/mod.ts`, `deno test`, and
+  `deno publish --dry-run --allow-dirty` all pass; `deno check` of the
+  integration file also passes.

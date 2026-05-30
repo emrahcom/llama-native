@@ -24,7 +24,6 @@ Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse
     assertEquals(typeof choice.index, "number");
     assertEquals(choice.message.role, "assistant");
     assertEquals(typeof choice.message.content, "string");
-    assertEquals(choice.logprobs, null);
     assert(
       choice.finish_reason === "stop" || choice.finish_reason === "length",
     );
@@ -58,10 +57,9 @@ Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a r
       if (choice.delta.role !== undefined) {
         assertEquals(choice.delta.role, "assistant");
       }
-      if (choice.delta.content !== undefined) {
+      if (choice.delta.content != null) {
         assertEquals(typeof choice.delta.content, "string");
       }
-      assertEquals(choice.logprobs, null);
       assert(
         choice.finish_reason === null ||
           choice.finish_reason === "stop" ||

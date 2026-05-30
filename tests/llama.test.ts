@@ -728,7 +728,6 @@ Deno.test("v1.chat.completions returns the parsed JSON body as ChatCompletionsRe
           role: "assistant",
           content: "Hello there!",
         },
-        logprobs: null,
         finish_reason: "stop",
       },
     ],
@@ -850,7 +849,6 @@ Deno.test("v1.chat.completions with stream: true yields parsed ChatCompletionsCh
           role: "assistant",
           content: "Hello",
         },
-        logprobs: null,
         finish_reason: null,
       },
     ],
@@ -866,7 +864,6 @@ Deno.test("v1.chat.completions with stream: true yields parsed ChatCompletionsCh
         delta: {
           content: " there!",
         },
-        logprobs: null,
         finish_reason: "stop",
       },
     ],
