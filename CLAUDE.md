@@ -43,7 +43,7 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   belongs to its own task; note observations or suggestions as findings when
   completing the task instead of implementing them.
 - Make changes small and reversible.
-- Run the formatter, linter, type-checker, tests, and publishability check
+- Run the formatter, linter, type-checker, unit tests, and publishability check
   before considering any change done.
 - To change behavior, update the spec first, then the code, then tests.
 - Flag any change that would break Node compatibility before applying it.
@@ -94,7 +94,11 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   Type-check.
 
 - `deno test`\
-  Run tests.
+  Run unit tests.
+
+- `deno test --allow-net integration/`\
+  Run integration tests against a running llama-server. Not part of the default
+  check; requires a local server.
 
 - `deno publish --dry-run --allow-dirty`\
   Verify the module is publishable.

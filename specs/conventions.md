@@ -61,6 +61,16 @@ Rules that every spec and the implementation inherit.
   Shared test scaffolding (e.g. `fetch` stubs, helper types) may be repeated
   across test files. Do not extract it into a shared helper.
 
+- **Integration tests live under `integration/`**\
+  Integration tests exercise endpoints against a running llama-server instead of
+  stubbed `fetch`, confirming that real server output matches the typed shapes.
+  They target the default local server (`new Llama()` with no arguments) and are
+  not gated on any environment variable. One file per endpoint, named by the
+  endpoint path with slashes replaced by hyphens (e.g.
+  `integration/v1-chat-completions.test.ts`), with one test per endpoint case
+  (each endpoint, each mode). They are not part of the default `deno test` run,
+  require a running server, and are not published.
+
 ## Examples
 
 - **One file per endpoint under `examples/`**\
@@ -71,8 +81,8 @@ Rules that every spec and the implementation inherit.
 ## Publishing
 
 - **Exclude development-only files from the published package**\
-  Development artifacts (`CLAUDE.md`, `TASKS.md`, `specs`, `tests`) and
-  repository metadata do not ship. `deno.json` `publish.exclude` is the
-  authoritative list.
+  Development artifacts (`CLAUDE.md`, `TASKS.md`, `integration`, `specs`,
+  `tests`) and repository metadata do not ship. `deno.json` `publish.exclude` is
+  the authoritative list.
 
   `examples` ships as documentation.
