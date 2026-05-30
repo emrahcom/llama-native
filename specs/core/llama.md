@@ -28,6 +28,11 @@ export class Llama {
 Endpoint specs add methods and sub-group properties to `Llama` per the endpoint
 access rule below.
 
+`Config` is not exported. It is a shared internal type defined in
+`src/types/config.ts` (per the shared-types rule in `specs/conventions.md`), not
+in `src/llama/`. It is shown here because `Llama` exposes it through the
+readonly `config` property.
+
 ## Constructor
 
 ```
