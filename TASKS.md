@@ -1079,3 +1079,41 @@ status: done
 ## T-040: Document the public surface
 
 Per the Documentation rule in `specs/conventions.md` and each symbol's spec.
+
+status: done
+
+- Added JSDoc to every exported symbol reachable from `src/mod.ts`, with text
+  derived from each symbol's spec per the "JSDoc text comes from the spec" rule:
+  the three error classes and their `status`/`body` members and constructors in
+  `src/errors/mod.ts`; `Usage` and its members in `src/types/v1.ts`;
+  `LlamaOptions`, `HealthResponse`, `TokenizeRequest`, `TokenizeResponse`, the
+  `Llama` class with its `config`/`v1` members, constructor, and
+  `health`/`tokenize` methods in `src/llama/mod.ts`; the `/v1/*` request,
+  response, and chunk interfaces, their members, and the `V1` class with
+  `models` and both `completions` overloads in `src/v1/mod.ts`; and the chat
+  request, response, and chunk interfaces, their members, and the `Chat` class
+  with both `completions` overloads in `src/v1/chat/mod.ts`.
+- Added a module doc (`@module`) to `src/mod.ts` summarizing the public API per
+  the "Module doc on the entrypoint" rule: the `Llama` entry point, the
+  endpoint-access chain (single-segment methods vs `/v1/*` sub-groups),
+  streaming vs non-streaming completions, and the `LlamaError` hierarchy.
+- Documented each overloaded `completions` signature separately (streaming and
+  non-streaming), since `deno doc --lint` requires JSDoc on each overload, and
+  documented class constructors, which the lint also flags individually.
+- `deno doc --lint src/mod.ts` now reports zero `missing-jsdoc` errors (down
+  from 111). `deno fmt`, `deno lint`, `deno check src/mod.ts`, `deno test` (89
+  passed), and `deno publish --dry-run --allow-dirty` all pass.
+
+findings:
+
+- `deno doc --lint src/mod.ts` still reports two `private-type-ref` errors:
+  `Llama.config` references the internal `Config` type and `Llama.v1` references
+  the internal `V1` class. Both are a direct consequence of the spec design:
+  `specs/core/llama.md` exposes `readonly config: Config` and the v1-models spec
+  adds `readonly v1` (a `V1` sub-group) on the public `Llama` class while
+  `specs/conventions.md` keeps `Config` and the sub-group classes internal (not
+  marked `export`, so not re-exported from `src/mod.ts`). These predate T-040,
+  are structural rather than documentation, and resolving them requires a spec
+  decision (export `Config`/`V1`/`Chat`, or stop exposing the `config`/`v1`
+  members publicly). That belongs to its own task. `deno publish --dry-run`'s
+  slow-types check is unaffected and passes.

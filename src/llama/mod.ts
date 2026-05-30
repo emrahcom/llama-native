@@ -2,21 +2,39 @@ import type { Config } from "../types/config.ts";
 import { request as sendRequest } from "../request/mod.ts";
 import { V1 } from "../v1/mod.ts";
 
+/** Options for constructing a {@link Llama} client. */
 export interface LlamaOptions {
+  /**
+   * Base URL of the llama-server. Defaults to `"http://localhost:8080"` (which
+   * matches llama-server's default port) when not provided. One or more
+   * trailing slashes are stripped.
+   */
   baseUrl?: string;
+  /** API key sent as a bearer token. Undefined when not provided. */
   apiKey?: string;
 }
 
+/** A readiness check for the llama-server. */
 export interface HealthResponse {
+  /**
+   * Typically `"ok"` but other strings are possible depending on server state.
+   */
   status: string;
 }
 
+/** Tokenizes input text into model token IDs. */
 export interface TokenizeRequest {
+  /** The input text. */
   content: string;
+  /**
+   * Controls whether the model's special tokens like BOS/EOS are prepended.
+   */
   add_special?: boolean;
 }
 
+/** The result of a {@link TokenizeRequest}. */
 export interface TokenizeResponse {
+  /** The resulting list of model token IDs. */
   tokens: number[];
 }
 
@@ -27,10 +45,22 @@ function normalizeBaseUrl(baseUrl: string | undefined): string {
   return baseUrl.replace(/\/+$/, "");
 }
 
+/** The top-level entry point of the module. */
 export class Llama {
+  /**
+   * The internal configuration, frozen after construction; assignment to any
+   * field throws a `TypeError`. To change `baseUrl` or `apiKey`, create a new
+   * `Llama` instance.
+   */
   readonly config: Config;
+  /** The `/v1/*` sub-group, accessed as `llama.v1`. */
   readonly v1: V1;
 
+  /**
+   * Creates a `Llama` client. `baseUrl` defaults to `"http://localhost:8080"`
+   * and has trailing slashes stripped; `apiKey` is undefined when omitted. The
+   * resulting configuration is frozen.
+   */
   constructor(options: LlamaOptions = {}) {
     this.config = Object.freeze({
       baseUrl: normalizeBaseUrl(options.baseUrl),
@@ -39,6 +69,12 @@ export class Llama {
     this.v1 = new V1(this.config);
   }
 
+  /**
+   * A readiness check for the llama-server.
+   *
+   * Issues `GET /health` with no body and returns the parsed JSON as a
+   * {@link HealthResponse}. Errors are handled per `specs/core/request.md`.
+   */
   async health(
     options?: { signal?: AbortSignal },
   ): Promise<HealthResponse> {
@@ -50,6 +86,13 @@ export class Llama {
     }) as HealthResponse;
   }
 
+  /**
+   * Tokenizes input text into model token IDs.
+   *
+   * Issues `POST /tokenize` with `request` as the JSON-serialized body and
+   * returns the parsed JSON as a {@link TokenizeResponse}. Errors are handled
+   * per `specs/core/request.md`.
+   */
   async tokenize(
     request: TokenizeRequest,
     options?: { signal?: AbortSignal },
