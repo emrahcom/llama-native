@@ -97,3 +97,7 @@ The helper translates failures into the library's error types per
 - **Network error mid-stream (after iteration has started yielding)**\
   Wrapped in `LlamaError` with the original error attached via `cause`.\
   Message: `{method} {path} stream failed`.
+
+- **OK response with no body** (`response.body` is `null`)\
+  Thrown as `LlamaStreamError`.\
+  Message: `Streaming response had no body`.
