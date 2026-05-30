@@ -61,6 +61,10 @@ export interface Usage {
 }
 ```
 
+`Usage` is a shared v1 type defined in `src/types/v1.ts` (per the shared-types
+rule in `specs/conventions.md`), not in `src/v1/`. It is shown here because the
+completions response and chunk include it.
+
 Called as
 
 ```
@@ -87,18 +91,21 @@ The overload selected depends on the literal type of `request.stream`:
 
 ### Request fields
 
-- `prompt` is the input to generate from\
-  accepts:
+- `prompt`\
+  is the input to generate from; accepts:
   - a single string
   - an array of strings (batch)
   - an array of token IDs
   - an array of token ID arrays (batch over token sequences)
-- `model` is the model identifier\
-  when omitted, llama-server uses its loaded model
-- `max_tokens` is the upper bound on tokens generated
-- `stop` is a single string or array of strings\
+- `model`\
+  is the model identifier; when omitted, llama-server uses its loaded model
+- `max_tokens`\
+  is the upper bound on tokens generated
+- `stop`\
+  is a single string or array of strings;\
   generation halts when any is produced
-- `temperature` is the sampling temperature
+- `temperature`\
+  is the sampling temperature
 - `stream`
   - selects streaming mode when `true`
   - non-streaming when `false`, omitted, or `undefined`
@@ -107,13 +114,20 @@ Omitted optional fields use llama-server defaults.
 
 ### Non-streaming response fields
 
-- `id` is the request identifier assigned by the server
-- `object` is the discriminator (always `"text_completion"`)
-- `created` is the Unix-seconds timestamp
-- `model` is the model that generated the response
-- `choices` is the list of generated completions
-- `usage` is the token counts for the request
-- `system_fingerprint` is the server build identifier (optional)
+- `id`\
+  is the request identifier assigned by the server
+- `object`\
+  is the discriminator (always `"text_completion"`)
+- `created`\
+  is the Unix-seconds timestamp
+- `model`\
+  is the model that generated the response
+- `choices`\
+  is the list of generated completions
+- `usage`\
+  is the token counts for the request
+- `system_fingerprint`\
+  is the server build identifier (optional)
 
 Each `Choice` has:
 

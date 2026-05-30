@@ -28,10 +28,14 @@ llama.tokenize(
 ): Promise<TokenizeResponse>
 ```
 
-- `content` is the input text
-- `add_special` (default `false`) controls whether the model's special tokens
-  like BOS/EOS are prepended
-- `tokens` is the resulting list of model token IDs
+- `content`\
+  is the input text
+- `add_special`\
+  controls whether the model's special tokens like BOS/EOS are prepended
+- `tokens`\
+  is the resulting list of model token IDs
+
+Omitted optional fields use llama-server defaults.
 
 ## Request
 
