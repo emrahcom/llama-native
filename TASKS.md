@@ -937,3 +937,7 @@ findings:
 - No `examples/v1-chat-completions.ts` yet; per the precedent set by T-025/T-026
   and the Examples convention (`/v1/chat/completions` →
   `examples/v1-chat-completions.ts`), the example belongs to its own task.
+
+## T-036: Tests for /v1/chat/completions
+
+Per `specs/endpoints/v1-chat-completions.md`.
