@@ -19,6 +19,13 @@ Rules that every spec and the implementation inherit.
   Required by JSR's no-slow-types rule. Applies to every exported function,
   method, and getter.
 
+- **Type to what each context can reach**\
+  A field is typed to the values that can actually occur where it appears, not
+  widened to cover every context it might appear in. When one conceptual object
+  has different reachable shapes across contexts (request vs response,
+  non-streaming vs streaming), each context gets its own type rather than one
+  widened type shared between them.
+
 ## Structure
 
 - **Components live in folders under `src/`**\
