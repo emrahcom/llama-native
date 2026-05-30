@@ -864,3 +864,16 @@ findings:
 ## T-033: Fix null-body streaming message
 
 Per `specs/core/streaming.md`.
+
+status: done
+
+- `src/request/mod.ts`: `requestStream` now throws `LlamaStreamError` with the
+  message `Streaming response had no body` when `response.body` is `null`,
+  matching the streaming spec's "OK response with no body" error-mapping entry.
+  Previously it reused the `Stream ended without [DONE] marker` message, which
+  conflated a missing body with a body that ended without the terminator.
+- `tests/request.test.ts`: updated the "requestStream throws LlamaStreamError
+  when a response has no body" case to assert the new
+  `Streaming response had no body` message. This is the only test that pins the
+  null-body message; the end-without-`[DONE]` case keeps its own message
+  unchanged.

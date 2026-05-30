@@ -122,7 +122,7 @@ export async function* requestStream<T>(
   }
 
   if (response.body === null) {
-    throw new LlamaStreamError("Stream ended without [DONE] marker");
+    throw new LlamaStreamError("Streaming response had no body");
   }
 
   const reader = response.body

@@ -456,7 +456,7 @@ Deno.test("requestStream throws LlamaStreamError when a response has no body", a
     await assertRejects(
       () => collect(requestStream({ config, method: "GET", path: "/stream" })),
       LlamaStreamError,
-      "Stream ended without [DONE] marker",
+      "Streaming response had no body",
     );
   } finally {
     restoreFetch();
