@@ -28,20 +28,40 @@ const result = await llama.v1.chat.completions({
   messages: [...messages],
   max_tokens: 16,
 });
-console.log(result.choices[0].message.content);
+// reasoning_content is present for reasoning models and absent otherwise; show
+// it before the reply when the model exposed its reasoning trace.
+const message = result.choices[0].message;
+if (message.reasoning_content) {
+  console.log("[reasoning]", message.reasoning_content);
+}
+console.log(message.content);
 
 // Streaming: set stream: true to receive an AsyncIterable of chunks. Each
-// chunk's delta.content is a fragment; concatenate them across chunks to
-// reconstruct the full reply.
+// chunk's delta.content is a reply fragment and delta.reasoning_content is a
+// reasoning fragment; concatenate each across chunks to reconstruct the full
+// trace and reply.
 const stream = llama.v1.chat.completions({
   messages: [...messages],
   max_tokens: 16,
   stream: true,
 });
+const encoder = new TextEncoder();
+let inReasoning = false;
 for await (const chunk of stream) {
-  const content = chunk.choices[0].delta.content;
-  if (content) {
-    await Deno.stdout.write(new TextEncoder().encode(content));
+  const delta = chunk.choices[0].delta;
+  if (delta.reasoning_content) {
+    if (!inReasoning) {
+      await Deno.stdout.write(encoder.encode("[reasoning] "));
+      inReasoning = true;
+    }
+    await Deno.stdout.write(encoder.encode(delta.reasoning_content));
+  }
+  if (delta.content) {
+    if (inReasoning) {
+      await Deno.stdout.write(encoder.encode("\n"));
+      inReasoning = false;
+    }
+    await Deno.stdout.write(encoder.encode(delta.content));
   }
 }
 console.log();

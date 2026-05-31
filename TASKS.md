@@ -1168,3 +1168,10 @@ status: done
 ## T-043: Make the chat example reasoning-aware
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Non-streaming branch of `examples/v1-chat-completions.ts` now prints
+  `message.reasoning_content` before the reply when present.
+- Streaming branch concatenates and prints `delta.reasoning_content` fragments
+  (prefixed `[reasoning]`) and separates them from the reply text.
