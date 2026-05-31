@@ -1197,3 +1197,8 @@ findings:
   predates T-043 and changing it is outside this task's scope (recomposing onto
   `GenerationParams`); left as-is. Resolving it needs a spec decision (widen the
   spec to the implemented union, or narrow the code to `string`).
+
+## T-044: Sync code to the spec-reference corrections
+
+Per `specs/endpoints/v1-models.md`, `specs/endpoints/v1-completions.md`, and
+`specs/endpoints/health.md`.
