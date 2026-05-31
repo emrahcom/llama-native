@@ -3,7 +3,7 @@
 **Still in alpha**
 
 A lightweight, typed Deno client for [llama-server], the HTTP server in
-[llama.cpp]. Zero dependencies, with OpenAI-compatible chat and text
+[llama.cpp]. No third-party dependencies, with OpenAI-compatible chat and text
 completions.
 
 ## Usage

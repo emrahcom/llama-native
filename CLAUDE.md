@@ -6,21 +6,23 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 
 ## Principles
 
-- **KISS**\
-  Keep everything as simple and clear as possible. Simpler is better than
-  clever.
+- **KISS**
+  - Keep everything as simple and clear as possible.
+  - Simpler is better than clever.
 
-- **YAGNI**\
-  No features for speculative future requirements. Build only what is needed
-  now.
+- **YAGNI**
+  - No features for speculative future requirements.
+  - Build only what is needed now.
 
-- **Spec-first**\
-  Every area of the library (under `src/`) has a spec under `specs/`, written
-  before its code. The spec is authoritative: code follows it, and code-level
-  problems are fixed by updating the spec first. Specs are
-  implementation-complete: someone with no access to prior code can produce a
-  working implementation from the spec alone. Tests verify implementations and
-  do not require specs.
+- **Spec-first**
+  - Every area of the library (under `src/`) has a spec under `specs/`, written
+    before its code.
+  - The spec is authoritative: code follows it, and code-level problems are
+    fixed by updating the spec first.
+  - Specs are implementation-complete: someone with no access to prior code can
+    produce a working implementation from the spec alone.
+  - Tests verify implementations and examples illustrate them; both are
+    hand-maintained and do not require specs.
 
 ## Hard constraints
 
@@ -78,6 +80,10 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 
 - `tests/`\
   Populated alongside `src/`.
+
+- `integration/`\
+  Integration tests against a live `llama-server`. One per endpoint; not part of
+  the default check.
 
 - `examples/`\
   One runnable example per endpoint, added after that endpoint is implemented.
