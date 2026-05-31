@@ -1247,3 +1247,8 @@ findings:
   only 4 of the 11 `GenerationParams` fields. Left as-is (adjacent doc work
   outside this task's scope); a follow-up could drop the stale enumeration or
   replace it with a non-exhaustive phrasing.
+
+## T-046: Drop the stale shared-params enumeration from request JSDoc
+
+Per `specs/endpoints/v1-completions.md` and
+`specs/endpoints/v1-chat-completions.md`.
