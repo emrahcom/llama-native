@@ -103,6 +103,13 @@ Rules that every spec and the implementation inherit.
   (client defaults apply when unset), so they call `Deno.env.get` and the
   command includes both `--allow-net` and `--allow-env`.
 
+- **Examples stay minimal**\
+  An example demonstrates the endpoint's core usage and nothing more: the call,
+  its essential options, and reading the result. Examples are learning material,
+  so clarity beats completeness — avoid presentation logic and edge-case
+  handling, and note less-common fields in a comment rather than building logic
+  around them.
+
 ## Publishing
 
 - **Exclude development-only files from the published package**\
