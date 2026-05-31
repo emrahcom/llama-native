@@ -1,6 +1,6 @@
 {
   "name": "@emrahcom/llama-native",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "license": "MIT",
   "exports": "./src/mod.ts",
   "imports": {
