@@ -1164,3 +1164,9 @@ status: done
 - `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
   `deno publish --dry-run --allow-dirty` all pass.
+
+## T-043: Add GenerationParams shared request base
+
+Per `specs/core/generation-params.md`, with `CompletionsRequest` and
+`ChatCompletionsRequest` recomposed per `specs/endpoints/v1-completions.md` and
+`specs/endpoints/v1-chat-completions.md`.
