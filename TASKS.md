@@ -1147,3 +1147,7 @@ status: done
   `V1`). `deno doc --lint src/mod.ts` now reports zero errors. `deno fmt`,
   `deno lint`, `deno check src/mod.ts`, `deno test` (89 passed), and
   `deno publish --dry-run --allow-dirty` all pass.
+
+## T-042: Fix example run commands
+
+Per the Examples convention in `specs/conventions.md`.
