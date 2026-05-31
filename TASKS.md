@@ -1266,3 +1266,9 @@ status: done
 - `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
   `deno publish --dry-run --allow-dirty` all pass.
+
+## T-047: Integration coverage for the new wire additions
+
+Per the integration-testing convention in `specs/conventions.md`, exercising the
+additions in `specs/core/generation-params.md` and
+`specs/endpoints/v1-completions.md`.
