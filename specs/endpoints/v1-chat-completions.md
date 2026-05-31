@@ -137,6 +137,10 @@ Each `ChatChoice` has:
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`)
 
+The server's `"tool_calls"` finish reason is intentionally excluded: this
+endpoint exposes no tool inputs, so the server never emits it. It would be added
+alongside tool support.
+
 Each `AssistantMessage` has:
 
 - a `role`, always `"assistant"`

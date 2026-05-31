@@ -35,7 +35,7 @@ llama.v1.models(
 - an `id` (the model identifier)
 - an `object` discriminator (always `"model"`)
 - a `created` timestamp (Unix seconds)
-- an `owned_by` string (typically `"user"` for locally loaded models)
+- an `owned_by` string (the model owner; llama-server reports `"llamacpp"`)
 
 This endpoint introduces the `V1` sub-group to `Llama`, accessed as `llama.v1`.
 Future `/v1/*` endpoints add methods to the same sub-group.

@@ -54,6 +54,7 @@ export interface Usage {
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
+  prompt_tokens_details?: { cached_tokens: number };
 }
 ```
 
@@ -133,6 +134,8 @@ Each `Usage` has:
 - a `prompt_tokens` count (tokens in the input prompt)
 - a `completion_tokens` count (tokens in the generated text)
 - a `total_tokens` count (sum of the two)
+- an optional `prompt_tokens_details` with a `cached_tokens` count (prompt
+  tokens served from cache)
 
 ### Streaming chunk fields
 

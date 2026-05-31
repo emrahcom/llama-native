@@ -22,8 +22,10 @@ llama.health(
 ): Promise<HealthResponse>
 ```
 
-`status` is typically `"ok"` but other strings are possible depending on server
-state.
+`status` is `"ok"` on a ready server. A not-ready server responds with HTTP 503
+(surfaced as `LlamaHTTPError` per `request.md`), not a 200 body carrying a
+different status, so a successful response's `status` is effectively always
+`"ok"`. The `string` type is defensive.
 
 ## Request
 
