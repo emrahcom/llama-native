@@ -17,9 +17,9 @@ export interface GenerationParams {
 }
 ```
 
-All fields are optional; an omitted field uses the llama-server default. These
-three move verbatim from the current completions and chat request specs (same
-names, types, and meaning), consolidated here as their single home.
+All fields are optional; an omitted field uses the llama-server default. This
+type is the single home for the request fields shared by the generation
+endpoints.
 
 ## Composition
 

@@ -31,7 +31,7 @@ Rules that every spec and the implementation inherit.
 - **Components live in folders under `src/`**\
   Each component folder contains `mod.ts` as its entry point.
 
-- **Shared internal types in `src/types/`**\
+- **Shared types in `src/types/`**\
   Types used by more than one component live in `src/types/<name>.ts`, one file
   per concern (e.g., `src/types/config.ts`). No `mod.ts` is required.
 
