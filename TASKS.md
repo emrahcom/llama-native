@@ -1222,3 +1222,28 @@ status: done
 ## T-045: Add sampling parameters to GenerationParams
 
 Per `specs/core/generation-params.md`.
+
+status: done
+
+- Added the seven sampling fields the spec declares but the code lacked to the
+  `GenerationParams` interface (`src/types/generation-params.ts`): `top_k`,
+  `top_p`, `min_p`, `presence_penalty`, `frequency_penalty`, `repeat_penalty`,
+  and `seed`, each optional `number` with the spec's JSDoc verbatim.
+- Verified each field's name and type against the llama-server reference
+  (`specs/references.md`): names match exactly; `top_k`/`seed` are integers and
+  the rest floats, all `number` in TypeScript. No contradiction.
+- No other change needed: `CompletionsRequest` and `ChatCompletionsRequest`
+  already `extends GenerationParams`, so they inherit the new fields, and
+  `GenerationParams` is already re-exported from `src/mod.ts`.
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.
+
+findings:
+
+- The JSDoc on `CompletionsRequest` (`src/v1/mod.ts`) and
+  `ChatCompletionsRequest` (`src/v1/chat/mod.ts`) parenthetically enumerates the
+  shared params as `(model, max_tokens, stop, temperature)`, which now lists
+  only 4 of the 11 `GenerationParams` fields. Left as-is (adjacent doc work
+  outside this task's scope); a follow-up could drop the stale enumeration or
+  replace it with a non-exhaustive phrasing.
