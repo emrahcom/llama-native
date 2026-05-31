@@ -1307,3 +1307,24 @@ findings:
 
 Per the integration-testing convention in `specs/conventions.md`, exercising
 `specs/core/generation-params.md` and `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Augmented the two existing `/v1/chat/completions` integration tests
+  (`integration/v1-chat-completions.test.ts`) rather than adding new ones, per
+  the convention's one-test-per-mode rule (non-streaming and streaming),
+  mirroring the T-047 coverage on `/v1/completions`.
+- Both request bodies now send the seven shared `GenerationParams` sampling
+  fields (`top_k`, `top_p`, `min_p`, `presence_penalty`, `frequency_penalty`,
+  `repeat_penalty`, `seed`), exercising that they serialize and a live server
+  accepts them. They are request-only fields with no response reflection, so
+  coverage is a successful response with the params present.
+- Both tests now assert the shape of the shared `Usage.prompt_tokens_details`
+  (`{ cached_tokens: number }`) addition where it appears: guarded behind the
+  optional field in the non-streaming `usage`, and guarded behind the optional
+  `usage` on each streaming chunk.
+- `deno fmt`, `deno lint`, and `deno check` on the integration file pass; the
+  full default suite (`deno fmt --check`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` — 89 passed,
+  `deno publish --dry-run --allow-dirty`) also passes. The integration test
+  itself needs a running llama-server and is not part of the default run.

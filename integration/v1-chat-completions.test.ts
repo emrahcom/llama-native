@@ -13,6 +13,13 @@ Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse
   const response: ChatCompletionsResponse = await llama.v1.chat.completions({
     messages: [{ role: "user", content: "The capital of France is" }],
     max_tokens: 1024,
+    top_k: 40,
+    top_p: 0.95,
+    min_p: 0.05,
+    presence_penalty: 0.1,
+    frequency_penalty: 0.1,
+    repeat_penalty: 1.1,
+    seed: 42,
   });
   assertEquals(typeof response.id, "string");
   assertEquals(response.object, "chat.completion");
@@ -31,6 +38,12 @@ Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse
   assertEquals(typeof response.usage.prompt_tokens, "number");
   assertEquals(typeof response.usage.completion_tokens, "number");
   assertEquals(typeof response.usage.total_tokens, "number");
+  if (response.usage.prompt_tokens_details !== undefined) {
+    assertEquals(
+      typeof response.usage.prompt_tokens_details.cached_tokens,
+      "number",
+    );
+  }
 });
 
 Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a running server", async () => {
@@ -40,6 +53,13 @@ Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a r
     const chunk of llama.v1.chat.completions({
       messages: [{ role: "user", content: "The capital of France is" }],
       max_tokens: 1024,
+      top_k: 40,
+      top_p: 0.95,
+      min_p: 0.05,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1,
+      repeat_penalty: 1.1,
+      seed: 42,
       stream: true,
     })
   ) {
@@ -64,6 +84,12 @@ Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a r
         choice.finish_reason === null ||
           choice.finish_reason === "stop" ||
           choice.finish_reason === "length",
+      );
+    }
+    if (chunk.usage?.prompt_tokens_details !== undefined) {
+      assertEquals(
+        typeof chunk.usage.prompt_tokens_details.cached_tokens,
+        "number",
       );
     }
   }
