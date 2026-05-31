@@ -12,7 +12,7 @@ field of the request.
 
 ```ts
 export interface CompletionsRequest extends GenerationParams {
-  prompt: string;
+  prompt: string | string[] | number[] | number[][];
   stream?: boolean;
 }
 
