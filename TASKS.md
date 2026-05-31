@@ -1164,3 +1164,7 @@ status: done
 - `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
   `deno publish --dry-run --allow-dirty` all pass.
+
+## T-043: Make the chat example reasoning-aware
+
+Per `specs/endpoints/v1-chat-completions.md`.
