@@ -96,6 +96,13 @@ Rules that every spec and the implementation inherit.
   `/health` → `examples/health.ts`, `/v1/chat/completions` →
   `examples/v1-chat-completions.ts`).
 
+- **Run command matches the permissions used**\
+  Each example's header documents a `deno run` command whose flags are exactly
+  the permissions the example needs. Examples read `baseUrl` and `apiKey` from
+  the optional `LLAMA_BASE_URL` and `LLAMA_API_KEY` environment variables
+  (client defaults apply when unset), so they call `Deno.env.get` and the
+  command includes both `--allow-net` and `--allow-env`.
+
 ## Publishing
 
 - **Exclude development-only files from the published package**\
