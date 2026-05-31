@@ -1151,3 +1151,16 @@ status: done
 ## T-042: Fix example run commands
 
 Per the Examples convention in `specs/conventions.md`.
+
+status: done
+
+- Added `--allow-env` to the default "Run against a local server" `deno run`
+  command in every example header (`health.ts`, `tokenize.ts`,
+  `v1-chat-completions.ts`, `v1-completions.ts`, `v1-models.ts`). Each example
+  calls `Deno.env.get` unconditionally to read `LLAMA_BASE_URL` and
+  `LLAMA_API_KEY`, so the documented command needs both `--allow-net` and
+  `--allow-env`, as the convention requires. The previous default command
+  (`--allow-net` only) would fail the env-permission check when run as written.
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.

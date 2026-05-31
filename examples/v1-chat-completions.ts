@@ -3,7 +3,7 @@
 //
 // Run against a local server on the default http://localhost:8080:
 //
-//   deno run --allow-net examples/v1-chat-completions.ts
+//   deno run --allow-net --allow-env examples/v1-chat-completions.ts
 //
 // Override the server URL and supply an API key with environment variables:
 //
