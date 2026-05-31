@@ -15,7 +15,7 @@ export interface Model {
   object: "model";
   /** The creation timestamp, in Unix seconds. */
   created: number;
-  /** Typically `"user"` for locally loaded models. */
+  /** The model owner; llama-server reports `"llamacpp"`. */
   owned_by: string;
 }
 

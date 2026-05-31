@@ -17,7 +17,10 @@ export interface LlamaOptions {
 /** A readiness check for the llama-server. */
 export interface HealthResponse {
   /**
-   * Typically `"ok"` but other strings are possible depending on server state.
+   * `"ok"` on a ready server. A not-ready server responds with HTTP 503
+   * (surfaced as an error per `specs/core/request.md`), so a successful
+   * response's `status` is effectively always `"ok"`; the `string` type is
+   * defensive.
    */
   status: string;
 }

@@ -1202,3 +1202,19 @@ findings:
 
 Per `specs/endpoints/v1-models.md`, `specs/endpoints/v1-completions.md`, and
 `specs/endpoints/health.md`.
+
+status: done
+
+- Added the optional `prompt_tokens_details?: { cached_tokens: number }` field
+  to the `Usage` interface (`src/types/v1.ts`), the only wire-type change among
+  the corrections, matching `specs/endpoints/v1-completions.md`.
+- Updated the `Model.owned_by` doc comment (`src/v1/mod.ts`) to the corrected
+  description ("the model owner; llama-server reports `"llamacpp"`"), per
+  `specs/endpoints/v1-models.md`. Type unchanged (`string`).
+- Updated the `HealthResponse.status` doc comment (`src/llama/mod.ts`) to the
+  corrected description (always `"ok"` on a successful response; a not-ready
+  server responds with HTTP 503; the `string` type is defensive), per
+  `specs/endpoints/health.md`. Type unchanged (`string`).
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.
