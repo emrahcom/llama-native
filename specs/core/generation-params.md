@@ -1,13 +1,15 @@
 # GenerationParams
 
 Request parameters shared by the generation endpoints (`/v1/completions` and
-`/v1/chat/completions`). They configure the same underlying sampler, so each
+`/v1/chat/completions`). They are sent on each generation request, so each
 endpoint's request composes this type instead of re-declaring the fields.
 
 ## Type
 
 ```ts
 export interface GenerationParams {
+  /** Model identifier; when omitted, llama-server uses its loaded model. */
+  model?: string;
   /** Maximum number of tokens to generate. */
   max_tokens?: number;
   /** Stop generation when any of these strings is produced. */

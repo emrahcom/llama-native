@@ -16,12 +16,8 @@ template in `specs/core/llama.md`. `V1` gains a `readonly chat: Chat` property;
 ## TypeScript surface
 
 ```ts
-export interface ChatCompletionsRequest {
+export interface ChatCompletionsRequest extends GenerationParams {
   messages: Message[];
-  model?: string;
-  max_tokens?: number;
-  stop?: string | string[];
-  temperature?: number;
   stream?: boolean;
 }
 
@@ -103,17 +99,12 @@ The overload selected depends on the literal type of `request.stream`:
 
 - `messages`\
   is the conversation so far, an ordered list of `Message` objects
-- `model`\
-  is the model identifier; when omitted, llama-server uses its loaded model
-- `max_tokens`\
-  is the upper bound on tokens generated
-- `stop`\
-  is a single string or array of strings; generation halts when any is produced
-- `temperature`\
-  is the sampling temperature
 - `stream`\
   selects streaming mode when `true`; non-streaming when `false`, omitted, or
   `undefined`
+
+The shared request fields (`model`, `max_tokens`, `stop`, `temperature`) are
+documented in `specs/core/generation-params.md`.
 
 Each `Message` has:
 

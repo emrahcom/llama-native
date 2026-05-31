@@ -11,12 +11,8 @@ field of the request.
 ## TypeScript surface
 
 ```ts
-export interface CompletionsRequest {
-  prompt: string | string[] | number[] | number[][];
-  model?: string;
-  max_tokens?: number;
-  stop?: string | string[];
-  temperature?: number;
+export interface CompletionsRequest extends GenerationParams {
+  prompt: string;
   stream?: boolean;
 }
 
@@ -97,18 +93,12 @@ The overload selected depends on the literal type of `request.stream`:
   - an array of strings (batch)
   - an array of token IDs
   - an array of token ID arrays (batch over token sequences)
-- `model`\
-  is the model identifier; when omitted, llama-server uses its loaded model
-- `max_tokens`\
-  is the upper bound on tokens generated
-- `stop`\
-  is a single string or array of strings;\
-  generation halts when any is produced
-- `temperature`\
-  is the sampling temperature
 - `stream`
   - selects streaming mode when `true`
   - non-streaming when `false`, omitted, or `undefined`
+
+The shared request fields (`model`, `max_tokens`, `stop`, `temperature`) are
+documented in `specs/core/generation-params.md`.
 
 Omitted optional fields use llama-server defaults.
 
