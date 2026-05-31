@@ -103,8 +103,7 @@ The overload selected depends on the literal type of `request.stream`:
   selects streaming mode when `true`; non-streaming when `false`, omitted, or
   `undefined`
 
-The shared request fields (`model`, `max_tokens`, `stop`, `temperature`) are
-documented in `specs/core/generation-params.md`.
+The shared request fields are documented in `specs/core/generation-params.md`.
 
 Each `Message` has:
 
