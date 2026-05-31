@@ -366,7 +366,7 @@ Deno.test("v1.completions sends the CompletionsRequest as the JSON body, preserv
     await llama.v1.completions({
       prompt: "Hello",
       model: "my-model",
-      max_tokens: 16,
+      max_tokens: 1024,
       stop: ["\n"],
       temperature: 0.7,
     });
@@ -375,7 +375,7 @@ Deno.test("v1.completions sends the CompletionsRequest as the JSON body, preserv
       JSON.stringify({
         prompt: "Hello",
         model: "my-model",
-        max_tokens: 16,
+        max_tokens: 1024,
         stop: ["\n"],
         temperature: 0.7,
       }),
@@ -532,13 +532,13 @@ Deno.test("v1.completions with stream: true sends the CompletionsRequest includi
     await collect(
       llama.v1.completions({
         prompt: "Hello",
-        max_tokens: 16,
+        max_tokens: 1024,
         stream: true,
       }),
     );
     assertEquals(
       seenBody,
-      JSON.stringify({ prompt: "Hello", max_tokens: 16, stream: true }),
+      JSON.stringify({ prompt: "Hello", max_tokens: 1024, stream: true }),
     );
   } finally {
     restoreFetch();
@@ -684,7 +684,7 @@ Deno.test("v1.chat.completions sends the ChatCompletionsRequest as the JSON body
         { role: "user", content: "Hello" },
       ],
       model: "my-model",
-      max_tokens: 16,
+      max_tokens: 1024,
       stop: ["\n"],
       temperature: 0.7,
     });
@@ -696,7 +696,7 @@ Deno.test("v1.chat.completions sends the ChatCompletionsRequest as the JSON body
           { role: "user", content: "Hello" },
         ],
         model: "my-model",
-        max_tokens: 16,
+        max_tokens: 1024,
         stop: ["\n"],
         temperature: 0.7,
       }),
@@ -845,7 +845,7 @@ Deno.test("v1.chat.completions with stream: true sends the ChatCompletionsReques
     await collect(
       llama.v1.chat.completions({
         messages: [{ role: "user", content: "Hello" }],
-        max_tokens: 16,
+        max_tokens: 1024,
         stream: true,
       }),
     );
@@ -853,7 +853,7 @@ Deno.test("v1.chat.completions with stream: true sends the ChatCompletionsReques
       seenBody,
       JSON.stringify({
         messages: [{ role: "user", content: "Hello" }],
-        max_tokens: 16,
+        max_tokens: 1024,
         stream: true,
       }),
     );

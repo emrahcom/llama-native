@@ -12,7 +12,7 @@ Deno.test("v1.completions (non-streaming) returns a CompletionsResponse from a r
   const llama = new Llama();
   const response: CompletionsResponse = await llama.v1.completions({
     prompt: "The capital of France is",
-    max_tokens: 16,
+    max_tokens: 1024,
   });
   assertEquals(typeof response.id, "string");
   assertEquals(response.object, "text_completion");
@@ -39,7 +39,7 @@ Deno.test("v1.completions (streaming) yields CompletionsChunks from a running se
   for await (
     const chunk of llama.v1.completions({
       prompt: "The capital of France is",
-      max_tokens: 16,
+      max_tokens: 1024,
       stream: true,
     })
   ) {

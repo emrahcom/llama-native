@@ -20,7 +20,7 @@ const llama = new Llama({
 // Non-streaming: await a single CompletionsResponse.
 const result = await llama.v1.completions({
   prompt: "The capital of France is",
-  max_tokens: 16,
+  max_tokens: 1024,
 });
 console.log(result.choices[0].text);
 
@@ -28,7 +28,7 @@ console.log(result.choices[0].text);
 // chunk's text is a delta; concatenate them to reconstruct the full output.
 const stream = llama.v1.completions({
   prompt: "The capital of France is",
-  max_tokens: 16,
+  max_tokens: 1024,
   stream: true,
 });
 for await (const chunk of stream) {

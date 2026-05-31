@@ -12,7 +12,7 @@ Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse
   const llama = new Llama();
   const response: ChatCompletionsResponse = await llama.v1.chat.completions({
     messages: [{ role: "user", content: "The capital of France is" }],
-    max_tokens: 16,
+    max_tokens: 1024,
   });
   assertEquals(typeof response.id, "string");
   assertEquals(response.object, "chat.completion");
@@ -39,7 +39,7 @@ Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a r
   for await (
     const chunk of llama.v1.chat.completions({
       messages: [{ role: "user", content: "The capital of France is" }],
-      max_tokens: 16,
+      max_tokens: 1024,
       stream: true,
     })
   ) {
