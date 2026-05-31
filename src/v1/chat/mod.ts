@@ -8,8 +8,7 @@ import {
 
 /**
  * A request to generate a chat completion from a list of messages. Composes the
- * shared {@link GenerationParams} (`model`, `max_tokens`, `stop`,
- * `temperature`).
+ * shared {@link GenerationParams}.
  */
 export interface ChatCompletionsRequest extends GenerationParams {
   /** The conversation so far, an ordered list of {@link Message} objects. */

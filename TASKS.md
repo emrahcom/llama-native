@@ -1252,3 +1252,17 @@ findings:
 
 Per `specs/endpoints/v1-completions.md` and
 `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Removed the stale `(model, max_tokens, stop, temperature)` parenthetical from
+  the `CompletionsRequest` JSDoc (`src/v1/mod.ts`) and the
+  `ChatCompletionsRequest` JSDoc (`src/v1/chat/mod.ts`). The lists named only 4
+  of the 11 `GenerationParams` fields after T-045 added the sampling params.
+- Both comments retain "Composes the shared {@link GenerationParams}", which
+  links readers to the authoritative, complete field list, matching the specs'
+  "The shared request fields are documented in
+  `specs/core/generation-params.md`" note. No code or wire-type change.
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.

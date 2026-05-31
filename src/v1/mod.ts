@@ -29,7 +29,7 @@ export interface ModelsResponse {
 
 /**
  * A request to generate a text completion for a prompt. Composes the shared
- * {@link GenerationParams} (`model`, `max_tokens`, `stop`, `temperature`).
+ * {@link GenerationParams}.
  */
 export interface CompletionsRequest extends GenerationParams {
   /**
