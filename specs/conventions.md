@@ -9,6 +9,13 @@ Rules that every spec and the implementation inherit.
   received from it match the server's JSON field names verbatim. Any field that
   crosses an HTTP boundary in either direction follows this rule.
 
+- **Wire types match the documented server**\
+  A wire type's field names, types, and shapes match the server as documented in
+  `specs/references.md`: request fields match what the server accepts, and
+  response and chunk fields cover everything it can return. A spec may expose a
+  subset of accepted inputs or otherwise deviate, but only by stating the
+  deviation; an unstated mismatch is a defect, not a choice.
+
 - **camelCase for library-only types**\
   Types that never touch the wire (constructor options, internal config, error
   class fields, utility parameters) use camelCase.

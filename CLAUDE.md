@@ -41,6 +41,12 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 - Push back on questionable specs or tasks; raise findings during implementation
   rather than silently agreeing.
 - Read the relevant spec section before implementing.
+- Before implementing a change to a wire type (a request, response, or chunk
+  field crossing the HTTP boundary), verify each field's name, type, and shape
+  against the reference in `specs/references.md`. On an unstated contradiction
+  (a wrong name or type, or a response field that omits a value the server can
+  return), stop and push back with the conflicting reference text instead of
+  implementing. Respect any deviation the spec states explicitly.
 - Do only what the task defines. Adjacent work (tests, examples, refactors)
   belongs to its own task; note observations or suggestions as findings when
   completing the task instead of implementing them.
@@ -67,7 +73,7 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
   Per-endpoint specs.
 
 - `specs/conventions.md`\
-  Project-wide naming, typing, structure, and workflow rules.
+  Project-wide conventions inherited by every spec and the implementation.
 
 - `specs/references.md`\
   Upstream documentation links.
