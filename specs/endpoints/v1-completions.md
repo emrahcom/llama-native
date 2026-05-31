@@ -88,11 +88,7 @@ The overload selected depends on the literal type of `request.stream`:
 ### Request fields
 
 - `prompt`\
-  is the input to generate from; accepts:
-  - a single string
-  - an array of strings (batch)
-  - an array of token IDs
-  - an array of token ID arrays (batch over token sequences)
+  is the input text to generate from
 - `stream`
   - selects streaming mode when `true`
   - non-streaming when `false`, omitted, or `undefined`
