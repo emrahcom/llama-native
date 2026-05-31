@@ -26,7 +26,7 @@ const messages = [
 // Non-streaming: await a single ChatCompletionsResponse.
 const result = await llama.v1.chat.completions({
   messages: [...messages],
-  max_tokens: 16,
+  max_tokens: 1024,
 });
 console.log(result.choices[0].message.content);
 
@@ -35,7 +35,7 @@ console.log(result.choices[0].message.content);
 // reconstruct the full reply.
 const stream = llama.v1.chat.completions({
   messages: [...messages],
-  max_tokens: 16,
+  max_tokens: 1024,
   stream: true,
 });
 for await (const chunk of stream) {
