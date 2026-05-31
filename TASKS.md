@@ -1302,3 +1302,8 @@ findings:
   does not assert `prompt_tokens_details`. This task names only
   `specs/endpoints/v1-completions.md`, so the chat endpoint was left untouched;
   a follow-up could mirror this coverage there.
+
+## T-048: Mirror the sampling and usage integration coverage to the chat endpoint
+
+Per the integration-testing convention in `specs/conventions.md`, exercising
+`specs/core/generation-params.md` and `specs/endpoints/v1-chat-completions.md`.
