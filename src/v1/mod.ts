@@ -1,4 +1,5 @@
 import type { Config } from "../types/config.ts";
+import type { GenerationParams } from "../types/generation-params.ts";
 import type { Usage } from "../types/v1.ts";
 import {
   request as sendRequest,
@@ -26,26 +27,17 @@ export interface ModelsResponse {
   data: Model[];
 }
 
-/** A request to generate a text completion for a prompt. */
-export interface CompletionsRequest {
+/**
+ * A request to generate a text completion for a prompt. Composes the shared
+ * {@link GenerationParams} (`model`, `max_tokens`, `stop`, `temperature`).
+ */
+export interface CompletionsRequest extends GenerationParams {
   /**
    * The input to generate from; accepts a single string, an array of strings
    * (batch), an array of token IDs, or an array of token ID arrays (batch over
    * token sequences).
    */
   prompt: string | string[] | number[] | number[][];
-  /**
-   * The model identifier; when omitted, llama-server uses its loaded model.
-   */
-  model?: string;
-  /** The upper bound on tokens generated. */
-  max_tokens?: number;
-  /**
-   * A single string or array of strings; generation halts when any is produced.
-   */
-  stop?: string | string[];
-  /** The sampling temperature. */
-  temperature?: number;
   /**
    * Selects streaming mode when `true`; non-streaming when `false`, omitted, or
    * `undefined`.

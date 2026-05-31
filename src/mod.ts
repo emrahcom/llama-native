@@ -43,5 +43,6 @@ export type {
   Delta,
   Message,
 } from "./v1/chat/mod.ts";
+export type { GenerationParams } from "./types/generation-params.ts";
 export type { Usage } from "./types/v1.ts";
 export { LlamaError, LlamaHTTPError, LlamaStreamError } from "./errors/mod.ts";

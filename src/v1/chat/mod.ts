@@ -1,26 +1,19 @@
 import type { Config } from "../../types/config.ts";
+import type { GenerationParams } from "../../types/generation-params.ts";
 import type { Usage } from "../../types/v1.ts";
 import {
   request as sendRequest,
   requestStream as sendRequestStream,
 } from "../../request/mod.ts";
 
-/** A request to generate a chat completion from a list of messages. */
-export interface ChatCompletionsRequest {
+/**
+ * A request to generate a chat completion from a list of messages. Composes the
+ * shared {@link GenerationParams} (`model`, `max_tokens`, `stop`,
+ * `temperature`).
+ */
+export interface ChatCompletionsRequest extends GenerationParams {
   /** The conversation so far, an ordered list of {@link Message} objects. */
   messages: Message[];
-  /**
-   * The model identifier; when omitted, llama-server uses its loaded model.
-   */
-  model?: string;
-  /** The upper bound on tokens generated. */
-  max_tokens?: number;
-  /**
-   * A single string or array of strings; generation halts when any is produced.
-   */
-  stop?: string | string[];
-  /** The sampling temperature. */
-  temperature?: number;
   /**
    * Selects streaming mode when `true`; non-streaming when `false`, omitted, or
    * `undefined`.

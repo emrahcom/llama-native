@@ -1170,3 +1170,30 @@ status: done
 Per `specs/core/generation-params.md`, with `CompletionsRequest` and
 `ChatCompletionsRequest` recomposed per `specs/endpoints/v1-completions.md` and
 `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- Added the exported `GenerationParams` interface in
+  `src/types/generation-params.ts` (the shared-types home per
+  `specs/conventions.md`), with JSDoc on the type and every member (`model`,
+  `max_tokens`, `stop`, `temperature`), matching the spec.
+- Recomposed `CompletionsRequest` (`src/v1/mod.ts`) and `ChatCompletionsRequest`
+  (`src/v1/chat/mod.ts`) to `extends GenerationParams`, removing the four
+  now-shared field declarations from each. Each request keeps only its
+  endpoint-specific field (`prompt` / `messages`) and the `stream` discriminant,
+  per the shared-request-parameters convention.
+- Re-exported `GenerationParams` (type-only) from `src/mod.ts`, since the spec
+  marks it `export`.
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.
+
+findings:
+
+- `CompletionsRequest.prompt` is typed
+  `string | string[] | number[] |
+  number[][]` in the code, but
+  `specs/endpoints/v1-completions.md` shows `prompt: string`. This divergence
+  predates T-043 and changing it is outside this task's scope (recomposing onto
+  `GenerationParams`); left as-is. Resolving it needs a spec decision (widen the
+  spec to the implemented union, or narrow the code to `string`).
