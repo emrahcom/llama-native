@@ -2,8 +2,10 @@
 
 **Still in alpha**
 
-A lightweight Deno client for llama.cpp with zero dependencies. Supports
-OpenAI-compatible chat and text completions.
+A lightweight, typed Deno client for
+[llama-server](https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md),
+the HTTP server in [llama.cpp](https://github.com/ggml-org/llama.cpp). Zero
+dependencies, with OpenAI-compatible chat and text completions.
 
 ## Usage
 
