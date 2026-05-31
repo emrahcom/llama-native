@@ -41,6 +41,12 @@ Rules that every spec and the implementation inherit.
   `export` stay internal, even if a consumer would need them to name the type by
   hand.
 
+- **Shared request parameters**\
+  Parameters common to several endpoints' requests live in one exported type in
+  `src/types/`, composed into each endpoint's request with `extends`. A shared
+  field is declared once there, never duplicated per endpoint. Endpoint-specific
+  fields and `stream` stay on the per-endpoint request.
+
 ## Runtime
 
 - **Web Standards only in `src/`**\
