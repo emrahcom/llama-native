@@ -2,10 +2,9 @@
 
 **Still in alpha**
 
-A lightweight, typed Deno client for [llama-server](https://github.com/ggml-
-org/llama.cpp/blob/master/tools/server/README.md), the HTTP server in
-[llama.cpp](https://github.com/ggml-org/llama.cpp). Zero dependencies, with
-OpenAI-compatible chat and text completions.
+A lightweight, typed Deno client for [llama-server], the HTTP server in
+[llama.cpp]. Zero dependencies, with OpenAI-compatible chat and text
+completions.
 
 ## Usage
 
@@ -30,3 +29,6 @@ See also [examples](examples).
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file
 for details.
+
+[llama-server]: https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md
+[llama.cpp]: https://github.com/ggml-org/llama.cpp
