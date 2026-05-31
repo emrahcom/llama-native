@@ -13,6 +13,13 @@ Deno.test("v1.completions (non-streaming) returns a CompletionsResponse from a r
   const response: CompletionsResponse = await llama.v1.completions({
     prompt: "The capital of France is",
     max_tokens: 1024,
+    top_k: 40,
+    top_p: 0.95,
+    min_p: 0.05,
+    presence_penalty: 0.1,
+    frequency_penalty: 0.1,
+    repeat_penalty: 1.1,
+    seed: 42,
   });
   assertEquals(typeof response.id, "string");
   assertEquals(response.object, "text_completion");
@@ -31,6 +38,12 @@ Deno.test("v1.completions (non-streaming) returns a CompletionsResponse from a r
   assertEquals(typeof response.usage.prompt_tokens, "number");
   assertEquals(typeof response.usage.completion_tokens, "number");
   assertEquals(typeof response.usage.total_tokens, "number");
+  if (response.usage.prompt_tokens_details !== undefined) {
+    assertEquals(
+      typeof response.usage.prompt_tokens_details.cached_tokens,
+      "number",
+    );
+  }
 });
 
 Deno.test("v1.completions (streaming) yields CompletionsChunks from a running server", async () => {
@@ -40,6 +53,13 @@ Deno.test("v1.completions (streaming) yields CompletionsChunks from a running se
     const chunk of llama.v1.completions({
       prompt: "The capital of France is",
       max_tokens: 1024,
+      top_k: 40,
+      top_p: 0.95,
+      min_p: 0.05,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1,
+      repeat_penalty: 1.1,
+      seed: 42,
       stream: true,
     })
   ) {
@@ -60,6 +80,12 @@ Deno.test("v1.completions (streaming) yields CompletionsChunks from a running se
         choice.finish_reason === null ||
           choice.finish_reason === "stop" ||
           choice.finish_reason === "length",
+      );
+    }
+    if (chunk.usage?.prompt_tokens_details !== undefined) {
+      assertEquals(
+        typeof chunk.usage.prompt_tokens_details.cached_tokens,
+        "number",
       );
     }
   }
