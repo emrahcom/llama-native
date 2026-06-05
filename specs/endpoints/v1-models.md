@@ -9,12 +9,12 @@ Lists the models available on the llama-server.
 ## TypeScript surface
 
 ```ts
-export interface ModelsResponse {
+export interface V1ModelsResponse {
   object: "list";
-  data: Model[];
+  data: V1Model[];
 }
 
-export interface Model {
+export interface V1Model {
   id: string;
   object: "model";
   created: number;
@@ -27,10 +27,10 @@ Called as
 ```
 llama.v1.models(
   options?: { signal?: AbortSignal },
-): Promise<ModelsResponse>
+): Promise<V1ModelsResponse>
 ```
 
-`data` is the list of available models. Each `Model` has:
+`data` is the list of available models. Each `V1Model` has:
 
 - an `id` (the model identifier)
 - an `object` discriminator (always `"model"`)
@@ -46,4 +46,4 @@ Future `/v1/*` endpoints add methods to the same sub-group.
 
 ## Response
 
-Parsed JSON as `ModelsResponse`. Errors handled per `specs/core/request.md`.
+Parsed JSON as `V1ModelsResponse`. Errors handled per `specs/core/request.md`.

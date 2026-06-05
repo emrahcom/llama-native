@@ -16,55 +16,55 @@ template in `specs/core/llama.md`. `V1` gains a `readonly chat: Chat` property;
 ## TypeScript surface
 
 ```ts
-export interface ChatCompletionsRequest extends GenerationParams {
-  messages: Message[];
+export interface V1ChatCompletionsRequest extends V1GenerationParams {
+  messages: V1Message[];
   stream?: boolean;
 }
 
-export interface Message {
+export interface V1Message {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-export interface ChatCompletionsResponse {
+export interface V1ChatCompletionsResponse {
   id: string;
   object: "chat.completion";
   created: number;
   model: string;
-  choices: ChatChoice[];
-  usage: Usage;
+  choices: V1ChatChoice[];
+  usage: V1Usage;
   system_fingerprint?: string;
 }
 
-export interface ChatChoice {
+export interface V1ChatChoice {
   index: number;
-  message: AssistantMessage;
+  message: V1AssistantMessage;
   finish_reason: "stop" | "length";
 }
 
-export interface AssistantMessage {
+export interface V1AssistantMessage {
   role: "assistant";
   content: string;
   reasoning_content?: string;
 }
 
-export interface ChatCompletionsChunk {
+export interface V1ChatCompletionsChunk {
   id: string;
   object: "chat.completion.chunk";
   created: number;
   model: string;
-  choices: ChatChunkChoice[];
-  usage?: Usage;
+  choices: V1ChatChunkChoice[];
+  usage?: V1Usage;
   system_fingerprint?: string;
 }
 
-export interface ChatChunkChoice {
+export interface V1ChatChunkChoice {
   index: number;
-  delta: Delta;
+  delta: V1Delta;
   finish_reason: "stop" | "length" | null;
 }
 
-export interface Delta {
+export interface V1Delta {
   role?: "assistant";
   content?: string | null;
   reasoning_content?: string;
@@ -75,22 +75,22 @@ Called as
 
 ```
 llama.v1.chat.completions(
-  request: ChatCompletionsRequest & { stream: true },
+  request: V1ChatCompletionsRequest & { stream: true },
   options?: { signal?: AbortSignal },
-): AsyncIterable<ChatCompletionsChunk>;
+): AsyncIterable<V1ChatCompletionsChunk>;
 
 llama.v1.chat.completions(
-  request: ChatCompletionsRequest & { stream?: false | undefined },
+  request: V1ChatCompletionsRequest & { stream?: false | undefined },
   options?: { signal?: AbortSignal },
-): Promise<ChatCompletionsResponse>;
+): Promise<V1ChatCompletionsResponse>;
 ```
 
 The overload selected depends on the literal type of `request.stream`:
 
 - `stream: true` selects the streaming overload, returning
-  `AsyncIterable<ChatCompletionsChunk>`
+  `AsyncIterable<V1ChatCompletionsChunk>`
 - `stream: false`, omitted, or `undefined` selects the non-streaming overload,
-  returning `Promise<ChatCompletionsResponse>`
+  returning `Promise<V1ChatCompletionsResponse>`
 - A `stream` value typed as `boolean` (not a literal) matches neither overload
   and produces a compile error; consumers in that case narrow the value before
   calling
@@ -98,14 +98,15 @@ The overload selected depends on the literal type of `request.stream`:
 ### Request fields
 
 - `messages`\
-  is the conversation so far, an ordered list of `Message` objects
+  is the conversation so far, an ordered list of `V1Message` objects
 - `stream`\
   selects streaming mode when `true`; non-streaming when `false`, omitted, or
   `undefined`
 
-The shared request fields are documented in `specs/core/generation-params.md`.
+The shared request fields are documented in
+`specs/core/v1-generation-params.md`.
 
-Each `Message` has:
+Each `V1Message` has:
 
 - a `role`: `"system"`, `"user"`, or `"assistant"`
 - a `content`: the message text
@@ -129,10 +130,10 @@ Omitted optional fields use llama-server defaults.
 - `system_fingerprint`\
   is the server build identifier (optional)
 
-Each `ChatChoice` has:
+Each `V1ChatChoice` has:
 
 - an `index` (position in the choices array)
-- a `message` (the assistant's reply, an `AssistantMessage`)
+- a `message` (the assistant's reply, a `V1AssistantMessage`)
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`)
 
@@ -140,7 +141,7 @@ The server's `"tool_calls"` finish reason is intentionally excluded: this
 endpoint exposes no tool inputs, so the server never emits it. It would be added
 alongside tool support.
 
-Each `AssistantMessage` has:
+Each `V1AssistantMessage` has:
 
 - a `role`, always `"assistant"`
 - a `content`, the reply text; may be an empty string when the model produced no
@@ -151,19 +152,19 @@ Each `AssistantMessage` has:
 
 ### Streaming chunk fields
 
-Each `ChatCompletionsChunk` has the same top-level fields as
-`ChatCompletionsResponse`, with `choices: ChatChunkChoice[]` instead of
-`ChatChoice[]`, and `usage` optional (llama-server may include it on the final
+Each `V1ChatCompletionsChunk` has the same top-level fields as
+`V1ChatCompletionsResponse`, with `choices: V1ChatChunkChoice[]` instead of
+`V1ChatChoice[]`, and `usage` optional (llama-server may include it on the final
 chunk depending on configuration).
 
-Each `ChatChunkChoice` has:
+Each `V1ChatChunkChoice` has:
 
-- an `index` with the same meaning as `ChatChoice`
-- a `delta` (a `Delta`: the incremental piece of the assistant's reply)
+- an `index` with the same meaning as `V1ChatChoice`
+- a `delta` (a `V1Delta`: the incremental piece of the assistant's reply)
 - a `finish_reason` that is `null` while generation is in progress and becomes
   `"stop"` or `"length"` on the final chunk
 
-Each `Delta` has:
+Each `V1Delta` has:
 
 - an optional `role`, present only on the first chunk for a choice, always
   `"assistant"`
@@ -179,8 +180,9 @@ by concatenating `delta.reasoning_content` the same way.
 
 ## Request
 
-`POST /v1/chat/completions` with `ChatCompletionsRequest` as the JSON-serialized
-body. Optional fields are omitted from the body when not provided.
+`POST /v1/chat/completions` with `V1ChatCompletionsRequest` as the
+JSON-serialized body. Optional fields are omitted from the body when not
+provided.
 
 When `stream: true` is set in the request body, llama-server responds with
 Server-Sent Events. When `stream` is `false`, omitted, or `undefined`, it
@@ -188,9 +190,10 @@ responds with a single JSON document.
 
 ## Response
 
-Non-streaming: parsed JSON as `ChatCompletionsResponse`. Errors handled per
+Non-streaming: parsed JSON as `V1ChatCompletionsResponse`. Errors handled per
 `specs/core/request.md`.
 
-Streaming: an `AsyncIterable<ChatCompletionsChunk>` produced by `requestStream`
-from `specs/core/streaming.md`. Each iteration yields the next chunk parsed from
-an SSE `data:` event. Errors handled per `specs/core/streaming.md`.
+Streaming: an `AsyncIterable<V1ChatCompletionsChunk>` produced by
+`requestStream` from `specs/core/streaming.md`. Each iteration yields the next
+chunk parsed from an SSE `data:` event. Errors handled per
+`specs/core/streaming.md`.

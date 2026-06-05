@@ -11,46 +11,46 @@ field of the request.
 ## TypeScript surface
 
 ```ts
-export interface CompletionsRequest extends GenerationParams {
+export interface V1CompletionsRequest extends V1GenerationParams {
   prompt: string | string[] | number[] | number[][];
   stream?: boolean;
 }
 
-export interface CompletionsResponse {
+export interface V1CompletionsResponse {
   id: string;
   object: "text_completion";
   created: number;
   model: string;
-  choices: Choice[];
-  usage: Usage;
+  choices: V1Choice[];
+  usage: V1Usage;
   system_fingerprint?: string;
 }
 
-export interface Choice {
+export interface V1Choice {
   index: number;
   text: string;
   logprobs: null;
   finish_reason: "stop" | "length";
 }
 
-export interface CompletionsChunk {
+export interface V1CompletionsChunk {
   id: string;
   object: "text_completion";
   created: number;
   model: string;
-  choices: ChunkChoice[];
-  usage?: Usage;
+  choices: V1ChunkChoice[];
+  usage?: V1Usage;
   system_fingerprint?: string;
 }
 
-export interface ChunkChoice {
+export interface V1ChunkChoice {
   index: number;
   text: string;
   logprobs: null;
   finish_reason: "stop" | "length" | null;
 }
 
-export interface Usage {
+export interface V1Usage {
   prompt_tokens: number;
   completion_tokens: number;
   total_tokens: number;
@@ -58,7 +58,7 @@ export interface Usage {
 }
 ```
 
-`Usage` is a shared v1 type defined in `src/types/v1.ts` (per the shared-types
+`V1Usage` is a shared v1 type defined in `src/types/v1.ts` (per the shared-types
 rule in `specs/conventions.md`), not in `src/v1/`. It is shown here because the
 completions response and chunk include it.
 
@@ -66,22 +66,22 @@ Called as
 
 ```
 llama.v1.completions(
-  request: CompletionsRequest & { stream: true },
+  request: V1CompletionsRequest & { stream: true },
   options?: { signal?: AbortSignal },
-): AsyncIterable<CompletionsChunk>;
+): AsyncIterable<V1CompletionsChunk>;
 
 llama.v1.completions(
-  request: CompletionsRequest & { stream?: false | undefined },
+  request: V1CompletionsRequest & { stream?: false | undefined },
   options?: { signal?: AbortSignal },
-): Promise<CompletionsResponse>;
+): Promise<V1CompletionsResponse>;
 ```
 
 The overload selected depends on the literal type of `request.stream`:
 
 - `stream: true` selects the streaming overload, returning
-  `AsyncIterable<CompletionsChunk>`
+  `AsyncIterable<V1CompletionsChunk>`
 - `stream: false`, omitted, or `undefined` selects the non-streaming overload,
-  returning `Promise<CompletionsResponse>`
+  returning `Promise<V1CompletionsResponse>`
 - A `stream` value typed as `boolean` (not a literal) matches neither overload
   and produces a compile error; consumers in that case narrow the value before
   calling
@@ -98,7 +98,8 @@ The overload selected depends on the literal type of `request.stream`:
   - selects streaming mode when `true`
   - non-streaming when `false`, omitted, or `undefined`
 
-The shared request fields are documented in `specs/core/generation-params.md`.
+The shared request fields are documented in
+`specs/core/v1-generation-params.md`.
 
 Omitted optional fields use llama-server defaults.
 
@@ -119,7 +120,7 @@ Omitted optional fields use llama-server defaults.
 - `system_fingerprint`\
   is the server build identifier (optional)
 
-Each `Choice` has:
+Each `V1Choice` has:
 
 - an `index` (position in the choices array)
 - a `text` (the generated text)
@@ -128,7 +129,7 @@ Each `Choice` has:
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`)
 
-Each `Usage` has:
+Each `V1Usage` has:
 
 - a `prompt_tokens` count (tokens in the input prompt)
 - a `completion_tokens` count (tokens in the generated text)
@@ -138,13 +139,14 @@ Each `Usage` has:
 
 ### Streaming chunk fields
 
-Each `CompletionsChunk` has the same top-level fields as `CompletionsResponse`,
-with `choices: ChunkChoice[]` instead of `Choice[]`, and `usage` optional
-(llama-server may include it on the final chunk depending on configuration).
+Each `V1CompletionsChunk` has the same top-level fields as
+`V1CompletionsResponse`, with `choices: V1ChunkChoice[]` instead of
+`V1Choice[]`, and `usage` optional (llama-server may include it on the final
+chunk depending on configuration).
 
-Each `ChunkChoice` has:
+Each `V1ChunkChoice` has:
 
-- an `index`, `text`, and `logprobs` field with the same meaning as `Choice`
+- an `index`, `text`, and `logprobs` field with the same meaning as `V1Choice`
 - a `finish_reason` that is `null` while generation is in progress and becomes
   `"stop"` or `"length"` on the final chunk
 
@@ -154,7 +156,7 @@ values across chunks for each `index`.
 
 ## Request
 
-`POST /v1/completions` with `CompletionsRequest` as the JSON-serialized body.
+`POST /v1/completions` with `V1CompletionsRequest` as the JSON-serialized body.
 Optional fields are omitted from the body when not provided.
 
 When `stream: true` is set in the request body, llama-server responds with
@@ -163,9 +165,9 @@ responds with a single JSON document.
 
 ## Response
 
-Non-streaming: parsed JSON as `CompletionsResponse`. Errors handled per
+Non-streaming: parsed JSON as `V1CompletionsResponse`. Errors handled per
 `specs/core/request.md`.
 
-Streaming: an `AsyncIterable<CompletionsChunk>` produced by `requestStream` from
-`specs/core/streaming.md`. Each iteration yields the next chunk parsed from an
-SSE `data:` event. Errors handled per `specs/core/streaming.md`.
+Streaming: an `AsyncIterable<V1CompletionsChunk>` produced by `requestStream`
+from `specs/core/streaming.md`. Each iteration yields the next chunk parsed from
+an SSE `data:` event. Errors handled per `specs/core/streaming.md`.

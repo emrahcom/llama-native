@@ -20,6 +20,13 @@ Rules that every spec and the implementation inherit.
   Types that never touch the wire (constructor options, internal config, error
   class fields, utility parameters) use camelCase.
 
+- **Type prefixes mirror the access path**\
+  An endpoint's types carry the sub-group part of their access path as a prefix:
+  `llama.v1.completions` types are `V1CompletionsRequest`,
+  `V1CompletionsResponse`, and so on. Endpoints reached directly on `Llama`
+  (`llama.completion`, `llama.tokenize`) carry no prefix. The prefix tells the
+  reader which API family a type belongs to.
+
 ## Typing
 
 - **Explicit return types on public exports**\
@@ -49,10 +56,17 @@ Rules that every spec and the implementation inherit.
   hand.
 
 - **Shared request parameters**\
-  Parameters common to several endpoints' requests live in one exported type in
-  `src/types/`, composed into each endpoint's request with `extends`. A shared
-  field is declared once there, never duplicated per endpoint. Endpoint-specific
-  fields and `stream` stay on the per-endpoint request.
+  Parameters common to several endpoints' requests within the same API family
+  live in one exported type in `src/types/`, composed into each endpoint's
+  request with `extends`. A shared field is declared once there, never
+  duplicated per endpoint. Endpoint-specific fields and `stream` stay on the
+  per-endpoint request.
+
+- **API families stay isolated**\
+  The native endpoints and the OpenAI-compatible `/v1` endpoints are separate
+  API families with separate references. They do not share wire types, even
+  where field names coincide; each family's types are declared in that family's
+  scope and verified against that family's reference documentation.
 
 ## Runtime
 
