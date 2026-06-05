@@ -17,8 +17,12 @@
  */
 export { Llama } from "./llama/mod.ts";
 export type {
+  CompletionChunk,
+  CompletionRequest,
+  CompletionResponse,
   HealthResponse,
   LlamaOptions,
+  Timings,
   TokenizeRequest,
   TokenizeResponse,
 } from "./llama/mod.ts";

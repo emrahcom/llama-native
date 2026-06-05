@@ -1417,3 +1417,43 @@ status: done
 ## T-052: Implement /completion
 
 Per `specs/endpoints/completion.md`.
+
+status: done
+
+- `src/llama/mod.ts`: added the `CompletionRequest`, `CompletionResponse`,
+  `CompletionChunk`, and `Timings` interfaces (in the spec's surface order) and
+  an overloaded `completion(request, options?)` method on `Llama`, beside
+  `health` and `tokenize`, since `/completion` is a single-segment path. The
+  types are native-family and carry no prefix per the API-families rule in
+  `specs/conventions.md`; the sampling fields coincide in name with
+  `V1GenerationParams` because the server defines them identically, not because
+  the types are shared. All wire fields use snake_case (`n_predict`,
+  `stop_type`, `tokens_predicted`, etc.).
+- The overload is selected by the literal type of `request.stream`, mirroring
+  `V1.completions`: `stream: true` returns `AsyncIterable<CompletionChunk>`,
+  `stream: false`/omitted/`undefined` returns `Promise<CompletionResponse>`, and
+  a non-literal `boolean` matches neither (compile error). The implementation
+  dispatches on `request.stream === true`: the streaming branch returns
+  `requestStream<CompletionChunk>` with the `"native"` termination mode (native
+  streams send no `[DONE]` sentinel; the stream ends after the `stop: true`
+  chunk per `specs/core/streaming.md`) without awaiting, keeping iteration lazy;
+  the non-streaming branch returns the `request` helper's promise cast to
+  `Promise<CompletionResponse>`. Both send `POST /completion` with the
+  `CompletionRequest` as the JSON body and forward `options?.signal`. The
+  implementation signature is non-`async` so it can return either shape.
+- `src/mod.ts`: re-exported `CompletionRequest`, `CompletionResponse`,
+  `CompletionChunk`, and `Timings` as types, matching the conventions rule that
+  names marked `export` in a spec belong on the public surface.
+- The server's additional response fields (`generation_settings`, the processed
+  `prompt`, `id_slot`, `tokens`, `has_new_line`) are intentionally omitted per
+  the stated deviation in the spec.
+
+findings:
+
+- No tests for `llama.completion()` yet; per the precedent set by T-024/T-025
+  and T-030/T-031, completion tests (non-streaming and streaming) belong to
+  their own task. The native streaming termination is already covered against
+  `requestStream` directly in `tests/request.test.ts` (T-051).
+- No `examples/completion.ts` yet; per the precedent set by T-025/T-026 and the
+  Examples convention (`/completion` -> `examples/completion.ts`), the example
+  belongs to its own task.
