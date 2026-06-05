@@ -20,12 +20,13 @@ Rules that every spec and the implementation inherit.
   Types that never touch the wire (constructor options, internal config, error
   class fields, utility parameters) use camelCase.
 
-- **Type prefixes mirror the access path**\
-  An endpoint's types carry the sub-group part of their access path as a prefix:
-  `llama.v1.completions` types are `V1CompletionsRequest`,
-  `V1CompletionsResponse`, and so on. Endpoints reached directly on `Llama`
-  (`llama.completion`, `llama.tokenize`) carry no prefix. The prefix tells the
-  reader which API family a type belongs to.
+- **Type prefixes mark the API family**\
+  A type carries its API family as a prefix: the `/v1` family is prefixed `V1`
+  (`V1CompletionsRequest`, `V1ChatCompletionsRequest`), and the native endpoints
+  reached directly on `Llama` (`llama.completion`, `llama.tokenize`) are the
+  default family and carry none (`CompletionRequest`). Nested sub-groups like
+  `chat` add nothing further; the prefix is always just `V1`. The rest of the
+  name is the type's own.
 
 ## Typing
 
