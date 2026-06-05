@@ -16,12 +16,17 @@ on response handling.
 ## TypeScript surface
 
 ```ts
-function requestStream<T>(options: RequestOptions): AsyncIterable<T>;
+function requestStream<T>(
+  options: RequestOptions,
+  termination?: "sentinel" | "native",
+): AsyncIterable<T>;
 ```
 
 `requestStream` is internal. It is not re-exported from `src/mod.ts`. Endpoint
 methods import it directly from `src/request/mod.ts`. `RequestOptions` is the
-same interface defined in `specs/core/request.md`.
+same interface defined in `specs/core/request.md`. `termination` selects the
+termination mode described in the Termination section and defaults to
+"sentinel".
 
 ## Behavior
 
@@ -46,8 +51,8 @@ same interface defined in `specs/core/request.md`.
 
 For each event with a data payload:
 
-- If the payload is the literal string `[DONE]`, iteration completes cleanly
-  with no value yielded.
+- In sentinel mode, if the payload is the literal string `[DONE]`, iteration
+  completes cleanly with no value yielded.
 - Otherwise, the payload is parsed with `JSON.parse` and the parsed value is
   yielded as `T`.
 
@@ -58,6 +63,15 @@ body ends without `[DONE]`, the iterator throws `LlamaStreamError`.
 
 Content remaining in the buffer at end of stream without a terminating `\n\n` is
 treated as an incomplete event and discarded.
+
+The rules above describe the sentinel mode used by the OpenAI-compatible
+endpoints, where `data: [DONE]` marks the end of the stream. The native
+endpoints use a second mode, native termination: there is no sentinel, the final
+`data:` event is an ordinary JSON payload whose body marks completion
+(`stop: true` for `/completion`), and the server closes the stream after sending
+it. In this mode `requestStream` yields every parsed `data:` payload and ends
+iteration when the stream ends; end of stream is the terminator, not an error.
+The caller selects the mode per endpoint; sentinel remains the default.
 
 ### Cancellation
 
@@ -90,7 +104,7 @@ The helper translates failures into the library's error types per
   Thrown as `LlamaStreamError` with `JSON.parse`'s error attached via `cause`.\
   Message: `Failed to parse stream chunk`.
 
-- **Response body ends without `[DONE]`**\
+- **Response body ends without `[DONE]` (sentinel mode only)**\
   Thrown as `LlamaStreamError`.\
   Message: `Stream ended without [DONE] marker`.
 
