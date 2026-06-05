@@ -639,3 +639,66 @@ Deno.test("requestStream stops cleanly when the consumer breaks out early", asyn
     restoreFetch();
   }
 });
+
+Deno.test("requestStream in native mode yields every data payload and ends cleanly when the stream ends", async () => {
+  stubFetch(() =>
+    Promise.resolve(
+      sseResponse([
+        'data: {"content":"a","stop":false}\n\n',
+        'data: {"content":"b","stop":true}\n\n',
+      ]),
+    )
+  );
+  try {
+    const values = await collect(
+      requestStream({ config, method: "POST", path: "/completion" }, "native"),
+    );
+    assertEquals(values, [
+      { content: "a", stop: false },
+      { content: "b", stop: true },
+    ]);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("requestStream in native mode does not treat [DONE] as a terminator", async () => {
+  stubFetch(() =>
+    Promise.resolve(sseResponse(['data: [DONE]\n\ndata: {"i":1}\n\n']))
+  );
+  try {
+    const error = await assertRejects(
+      () =>
+        collect(
+          requestStream(
+            { config, method: "POST", path: "/completion" },
+            "native",
+          ),
+        ),
+      LlamaStreamError,
+      "Failed to parse stream chunk",
+    );
+    assertInstanceOf(error.cause, SyntaxError);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("requestStream in native mode surfaces an unparseable payload as LlamaStreamError", async () => {
+  stubFetch(() => Promise.resolve(sseResponse(["data: not json\n\n"])));
+  try {
+    await assertRejects(
+      () =>
+        collect(
+          requestStream(
+            { config, method: "POST", path: "/completion" },
+            "native",
+          ),
+        ),
+      LlamaStreamError,
+      "Failed to parse stream chunk",
+    );
+  } finally {
+    restoreFetch();
+  }
+});

@@ -1395,3 +1395,21 @@ findings:
 ## T-051: Tests for native termination mode
 
 Per `specs/core/streaming.md`.
+
+status: done
+
+- Added three `requestStream` native-mode cases to `tests/request.test.ts`
+  covering the native-termination behavior from `specs/core/streaming.md`: with
+  `"native"` it yields every parsed `data:` payload and ends iteration cleanly
+  when the stream ends (no `[DONE]`, no `Stream ended without [DONE] marker`
+  error), the realistic `/completion` shape where the final ordinary payload
+  carries `stop: true`; it does not treat `[DONE]` as a terminator (the literal
+  `[DONE]` is fed to `JSON.parse` like any other payload, surfacing
+  `LlamaStreamError` with a `SyntaxError` cause); and it still surfaces an
+  unparseable payload as `LlamaStreamError` (`Failed to parse stream chunk`),
+  confirming native mode keeps the shared SSE parse/error behavior.
+- Followed the precedent set by T-028: the cases live in `tests/request.test.ts`
+  alongside the existing sentinel-mode cases and reuse the existing
+  `stubFetch`/`restoreFetch`/`sseResponse`/`collect` scaffolding; no new helpers
+  or imports were needed. Sentinel-mode (default) behavior stays covered by the
+  existing cases that omit the `termination` argument.
