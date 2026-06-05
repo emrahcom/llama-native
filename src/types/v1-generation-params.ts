@@ -4,7 +4,7 @@
  * `extends` instead of re-declaring the fields. All fields are optional; an
  * omitted field uses the llama-server default.
  */
-export interface GenerationParams {
+export interface V1GenerationParams {
   /** Model identifier; when omitted, llama-server uses its loaded model. */
   model?: string;
   /** Maximum number of tokens to generate. */

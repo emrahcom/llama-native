@@ -1341,3 +1341,28 @@ and the `src/mod.ts` re-exports; updating `tests/`, `integration/`, and
 not compile without it. Note that `src/types/generation-params.ts` should be
 renamed to `src/types/v1-generation-params.ts` on disk; update the imports that
 still reference the old path. Pure rename; no shape or behavior change.
+
+status: done
+
+- Renamed `src/types/generation-params.ts` to
+  `src/types/v1-generation-params.ts` with `git mv` and updated the three import
+  statements that referenced the old path (`src/mod.ts`, `src/v1/mod.ts`,
+  `src/v1/chat/mod.ts`).
+- Prefixed all seventeen exported v1 types with `V1`: `V1GenerationParams`,
+  `V1Usage`, `V1Model`, `V1ModelsResponse`, `V1CompletionsRequest`,
+  `V1CompletionsResponse`, `V1Choice`, `V1CompletionsChunk`, `V1ChunkChoice`,
+  `V1ChatCompletionsRequest`, `V1Message`, `V1ChatCompletionsResponse`,
+  `V1ChatChoice`, `V1AssistantMessage`, `V1ChatCompletionsChunk`,
+  `V1ChatChunkChoice`, and `V1Delta`. Declarations, internal references, JSDoc
+  `{@link}` references, and the `src/mod.ts` re-exports were all updated. The
+  `V1` and `Chat` classes are values, not the renamed types, and were left as
+  is.
+- Updated the consumers that name these types: `tests/llama.test.ts`,
+  `integration/v1-models.test.ts`, `integration/v1-completions.test.ts`,
+  `integration/v1-chat-completions.test.ts`, `examples/v1-completions.ts`, and
+  `examples/v1-chat-completions.ts`.
+- Pure rename: no field, shape, or behavior change. Preserved the unrelated
+  "Model identifier" prose in the `V1GenerationParams` `model` field comment.
+- `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (89 passed), and
+  `deno publish --dry-run --allow-dirty` all pass.

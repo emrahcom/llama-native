@@ -1,6 +1,6 @@
 import type { Config } from "../types/config.ts";
-import type { GenerationParams } from "../types/generation-params.ts";
-import type { Usage } from "../types/v1.ts";
+import type { V1GenerationParams } from "../types/v1-generation-params.ts";
+import type { V1Usage } from "../types/v1.ts";
 import {
   request as sendRequest,
   requestStream as sendRequestStream,
@@ -8,7 +8,7 @@ import {
 import { Chat } from "./chat/mod.ts";
 
 /** A model available on the llama-server. */
-export interface Model {
+export interface V1Model {
   /** The model identifier. */
   id: string;
   /** The discriminator, always `"model"`. */
@@ -20,18 +20,18 @@ export interface Model {
 }
 
 /** The list of models available on the llama-server. */
-export interface ModelsResponse {
+export interface V1ModelsResponse {
   /** The discriminator, always `"list"`. */
   object: "list";
   /** The list of available models. */
-  data: Model[];
+  data: V1Model[];
 }
 
 /**
  * A request to generate a text completion for a prompt. Composes the shared
- * {@link GenerationParams}.
+ * {@link V1GenerationParams}.
  */
-export interface CompletionsRequest extends GenerationParams {
+export interface V1CompletionsRequest extends V1GenerationParams {
   /**
    * The input to generate from; accepts a single string, an array of strings
    * (batch), an array of token IDs, or an array of token ID arrays (batch over
@@ -46,7 +46,7 @@ export interface CompletionsRequest extends GenerationParams {
 }
 
 /** A non-streaming text completion response. */
-export interface CompletionsResponse {
+export interface V1CompletionsResponse {
   /** The request identifier assigned by the server. */
   id: string;
   /** The discriminator, always `"text_completion"`. */
@@ -56,15 +56,15 @@ export interface CompletionsResponse {
   /** The model that generated the response. */
   model: string;
   /** The list of generated completions. */
-  choices: Choice[];
+  choices: V1Choice[];
   /** The token counts for the request. */
-  usage: Usage;
+  usage: V1Usage;
   /** The server build identifier (optional). */
   system_fingerprint?: string;
 }
 
-/** A single generated completion in a {@link CompletionsResponse}. */
-export interface Choice {
+/** A single generated completion in a {@link V1CompletionsResponse}. */
+export interface V1Choice {
   /** The position in the choices array. */
   index: number;
   /** The generated text. */
@@ -83,11 +83,11 @@ export interface Choice {
 
 /**
  * A streaming text completion chunk. Has the same top-level fields as
- * {@link CompletionsResponse}, with `choices: ChunkChoice[]` instead of
- * `Choice[]`, and `usage` optional (llama-server may include it on the final
+ * {@link V1CompletionsResponse}, with `choices: V1ChunkChoice[]` instead of
+ * `V1Choice[]`, and `usage` optional (llama-server may include it on the final
  * chunk depending on configuration).
  */
-export interface CompletionsChunk {
+export interface V1CompletionsChunk {
   /** The request identifier assigned by the server. */
   id: string;
   /** The discriminator, always `"text_completion"`. */
@@ -97,15 +97,15 @@ export interface CompletionsChunk {
   /** The model that generated the response. */
   model: string;
   /** The list of generated completion deltas. */
-  choices: ChunkChoice[];
+  choices: V1ChunkChoice[];
   /** The token counts for the request. */
-  usage?: Usage;
+  usage?: V1Usage;
   /** The server build identifier (optional). */
   system_fingerprint?: string;
 }
 
-/** A single generated completion delta in a {@link CompletionsChunk}. */
-export interface ChunkChoice {
+/** A single generated completion delta in a {@link V1CompletionsChunk}. */
+export interface V1ChunkChoice {
   /** The position in the choices array. */
   index: number;
   /**
@@ -146,49 +146,49 @@ export class V1 {
    * Lists the models available on the llama-server.
    *
    * Issues `GET /v1/models` with no body and returns the parsed JSON as a
-   * {@link ModelsResponse}. Errors are handled per `specs/core/request.md`.
+   * {@link V1ModelsResponse}. Errors are handled per `specs/core/request.md`.
    */
   async models(
     options?: { signal?: AbortSignal },
-  ): Promise<ModelsResponse> {
+  ): Promise<V1ModelsResponse> {
     return await sendRequest({
       config: this.#config,
       method: "GET",
       path: "/v1/models",
       signal: options?.signal,
-    }) as ModelsResponse;
+    }) as V1ModelsResponse;
   }
 
   /**
    * Generates a text completion for a prompt in streaming mode.
    *
    * Selected when `request.stream` is the literal `true`; returns an
-   * `AsyncIterable<CompletionsChunk>` whose each iteration yields the next
+   * `AsyncIterable<V1CompletionsChunk>` whose each iteration yields the next
    * chunk parsed from an SSE `data:` event. Errors are handled per
    * `specs/core/streaming.md`.
    */
   completions(
-    request: CompletionsRequest & { stream: true },
+    request: V1CompletionsRequest & { stream: true },
     options?: { signal?: AbortSignal },
-  ): AsyncIterable<CompletionsChunk>;
+  ): AsyncIterable<V1CompletionsChunk>;
   /**
    * Generates a text completion for a prompt in non-streaming mode.
    *
    * Selected when `request.stream` is `false`, omitted, or `undefined`; issues
    * `POST /v1/completions` with `request` as the JSON-serialized body and
-   * returns the parsed JSON as a {@link CompletionsResponse}. Errors are
+   * returns the parsed JSON as a {@link V1CompletionsResponse}. Errors are
    * handled per `specs/core/request.md`.
    */
   completions(
-    request: CompletionsRequest & { stream?: false | undefined },
+    request: V1CompletionsRequest & { stream?: false | undefined },
     options?: { signal?: AbortSignal },
-  ): Promise<CompletionsResponse>;
+  ): Promise<V1CompletionsResponse>;
   completions(
-    request: CompletionsRequest,
+    request: V1CompletionsRequest,
     options?: { signal?: AbortSignal },
-  ): AsyncIterable<CompletionsChunk> | Promise<CompletionsResponse> {
+  ): AsyncIterable<V1CompletionsChunk> | Promise<V1CompletionsResponse> {
     if (request.stream === true) {
-      return sendRequestStream<CompletionsChunk>({
+      return sendRequestStream<V1CompletionsChunk>({
         config: this.#config,
         method: "POST",
         path: "/v1/completions",
@@ -202,6 +202,6 @@ export class V1 {
       path: "/v1/completions",
       body: request,
       signal: options?.signal,
-    }) as Promise<CompletionsResponse>;
+    }) as Promise<V1CompletionsResponse>;
   }
 }

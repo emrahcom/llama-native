@@ -23,7 +23,7 @@ const messages = [
   { role: "user", content: "What is the capital of France?" },
 ] as const;
 
-// Non-streaming: await a single ChatCompletionsResponse.
+// Non-streaming: await a single V1ChatCompletionsResponse.
 const result = await llama.v1.chat.completions({
   messages: [...messages],
   max_tokens: 1024,

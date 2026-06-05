@@ -3,14 +3,14 @@
 // Run with: deno test --allow-net integration/v1-chat-completions.test.ts
 import { assert, assertEquals } from "@std/assert";
 import {
-  type ChatCompletionsChunk,
-  type ChatCompletionsResponse,
   Llama,
+  type V1ChatCompletionsChunk,
+  type V1ChatCompletionsResponse,
 } from "@emrahcom/llama-native";
 
-Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse from a running server", async () => {
+Deno.test("v1.chat.completions (non-streaming) returns a V1ChatCompletionsResponse from a running server", async () => {
   const llama = new Llama();
-  const response: ChatCompletionsResponse = await llama.v1.chat.completions({
+  const response: V1ChatCompletionsResponse = await llama.v1.chat.completions({
     messages: [{ role: "user", content: "The capital of France is" }],
     max_tokens: 1024,
     top_k: 40,
@@ -48,7 +48,7 @@ Deno.test("v1.chat.completions (non-streaming) returns a ChatCompletionsResponse
 
 Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a running server", async () => {
   const llama = new Llama();
-  const chunks: ChatCompletionsChunk[] = [];
+  const chunks: V1ChatCompletionsChunk[] = [];
   for await (
     const chunk of llama.v1.chat.completions({
       messages: [{ role: "user", content: "The capital of France is" }],

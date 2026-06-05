@@ -24,25 +24,25 @@ export type {
 } from "./llama/mod.ts";
 export { V1 } from "./v1/mod.ts";
 export type {
-  Choice,
-  ChunkChoice,
-  CompletionsChunk,
-  CompletionsRequest,
-  CompletionsResponse,
-  Model,
-  ModelsResponse,
+  V1Choice,
+  V1ChunkChoice,
+  V1CompletionsChunk,
+  V1CompletionsRequest,
+  V1CompletionsResponse,
+  V1Model,
+  V1ModelsResponse,
 } from "./v1/mod.ts";
 export { Chat } from "./v1/chat/mod.ts";
 export type {
-  AssistantMessage,
-  ChatChoice,
-  ChatChunkChoice,
-  ChatCompletionsChunk,
-  ChatCompletionsRequest,
-  ChatCompletionsResponse,
-  Delta,
-  Message,
+  V1AssistantMessage,
+  V1ChatChoice,
+  V1ChatChunkChoice,
+  V1ChatCompletionsChunk,
+  V1ChatCompletionsRequest,
+  V1ChatCompletionsResponse,
+  V1Delta,
+  V1Message,
 } from "./v1/chat/mod.ts";
-export type { GenerationParams } from "./types/generation-params.ts";
-export type { Usage } from "./types/v1.ts";
+export type { V1GenerationParams } from "./types/v1-generation-params.ts";
+export type { V1Usage } from "./types/v1.ts";
 export { LlamaError, LlamaHTTPError, LlamaStreamError } from "./errors/mod.ts";

@@ -2,11 +2,11 @@
 // default local address. Run with:
 // deno test --allow-net integration/v1-models.test.ts
 import { assert, assertEquals } from "@std/assert";
-import { Llama, type ModelsResponse } from "@emrahcom/llama-native";
+import { Llama, type V1ModelsResponse } from "@emrahcom/llama-native";
 
-Deno.test("v1.models returns a ModelsResponse from a running server", async () => {
+Deno.test("v1.models returns a V1ModelsResponse from a running server", async () => {
   const llama = new Llama();
-  const response: ModelsResponse = await llama.v1.models();
+  const response: V1ModelsResponse = await llama.v1.models();
   assertEquals(response.object, "list");
   assert(Array.isArray(response.data));
   for (const model of response.data) {

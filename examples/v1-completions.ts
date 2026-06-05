@@ -17,7 +17,7 @@ const llama = new Llama({
   apiKey: Deno.env.get("LLAMA_API_KEY"),
 });
 
-// Non-streaming: await a single CompletionsResponse.
+// Non-streaming: await a single V1CompletionsResponse.
 const result = await llama.v1.completions({
   prompt: "The capital of France is",
   max_tokens: 1024,

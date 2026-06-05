@@ -1,11 +1,11 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
-  type ChatCompletionsChunk,
-  type ChatCompletionsResponse,
-  type CompletionsChunk,
-  type CompletionsResponse,
   Llama,
   type LlamaOptions,
+  type V1ChatCompletionsChunk,
+  type V1ChatCompletionsResponse,
+  type V1CompletionsChunk,
+  type V1CompletionsResponse,
 } from "@emrahcom/llama-native";
 
 const originalFetch = globalThis.fetch;
@@ -267,7 +267,7 @@ Deno.test("v1.models issues GET /v1/models against the configured baseUrl", asyn
   }
 });
 
-Deno.test("v1.models returns the parsed JSON body as ModelsResponse on HTTP 200", async () => {
+Deno.test("v1.models returns the parsed JSON body as V1ModelsResponse on HTTP 200", async () => {
   const payload = {
     object: "list",
     data: [
@@ -340,7 +340,7 @@ Deno.test("v1.completions issues POST /v1/completions against the configured bas
   }
 });
 
-Deno.test("v1.completions sends the CompletionsRequest as the JSON body, preserving optional fields", async () => {
+Deno.test("v1.completions sends the V1CompletionsRequest as the JSON body, preserving optional fields", async () => {
   let seenBody: string | undefined;
   stubFetch((_input, init) => {
     seenBody = init?.body as string | undefined;
@@ -415,8 +415,8 @@ Deno.test("v1.completions omits optional fields from the body when not provided"
   }
 });
 
-Deno.test("v1.completions returns the parsed JSON body as CompletionsResponse on HTTP 200", async () => {
-  const payload: CompletionsResponse = {
+Deno.test("v1.completions returns the parsed JSON body as V1CompletionsResponse on HTTP 200", async () => {
+  const payload: V1CompletionsResponse = {
     id: "cmpl-1",
     object: "text_completion",
     created: 1700000000,
@@ -521,7 +521,7 @@ Deno.test("v1.completions with stream: true issues POST /v1/completions against 
   }
 });
 
-Deno.test("v1.completions with stream: true sends the CompletionsRequest including stream as the JSON body", async () => {
+Deno.test("v1.completions with stream: true sends the V1CompletionsRequest including stream as the JSON body", async () => {
   let seenBody: string | undefined;
   stubFetch((_input, init) => {
     seenBody = init?.body as string | undefined;
@@ -545,8 +545,8 @@ Deno.test("v1.completions with stream: true sends the CompletionsRequest includi
   }
 });
 
-Deno.test("v1.completions with stream: true yields parsed CompletionsChunk values in order", async () => {
-  const first: CompletionsChunk = {
+Deno.test("v1.completions with stream: true yields parsed V1CompletionsChunk values in order", async () => {
+  const first: V1CompletionsChunk = {
     id: "cmpl-1",
     object: "text_completion",
     created: 1700000000,
@@ -560,7 +560,7 @@ Deno.test("v1.completions with stream: true yields parsed CompletionsChunk value
       },
     ],
   };
-  const second: CompletionsChunk = {
+  const second: V1CompletionsChunk = {
     id: "cmpl-1",
     object: "text_completion",
     created: 1700000000,
@@ -655,7 +655,7 @@ Deno.test("v1.chat.completions issues POST /v1/chat/completions against the conf
   }
 });
 
-Deno.test("v1.chat.completions sends the ChatCompletionsRequest as the JSON body, preserving optional fields", async () => {
+Deno.test("v1.chat.completions sends the V1ChatCompletionsRequest as the JSON body, preserving optional fields", async () => {
   let seenBody: string | undefined;
   stubFetch((_input, init) => {
     seenBody = init?.body as string | undefined;
@@ -741,8 +741,8 @@ Deno.test("v1.chat.completions omits optional fields from the body when not prov
   }
 });
 
-Deno.test("v1.chat.completions returns the parsed JSON body as ChatCompletionsResponse on HTTP 200", async () => {
-  const payload: ChatCompletionsResponse = {
+Deno.test("v1.chat.completions returns the parsed JSON body as V1ChatCompletionsResponse on HTTP 200", async () => {
+  const payload: V1ChatCompletionsResponse = {
     id: "chatcmpl-1",
     object: "chat.completion",
     created: 1700000000,
@@ -834,7 +834,7 @@ Deno.test("v1.chat.completions with stream: true issues POST /v1/chat/completion
   }
 });
 
-Deno.test("v1.chat.completions with stream: true sends the ChatCompletionsRequest including stream as the JSON body", async () => {
+Deno.test("v1.chat.completions with stream: true sends the V1ChatCompletionsRequest including stream as the JSON body", async () => {
   let seenBody: string | undefined;
   stubFetch((_input, init) => {
     seenBody = init?.body as string | undefined;
@@ -862,8 +862,8 @@ Deno.test("v1.chat.completions with stream: true sends the ChatCompletionsReques
   }
 });
 
-Deno.test("v1.chat.completions with stream: true yields parsed ChatCompletionsChunk values in order", async () => {
-  const first: ChatCompletionsChunk = {
+Deno.test("v1.chat.completions with stream: true yields parsed V1ChatCompletionsChunk values in order", async () => {
+  const first: V1ChatCompletionsChunk = {
     id: "chatcmpl-1",
     object: "chat.completion.chunk",
     created: 1700000000,
@@ -879,7 +879,7 @@ Deno.test("v1.chat.completions with stream: true yields parsed ChatCompletionsCh
       },
     ],
   };
-  const second: ChatCompletionsChunk = {
+  const second: V1ChatCompletionsChunk = {
     id: "chatcmpl-1",
     object: "chat.completion.chunk",
     created: 1700000000,

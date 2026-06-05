@@ -1,5 +1,5 @@
 /** Token counts for a request. */
-export interface Usage {
+export interface V1Usage {
   /** Tokens in the input prompt. */
   prompt_tokens: number;
   /** Tokens in the generated text. */

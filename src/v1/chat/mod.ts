@@ -1,6 +1,6 @@
 import type { Config } from "../../types/config.ts";
-import type { GenerationParams } from "../../types/generation-params.ts";
-import type { Usage } from "../../types/v1.ts";
+import type { V1GenerationParams } from "../../types/v1-generation-params.ts";
+import type { V1Usage } from "../../types/v1.ts";
 import {
   request as sendRequest,
   requestStream as sendRequestStream,
@@ -8,11 +8,11 @@ import {
 
 /**
  * A request to generate a chat completion from a list of messages. Composes the
- * shared {@link GenerationParams}.
+ * shared {@link V1GenerationParams}.
  */
-export interface ChatCompletionsRequest extends GenerationParams {
-  /** The conversation so far, an ordered list of {@link Message} objects. */
-  messages: Message[];
+export interface V1ChatCompletionsRequest extends V1GenerationParams {
+  /** The conversation so far, an ordered list of {@link V1Message} objects. */
+  messages: V1Message[];
   /**
    * Selects streaming mode when `true`; non-streaming when `false`, omitted, or
    * `undefined`.
@@ -21,7 +21,7 @@ export interface ChatCompletionsRequest extends GenerationParams {
 }
 
 /** A single message in a conversation. */
-export interface Message {
+export interface V1Message {
   /** The author of the message. */
   role: "system" | "user" | "assistant";
   /** The message text. */
@@ -29,7 +29,7 @@ export interface Message {
 }
 
 /** A non-streaming chat completion response. */
-export interface ChatCompletionsResponse {
+export interface V1ChatCompletionsResponse {
   /** The request identifier assigned by the server. */
   id: string;
   /** The discriminator, always `"chat.completion"`. */
@@ -39,19 +39,19 @@ export interface ChatCompletionsResponse {
   /** The model that generated the response. */
   model: string;
   /** The list of generated chat completions. */
-  choices: ChatChoice[];
+  choices: V1ChatChoice[];
   /** The token counts for the request. */
-  usage: Usage;
+  usage: V1Usage;
   /** The server build identifier (optional). */
   system_fingerprint?: string;
 }
 
-/** A single generated chat completion in a {@link ChatCompletionsResponse}. */
-export interface ChatChoice {
+/** A single generated chat completion in a {@link V1ChatCompletionsResponse}. */
+export interface V1ChatChoice {
   /** The position in the choices array. */
   index: number;
   /** The assistant's reply. */
-  message: AssistantMessage;
+  message: V1AssistantMessage;
   /**
    * `"stop"` when generation halted at a stop sequence or end of output,
    * `"length"` when it halted at `max_tokens`.
@@ -59,8 +59,8 @@ export interface ChatChoice {
   finish_reason: "stop" | "length";
 }
 
-/** The assistant's reply in a {@link ChatChoice}. */
-export interface AssistantMessage {
+/** The assistant's reply in a {@link V1ChatChoice}. */
+export interface V1AssistantMessage {
   /** Always `"assistant"`. */
   role: "assistant";
   /**
@@ -78,11 +78,11 @@ export interface AssistantMessage {
 
 /**
  * A streaming chat completion chunk. Has the same top-level fields as
- * {@link ChatCompletionsResponse}, with `choices: ChatChunkChoice[]` instead of
- * `ChatChoice[]`, and `usage` optional (llama-server may include it on the final
+ * {@link V1ChatCompletionsResponse}, with `choices: V1ChatChunkChoice[]` instead of
+ * `V1ChatChoice[]`, and `usage` optional (llama-server may include it on the final
  * chunk depending on configuration).
  */
-export interface ChatCompletionsChunk {
+export interface V1ChatCompletionsChunk {
   /** The request identifier assigned by the server. */
   id: string;
   /** The discriminator, always `"chat.completion.chunk"`. */
@@ -92,19 +92,19 @@ export interface ChatCompletionsChunk {
   /** The model that generated the response. */
   model: string;
   /** The list of generated chat completion deltas. */
-  choices: ChatChunkChoice[];
+  choices: V1ChatChunkChoice[];
   /** The token counts for the request. */
-  usage?: Usage;
+  usage?: V1Usage;
   /** The server build identifier (optional). */
   system_fingerprint?: string;
 }
 
-/** A single generated chat completion delta in a {@link ChatCompletionsChunk}. */
-export interface ChatChunkChoice {
+/** A single generated chat completion delta in a {@link V1ChatCompletionsChunk}. */
+export interface V1ChatChunkChoice {
   /** The position in the choices array. */
   index: number;
   /** The incremental piece of the assistant's reply. */
-  delta: Delta;
+  delta: V1Delta;
   /**
    * `null` while generation is in progress; becomes `"stop"` or `"length"` on
    * the final chunk.
@@ -113,13 +113,13 @@ export interface ChatChunkChoice {
 }
 
 /**
- * The incremental piece of an assistant's reply in a {@link ChatChunkChoice}.
+ * The incremental piece of an assistant's reply in a {@link V1ChatChunkChoice}.
  *
  * Consumers reconstruct the full reply by concatenating the non-null
  * `content` values across chunks for each `index`, and the reasoning trace by
  * concatenating `reasoning_content` the same way.
  */
-export interface Delta {
+export interface V1Delta {
   /** Present only on the first chunk for a choice, always `"assistant"`. */
   role?: "assistant";
   /**
@@ -151,32 +151,34 @@ export class Chat {
    * Generates a chat completion from a list of messages in streaming mode.
    *
    * Selected when `request.stream` is the literal `true`; returns an
-   * `AsyncIterable<ChatCompletionsChunk>` whose each iteration yields the next
+   * `AsyncIterable<V1ChatCompletionsChunk>` whose each iteration yields the next
    * chunk parsed from an SSE `data:` event. Errors are handled per
    * `specs/core/streaming.md`.
    */
   completions(
-    request: ChatCompletionsRequest & { stream: true },
+    request: V1ChatCompletionsRequest & { stream: true },
     options?: { signal?: AbortSignal },
-  ): AsyncIterable<ChatCompletionsChunk>;
+  ): AsyncIterable<V1ChatCompletionsChunk>;
   /**
    * Generates a chat completion from a list of messages in non-streaming mode.
    *
    * Selected when `request.stream` is `false`, omitted, or `undefined`; issues
    * `POST /v1/chat/completions` with `request` as the JSON-serialized body and
-   * returns the parsed JSON as a {@link ChatCompletionsResponse}. Errors are
+   * returns the parsed JSON as a {@link V1ChatCompletionsResponse}. Errors are
    * handled per `specs/core/request.md`.
    */
   completions(
-    request: ChatCompletionsRequest & { stream?: false | undefined },
+    request: V1ChatCompletionsRequest & { stream?: false | undefined },
     options?: { signal?: AbortSignal },
-  ): Promise<ChatCompletionsResponse>;
+  ): Promise<V1ChatCompletionsResponse>;
   completions(
-    request: ChatCompletionsRequest,
+    request: V1ChatCompletionsRequest,
     options?: { signal?: AbortSignal },
-  ): AsyncIterable<ChatCompletionsChunk> | Promise<ChatCompletionsResponse> {
+  ):
+    | AsyncIterable<V1ChatCompletionsChunk>
+    | Promise<V1ChatCompletionsResponse> {
     if (request.stream === true) {
-      return sendRequestStream<ChatCompletionsChunk>({
+      return sendRequestStream<V1ChatCompletionsChunk>({
         config: this.#config,
         method: "POST",
         path: "/v1/chat/completions",
@@ -190,6 +192,6 @@ export class Chat {
       path: "/v1/chat/completions",
       body: request,
       signal: options?.signal,
-    }) as Promise<ChatCompletionsResponse>;
+    }) as Promise<V1ChatCompletionsResponse>;
   }
 }

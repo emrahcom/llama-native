@@ -3,14 +3,14 @@
 // Run with: deno test --allow-net integration/v1-completions.test.ts
 import { assert, assertEquals } from "@std/assert";
 import {
-  type CompletionsChunk,
-  type CompletionsResponse,
   Llama,
+  type V1CompletionsChunk,
+  type V1CompletionsResponse,
 } from "@emrahcom/llama-native";
 
-Deno.test("v1.completions (non-streaming) returns a CompletionsResponse from a running server", async () => {
+Deno.test("v1.completions (non-streaming) returns a V1CompletionsResponse from a running server", async () => {
   const llama = new Llama();
-  const response: CompletionsResponse = await llama.v1.completions({
+  const response: V1CompletionsResponse = await llama.v1.completions({
     prompt: "The capital of France is",
     max_tokens: 1024,
     top_k: 40,
@@ -48,7 +48,7 @@ Deno.test("v1.completions (non-streaming) returns a CompletionsResponse from a r
 
 Deno.test("v1.completions (streaming) yields CompletionsChunks from a running server", async () => {
   const llama = new Llama();
-  const chunks: CompletionsChunk[] = [];
+  const chunks: V1CompletionsChunk[] = [];
   for await (
     const chunk of llama.v1.completions({
       prompt: "The capital of France is",
