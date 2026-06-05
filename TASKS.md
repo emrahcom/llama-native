@@ -1328,3 +1328,16 @@ status: done
   `deno doc --lint src/mod.ts`, `deno test` — 89 passed,
   `deno publish --dry-run --allow-dirty`) also passes. The integration test
   itself needs a running llama-server and is not part of the default run.
+
+## T-049: Prefix the v1 types with V1
+
+Per the type-prefix and API-family rules in `specs/conventions.md` and the
+renamed types in `specs/core/v1-generation-params.md`,
+`specs/endpoints/v1-models.md`, `specs/endpoints/v1-completions.md`, and
+`specs/endpoints/v1-chat-completions.md`. Rename every exported v1 type in the
+code to its `V1`-prefixed spec name, including JSDoc text, `{@link}` references,
+and the `src/mod.ts` re-exports; updating `tests/`, `integration/`, and
+`examples/` to the new names is in scope for this task, since the rename does
+not compile without it. Note that `src/types/generation-params.ts` should be
+renamed to `src/types/v1-generation-params.ts` on disk; update the imports that
+still reference the old path. Pure rename; no shape or behavior change.
