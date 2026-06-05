@@ -10,11 +10,13 @@ Rules that every spec and the implementation inherit.
   crosses an HTTP boundary in either direction follows this rule.
 
 - **Wire types match the documented server**\
-  A wire type's field names, types, and shapes match the server as documented in
-  `specs/references.md`: request fields match what the server accepts, and
-  response and chunk fields cover everything it can return. A spec may expose a
-  subset of accepted inputs or otherwise deviate, but only by stating the
-  deviation; an unstated mismatch is a defect, not a choice.
+  Every field a wire type models matches the server as documented in
+  `specs/references.md` in name, type, and shape. A spec may model only a subset
+  of the inputs and features the server supports and need not list what it omits;
+  keeping the initial surface small is intended. It must not contradict the
+  server, though: a modeled field with the wrong name, type, or shape, or a
+  response that omits a field the server returns for a feature the spec does
+  support, is a defect unless the spec states the deviation.
 
 - **camelCase for library-only types**\
   Types that never touch the wire (constructor options, internal config, error
