@@ -65,9 +65,11 @@ Rules that every spec and the implementation inherit.
 
 - **API families stay isolated**\
   The native endpoints and the OpenAI-compatible `/v1` endpoints are separate
-  API families with separate references. They do not share wire types, even
-  where field names coincide; each family's types are declared in that family's
-  scope and verified against that family's reference documentation.
+  API families. They do not share wire types, even where field names coincide;
+  each family's types are declared in that family's scope and verified against
+  its own reference: the native endpoints against the llama-server native API,
+  and the `/v1` endpoints against the OpenAI API plus llama-server's documented
+  extensions.
 
 ## Runtime
 
