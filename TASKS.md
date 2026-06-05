@@ -1532,3 +1532,40 @@ findings:
 
 Per the integration-testing convention in `specs/conventions.md` and
 `specs/endpoints/completion.md`.
+
+status: done
+
+- Added `integration/completion.test.ts`, named by the endpoint path with
+  slashes replaced by hyphens (`/completion` -> `completion.test.ts`), with one
+  test per mode (non-streaming and streaming) per the one-test-per-mode rule,
+  mirroring the structure of `integration/v1-completions.test.ts`. Each
+  exercises the endpoint against a running llama-server via `new Llama()` with
+  no arguments (the default local server), not stubbed `fetch`, and asserts the
+  real response matches the typed shape from the public surface.
+- Both request bodies send the native sampling fields (`n_predict`, `top_k`,
+  `top_p`, `min_p`, `presence_penalty`, `frequency_penalty`, `repeat_penalty`,
+  `seed`), exercising that they serialize and a live server accepts them,
+  mirroring the T-047/T-048 coverage on the v1 endpoints.
+- The non-streaming test asserts the full `CompletionResponse` shape: `content`,
+  the literal `stop: true`, `model`, `stop_type` (one of the four union
+  members), `stopping_word`, the three token counts, `truncated`, and the
+  `Timings` block (all eight numeric fields, via a shared `assertTimings`
+  helper). The streaming test drains the `AsyncIterable` with `for await`,
+  asserts each chunk's required `content`/`stop` fields and the optional
+  completion fields where present, and asserts the final chunk has `stop: true`
+  (native streams end after the `stop: true` chunk, with no `[DONE]` sentinel).
+- Imports the public surface through the `@emrahcom/llama-native` import-map
+  entry and annotates each response with its exported type, so the shape is
+  checked at compile time as well as at runtime. Confirmed the default
+  `deno test` run still covers only `tests/` (102 passed, integration excluded
+  via `test.include` in `deno.json`) and `deno publish --dry-run` does not list
+  `integration/`, so these stay out of the default check and the published
+  package.
+
+findings:
+
+- The `Timings` numeric assertions and the `stop_type` union check pin the typed
+  shapes from `specs/endpoints/completion.md`; if a real server build diverges
+  (e.g. omits a `timings` sub-field), that is a spec/type mismatch to reconcile
+  in the spec first, as noted for the streaming chunk shapes in T-038's
+  findings.
