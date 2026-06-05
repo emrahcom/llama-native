@@ -1503,3 +1503,27 @@ findings:
 
 Per `specs/endpoints/completion.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/completion.ts`, named per the Examples convention
+  (`/completion` -> `examples/completion.ts`).
+- Followed the precedent of `examples/v1-completions.ts`: same header comment
+  (purpose, run command, env-var overrides), same `Llama` construction from
+  `LLAMA_BASE_URL`/`LLAMA_API_KEY`, importing via the `@emrahcom/llama-native`
+  map entry, and demonstrating both the non-streaming and streaming variants in
+  a single file per endpoint.
+- The non-streaming variant calls `llama.completion({ prompt, n_predict })` and
+  prints the response's `content`. The streaming variant passes `stream: true`,
+  which selects the streaming overload returning
+  `AsyncIterable<CompletionChunk>` per `specs/endpoints/completion.md`; it
+  iterates with `for await`, writing each chunk's `content` delta to stdout, and
+  notes that the deltas are concatenated to reconstruct the full output and that
+  native streams send no `[DONE]` sentinel (the stream ends after the
+  `stop: true` chunk), matching the spec's "Streaming chunk fields" description.
+
+findings:
+
+- The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
+  API), which is allowed for `examples/` per the conventions runtime rule, as
+  already noted in T-032's and T-037's findings.
