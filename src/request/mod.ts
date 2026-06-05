@@ -111,6 +111,7 @@ function eventDataPayload(rawEvent: string): string | null {
 
 export async function* requestStream<T>(
   options: RequestOptions,
+  termination: "sentinel" | "native" = "sentinel",
 ): AsyncGenerator<T> {
   const { method } = options;
   const path = resolvePath(options.path);
@@ -156,7 +157,7 @@ export async function* requestStream<T>(
         if (payload === null) {
           continue;
         }
-        if (payload === "[DONE]") {
+        if (termination === "sentinel" && payload === "[DONE]") {
           return;
         }
 
@@ -170,7 +171,12 @@ export async function* requestStream<T>(
       }
     }
 
-    throw new LlamaStreamError("Stream ended without [DONE] marker");
+    // In native mode the server closes the stream after the final ordinary
+    // `data:` payload, so end of stream is the terminator. In sentinel mode the
+    // stream must end via `data: [DONE]`; reaching here means it did not.
+    if (termination === "sentinel") {
+      throw new LlamaStreamError("Stream ended without [DONE] marker");
+    }
   } finally {
     // Cancel (not just release) so an early consumer break propagates upstream
     // through the TextDecoderStream to response.body and closes the underlying

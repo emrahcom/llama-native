@@ -1370,3 +1370,24 @@ status: done
 ## T-050: Add native termination mode to requestStream
 
 Per `specs/core/streaming.md`.
+
+status: done
+
+- `src/request/mod.ts`: `requestStream<T>` now takes a second
+  `termination: "sentinel" | "native"` parameter defaulting to `"sentinel"`,
+  matching the spec's TypeScript surface. The existing sentinel behavior is
+  unchanged: `data: [DONE]` ends iteration cleanly, and a body that ends without
+  it throws `LlamaStreamError` (`Stream ended without [DONE] marker`).
+- In native mode the `[DONE]` payload is no longer treated as a sentinel (it is
+  parsed and yielded like any other `data:` payload), and end of stream ends
+  iteration cleanly rather than throwing, per the spec's native-termination
+  description for the native endpoints. The `[DONE]` check is gated on
+  `termination === "sentinel"` and the end-of-stream `LlamaStreamError` is
+  thrown only in sentinel mode.
+
+findings:
+
+- No endpoint passes `"native"` yet; the native `/completion` endpoint that
+  selects this mode belongs to its own task. The new branch is covered only by
+  the existing sentinel-mode tests until then; native-mode tests for
+  `requestStream` belong to their own task per the T-027/T-028 precedent.
