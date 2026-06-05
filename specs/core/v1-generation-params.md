@@ -60,6 +60,13 @@ All fields are optional; an omitted field uses the llama-server default. This
 type is the single home for the request fields shared by the generation
 endpoints.
 
+`top_k`, `min_p`, and `repeat_penalty` are llama.cpp sampling extensions, not
+part of the OpenAI API. llama-server accepts them on its OpenAI-compatible
+endpoints and documents them in the llama-server reference; this is a stated
+deviation from the OpenAI base shape per the wire-types rule in
+`specs/conventions.md`. The remaining fields are standard OpenAI generation
+parameters. See `specs/references.md` for both references.
+
 ## Composition
 
 Each generation endpoint's request `extends V1GenerationParams` and adds its own

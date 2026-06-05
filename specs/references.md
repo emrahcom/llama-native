@@ -6,5 +6,7 @@ External documentation that specs in this repository may cite.
   HTTP API documentation for the server this module wraps.
 
 - **[OpenAI API](https://developers.openai.com/api/reference/overview)**\
-  Specifications for the OpenAI-compatible endpoints (chat completions,
-  embeddings, models).
+  Base shapes for the OpenAI-compatible `/v1` endpoints (chat completions,
+  completions, models). llama-server extends these with extra sampling
+  parameters (e.g. `top_k`, `min_p`, `repeat_penalty`); those extensions are
+  documented in the llama-server reference above, not here.
