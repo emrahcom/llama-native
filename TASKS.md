@@ -1527,3 +1527,8 @@ findings:
 - The streaming example writes raw deltas to `Deno.stdout` (a Deno-specific
   API), which is allowed for `examples/` per the conventions runtime rule, as
   already noted in T-032's and T-037's findings.
+
+## T-055: Integration test for /completion
+
+Per the integration-testing convention in `specs/conventions.md` and
+`specs/endpoints/completion.md`.
