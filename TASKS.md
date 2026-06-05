@@ -1498,3 +1498,8 @@ findings:
 - No `examples/completion.ts` yet; per the precedent set by T-026/T-037 and the
   Examples convention (`/completion` -> `examples/completion.ts`), the example
   belongs to its own task (already flagged in T-052's findings).
+
+## T-054: Example for /completion
+
+Per `specs/endpoints/completion.md` and the Examples convention in
+`specs/conventions.md`.
