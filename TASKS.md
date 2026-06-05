@@ -1413,3 +1413,7 @@ status: done
   `stubFetch`/`restoreFetch`/`sseResponse`/`collect` scaffolding; no new helpers
   or imports were needed. Sentinel-mode (default) behavior stays covered by the
   existing cases that omit the `termination` argument.
+
+## T-052: Implement /completion
+
+Per `specs/endpoints/completion.md`.
