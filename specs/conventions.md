@@ -12,9 +12,9 @@ Rules that every spec and the implementation inherit.
 - **Wire types match the documented server**\
   Every field a wire type models matches the server as documented in
   `specs/references.md` in name, type, and shape. A spec may model only a subset
-  of the inputs and features the server supports and need not list what it omits;
-  keeping the initial surface small is intended. It must not contradict the
-  server, though: a modeled field with the wrong name, type, or shape, or a
+  of the inputs and features the server supports and need not list what it
+  omits; keeping the initial surface small is intended. It must not contradict
+  the server, though: a modeled field with the wrong name, type, or shape, or a
   response that omits a field the server returns for a feature the spec does
   support, is a defect unless the spec states the deviation.
 
