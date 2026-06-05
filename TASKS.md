@@ -1461,3 +1461,40 @@ findings:
 ## T-053: Tests for /completion
 
 Per `specs/endpoints/completion.md`.
+
+status: done
+
+- Added `completion` cases to `tests/llama.test.ts` covering the
+  /completion-specific surface from `specs/endpoints/completion.md`.
+  Non-streaming: it issues `POST <baseUrl>/completion`, serializes the
+  `CompletionRequest` as the JSON body preserving the snake_case optional fields
+  (`n_predict`, plus `stop`/`temperature`) when provided, omits the optional
+  fields from the body when not provided (so they are not forced onto the wire
+  as `undefined`), accepts the array `prompt` form built from text segments and
+  token IDs (serialized verbatim), returns the parsed JSON body as
+  `CompletionResponse` on HTTP 200 (a fully-formed response including
+  `stop_type`, the token counts, and a `Timings` block), and forwards the
+  `signal` option to the underlying `fetch` call.
+- Streaming: with `stream: true` it issues `POST <baseUrl>/completion`,
+  serializes the `CompletionRequest` including the `stream` field as the JSON
+  body, returns an `AsyncIterable<CompletionChunk>` that yields the SSE `data:`
+  chunks parsed in order (a `stop: false` delta chunk followed by a final
+  `stop: true` chunk carrying the completion fields), ending iteration after the
+  `stop: true` chunk with no `[DONE]` sentinel per the native termination mode,
+  and forwards the `signal` option to the underlying `fetch` call.
+- Followed the precedent established by T-025/T-031/T-036: shared HTTP and
+  streaming behavior (auth, error mapping, abort propagation, native-termination
+  end-of-stream handling, JSON parse failures) is exercised in
+  `tests/request.test.ts` against the `request`/`requestStream` helpers directly
+  (T-013/T-028/T-051) and is not duplicated here.
+- Imported `CompletionResponse` and `CompletionChunk` as types alongside the
+  existing imports from the public surface to annotate the expected payloads.
+  Reused the existing `stubFetch`/`restoreFetch` pattern and the
+  `sseResponse`/`collect` SSE helpers already present in `tests/llama.test.ts`;
+  no new helpers or imports were needed.
+
+findings:
+
+- No `examples/completion.ts` yet; per the precedent set by T-026/T-037 and the
+  Examples convention (`/completion` -> `examples/completion.ts`), the example
+  belongs to its own task (already flagged in T-052's findings).

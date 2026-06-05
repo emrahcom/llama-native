@@ -1,5 +1,7 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
+  type CompletionChunk,
+  type CompletionResponse,
   Llama,
   type LlamaOptions,
   type V1ChatCompletionsChunk,
@@ -937,6 +939,247 @@ Deno.test("v1.chat.completions with stream: true forwards the signal option to f
         messages: [{ role: "user", content: "Hello" }],
         stream: true,
       }, {
+        signal: controller.signal,
+      }),
+    );
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+// A representative finished native completion, reused where the parsed value is
+// not asserted. The `timings` block carries the full performance measurement.
+const completionResponse: CompletionResponse = {
+  content: " world",
+  stop: true,
+  model: "my-model",
+  stop_type: "eos",
+  stopping_word: "",
+  tokens_predicted: 2,
+  tokens_evaluated: 1,
+  tokens_cached: 0,
+  truncated: false,
+  timings: {
+    prompt_n: 1,
+    prompt_ms: 1,
+    prompt_per_token_ms: 1,
+    prompt_per_second: 1000,
+    predicted_n: 2,
+    predicted_ms: 2,
+    predicted_per_token_ms: 1,
+    predicted_per_second: 1000,
+  },
+};
+
+Deno.test("completion issues POST /completion against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.completion({ prompt: "Hello" });
+    assertEquals(seenUrl, "http://example.com:9000/completion");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion sends the CompletionRequest as the JSON body, preserving optional fields", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    await llama.completion({
+      prompt: "Hello",
+      n_predict: 1024,
+      stop: ["\n"],
+      temperature: 0.7,
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        prompt: "Hello",
+        n_predict: 1024,
+        stop: ["\n"],
+        temperature: 0.7,
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion omits optional fields from the body when not provided", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    await llama.completion({ prompt: "Hello" });
+    assertEquals(seenBody, JSON.stringify({ prompt: "Hello" }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion accepts the array prompt form built from text and token IDs", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    await llama.completion({ prompt: ["Hello", 123, " world"] });
+    assertEquals(
+      seenBody,
+      JSON.stringify({ prompt: ["Hello", 123, " world"] }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion returns the parsed JSON body as CompletionResponse on HTTP 200", async () => {
+  stubFetch(() =>
+    Promise.resolve(new Response(JSON.stringify(completionResponse)))
+  );
+  try {
+    const llama = new Llama();
+    const result = await llama.completion({ prompt: "Hello" });
+    assertEquals(result, completionResponse);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.completion({ prompt: "Hello" }, { signal: controller.signal });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion with stream: true issues POST /completion against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(
+      sseResponse([`data: ${JSON.stringify(completionResponse)}\n\n`]),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await collect(llama.completion({ prompt: "Hello", stream: true }));
+    assertEquals(seenUrl, "http://example.com:9000/completion");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion with stream: true sends the CompletionRequest including stream as the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      sseResponse([`data: ${JSON.stringify(completionResponse)}\n\n`]),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await collect(
+      llama.completion({ prompt: "Hello", n_predict: 8, stream: true }),
+    );
+    assertEquals(
+      seenBody,
+      JSON.stringify({ prompt: "Hello", n_predict: 8, stream: true }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion with stream: true yields parsed CompletionChunk values in order, ending after the stop chunk with no [DONE]", async () => {
+  const first: CompletionChunk = {
+    content: " world",
+    stop: false,
+  };
+  const last: CompletionChunk = {
+    content: "!",
+    stop: true,
+    model: "my-model",
+    stop_type: "eos",
+    stopping_word: "",
+    tokens_predicted: 2,
+    tokens_evaluated: 1,
+    tokens_cached: 0,
+    truncated: false,
+    timings: {
+      prompt_n: 1,
+      prompt_ms: 1,
+      prompt_per_token_ms: 1,
+      prompt_per_second: 1000,
+      predicted_n: 2,
+      predicted_ms: 2,
+      predicted_per_token_ms: 1,
+      predicted_per_second: 1000,
+    },
+  };
+  stubFetch(() =>
+    Promise.resolve(
+      sseResponse([
+        `data: ${JSON.stringify(first)}\n\n`,
+        `data: ${JSON.stringify(last)}\n\n`,
+      ]),
+    )
+  );
+  try {
+    const llama = new Llama();
+    const chunks = await collect(
+      llama.completion({ prompt: "Hello", stream: true }),
+    );
+    assertEquals(chunks, [first, last]);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion with stream: true forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      sseResponse([`data: ${JSON.stringify(completionResponse)}\n\n`]),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await collect(
+      llama.completion({ prompt: "Hello", stream: true }, {
         signal: controller.signal,
       }),
     );
