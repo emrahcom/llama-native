@@ -1391,3 +1391,7 @@ findings:
   selects this mode belongs to its own task. The new branch is covered only by
   the existing sentinel-mode tests until then; native-mode tests for
   `requestStream` belong to their own task per the T-027/T-028 precedent.
+
+## T-051: Tests for native termination mode
+
+Per `specs/core/streaming.md`.
