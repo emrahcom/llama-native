@@ -14,12 +14,18 @@ and live in `src/v1/mod.ts`.
 
 ## Server requirements
 
-This endpoint requires llama-server to be started in embedding mode with a
-pooling type other than `none`, for example `--embedding --pooling mean`. With
-pooling type `none` the server produces unpooled, per-token output that is not
-OpenAI-compatible and rejects the request with HTTP 400 (message
-`Pooling type 'none' is not OAI compatible`), surfaced as `LlamaHTTPError` per
-`specs/core/request.md`.
+This endpoint requires llama-server to be started with two launch flags, both
+mandatory:
+
+- `--embedding`, which enables the embeddings endpoint, and
+- `--pooling` set to a type other than `none`, which produces one pooled vector
+  per input. `mean` is a safe choice (`--pooling mean`).
+
+A full launch therefore includes both: `--embedding --pooling mean`. The
+`--pooling` flag is not optional here; with pooling type `none` the server
+produces unpooled, per-token output that is not OpenAI-compatible and rejects
+the request with HTTP 400 (message `Pooling type 'none' is not OAI compatible`),
+surfaced as `LlamaHTTPError` per `specs/core/request.md`.
 
 ## TypeScript surface
 
