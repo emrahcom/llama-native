@@ -1,5 +1,5 @@
 // Integration tests for /v1/embeddings. Requires a running llama-server on the
-// default local address, started with embedding support (e.g. --embeddings).
+// default local address, started with embedding support (e.g. --embedding).
 // Run with: deno test --allow-net integration/v1-embeddings.test.ts
 import { assert, assertEquals } from "@std/assert";
 import { Llama, type V1EmbeddingsResponse } from "@emrahcom/llama-native";
