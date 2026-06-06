@@ -2,6 +2,7 @@ import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
   type CompletionChunk,
   type CompletionResponse,
+  type EmbeddingResponse,
   Llama,
   type LlamaOptions,
 } from "@emrahcom/llama-native";
@@ -501,6 +502,87 @@ Deno.test("completion with stream: true forwards the signal option to fetch", as
         signal: controller.signal,
       }),
     );
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding issues POST /embedding against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(new Response(JSON.stringify([])));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.embedding({ content: "Hello" });
+    assertEquals(seenUrl, "http://example.com:9000/embedding");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding sends the EmbeddingRequest as the JSON body for a single input", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify([])));
+  });
+  try {
+    const llama = new Llama();
+    await llama.embedding({ content: "Hello" });
+    assertEquals(seenBody, JSON.stringify({ content: "Hello" }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding sends the EmbeddingRequest as the JSON body for a batch input", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify([])));
+  });
+  try {
+    const llama = new Llama();
+    await llama.embedding({ content: ["Hello", "World"] });
+    assertEquals(seenBody, JSON.stringify({ content: ["Hello", "World"] }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding returns the parsed JSON body as EmbeddingResponse on HTTP 200", async () => {
+  const payload: EmbeddingResponse = [
+    { index: 0, embedding: [[0.1, 0.2, 0.3]] },
+    { index: 1, embedding: [[0.4, 0.5, 0.6]] },
+  ];
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.embedding({ content: ["Hello", "World"] });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(new Response(JSON.stringify([])));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.embedding({ content: "Hello" }, {
+      signal: controller.signal,
+    });
     assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();

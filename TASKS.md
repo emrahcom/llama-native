@@ -1683,3 +1683,20 @@ status: done
 
 Per `specs/endpoints/embedding.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added five `embedding` unit tests to `tests/llama.test.ts` (POST path and
+  method, body serialization for a single input and for a batch input, parsed
+  `EmbeddingResponse` bare array on HTTP 200, and signal forwarding). The
+  `EmbeddingRequest` has only the required `content` field, so there is no
+  optional-field-omission test.
+- Added `integration/embedding.test.ts` with one test for a single input and one
+  for a batch input (verifying one indexed entry per input, in order). Since the
+  endpoint accepts both pooled and `--pooling none` launches, `embedding` is
+  asserted only as a non-empty array of non-empty float arrays. The header notes
+  the server must be started with `--embedding`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/embedding.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (112 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.
