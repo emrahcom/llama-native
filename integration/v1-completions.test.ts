@@ -30,7 +30,6 @@ Deno.test("v1.completions (non-streaming) returns a V1CompletionsResponse from a
   for (const choice of response.choices) {
     assertEquals(typeof choice.index, "number");
     assertEquals(typeof choice.text, "string");
-    assertEquals(choice.logprobs, null);
     assert(
       choice.finish_reason === "stop" || choice.finish_reason === "length",
     );
@@ -75,7 +74,6 @@ Deno.test("v1.completions (streaming) yields CompletionsChunks from a running se
     for (const choice of chunk.choices) {
       assertEquals(typeof choice.index, "number");
       assertEquals(typeof choice.text, "string");
-      assertEquals(choice.logprobs, null);
       assert(
         choice.finish_reason === null ||
           choice.finish_reason === "stop" ||

@@ -1573,3 +1573,19 @@ findings:
 ## T-056: Drop logprobs from v1.completions choices
 
 Per `specs/endpoints/v1-completions.md`.
+
+status: done
+
+- Removed the `logprobs: null` field (and its JSDoc) from `V1Choice` and
+  `V1ChunkChoice` in `src/v1/mod.ts`, matching the spec's choice types which no
+  longer model the always-null field. The chat endpoint's choice types already
+  omit it, so the two generation endpoints are now consistent.
+- Dropped `logprobs: null` from the three `V1CompletionsResponse`/
+  `V1CompletionsChunk` fixtures in `tests/llama.test.ts` and removed the two
+  `assertEquals(choice.logprobs, null)` assertions from
+  `integration/v1-completions.test.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint
+  src/mod.ts`, `deno test` (102 passed), and
+  `deno publish --dry-run
+  --allow-dirty` (success); all pass.

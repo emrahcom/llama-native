@@ -70,11 +70,6 @@ export interface V1Choice {
   /** The generated text. */
   text: string;
   /**
-   * Always `null` in the current scope (request-side `logprobs` not yet
-   * supported).
-   */
-  logprobs: null;
-  /**
    * `"stop"` when generation halted at a stop sequence or end of output,
    * `"length"` when it halted at `max_tokens`.
    */
@@ -114,11 +109,6 @@ export interface V1ChunkChoice {
    * for each `index`.
    */
   text: string;
-  /**
-   * Always `null` in the current scope (request-side `logprobs` not yet
-   * supported).
-   */
-  logprobs: null;
   /**
    * `null` while generation is in progress; becomes `"stop"` or `"length"` on
    * the final chunk.

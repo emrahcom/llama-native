@@ -427,7 +427,6 @@ Deno.test("v1.completions returns the parsed JSON body as V1CompletionsResponse 
       {
         index: 0,
         text: " world",
-        logprobs: null,
         finish_reason: "stop",
       },
     ],
@@ -557,7 +556,6 @@ Deno.test("v1.completions with stream: true yields parsed V1CompletionsChunk val
       {
         index: 0,
         text: " world",
-        logprobs: null,
         finish_reason: null,
       },
     ],
@@ -571,7 +569,6 @@ Deno.test("v1.completions with stream: true yields parsed V1CompletionsChunk val
       {
         index: 0,
         text: "!",
-        logprobs: null,
         finish_reason: "stop",
       },
     ],
