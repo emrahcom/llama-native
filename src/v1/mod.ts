@@ -116,6 +116,51 @@ export interface V1ChunkChoice {
   finish_reason: "stop" | "length" | null;
 }
 
+/** A request to generate embedding vectors for one or more input texts. */
+export interface V1EmbeddingsRequest {
+  /**
+   * The text to embed: a single string, or an array of strings to embed in one
+   * request (a batch). Each input produces one vector.
+   */
+  input: string | string[];
+  /** The model identifier; when omitted, llama-server uses its loaded model. */
+  model?: string;
+}
+
+/** A response containing embedding vectors, one per input. */
+export interface V1EmbeddingsResponse {
+  /** The discriminator, always `"list"`. */
+  object: "list";
+  /** The list of generated embeddings, one entry per input. */
+  data: V1Embedding[];
+  /** The model that produced the embeddings. */
+  model: string;
+  /** The token counts for the request. */
+  usage: V1EmbeddingsUsage;
+}
+
+/** A single embedding vector in a {@link V1EmbeddingsResponse}. */
+export interface V1Embedding {
+  /** The discriminator, always `"embedding"`. */
+  object: "embedding";
+  /** The position in the `data` array, matching the order of `input`. */
+  index: number;
+  /** The vector: a list of floats. */
+  embedding: number[];
+}
+
+/**
+ * The token counts for an embeddings request. Specific to this endpoint and
+ * distinct from the shared {@link V1Usage}: nothing is generated, so there is no
+ * `completion_tokens` and no `prompt_tokens_details`.
+ */
+export interface V1EmbeddingsUsage {
+  /** The tokens in the input. */
+  prompt_tokens: number;
+  /** The total tokens; equal to `prompt_tokens`, since nothing is generated. */
+  total_tokens: number;
+}
+
 /** The `/v1/*` sub-group of {@link Llama}. */
 export class V1 {
   #config: Config;
@@ -193,5 +238,25 @@ export class V1 {
       body: request,
       signal: options?.signal,
     }) as Promise<V1CompletionsResponse>;
+  }
+
+  /**
+   * Generates embedding vectors for one or more input texts.
+   *
+   * Issues `POST /v1/embeddings` with `request` as the JSON-serialized body and
+   * returns the parsed JSON as a {@link V1EmbeddingsResponse}. Embeddings are
+   * not streamed. Errors are handled per `specs/core/request.md`.
+   */
+  async embeddings(
+    request: V1EmbeddingsRequest,
+    options?: { signal?: AbortSignal },
+  ): Promise<V1EmbeddingsResponse> {
+    return await sendRequest({
+      config: this.#config,
+      method: "POST",
+      path: "/v1/embeddings",
+      body: request,
+      signal: options?.signal,
+    }) as V1EmbeddingsResponse;
   }
 }

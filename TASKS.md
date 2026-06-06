@@ -1593,3 +1593,14 @@ status: done
 ## T-057: Implement /v1/embeddings
 
 Per `specs/endpoints/v1-embeddings.md`.
+
+status: done
+
+- Added the `V1EmbeddingsRequest`, `V1EmbeddingsResponse`, `V1Embedding`, and
+  `V1EmbeddingsUsage` interfaces to `src/v1/mod.ts`, and an `embeddings` method
+  on `V1` that issues `POST /v1/embeddings` and returns the parsed
+  `V1EmbeddingsResponse` (non-streaming, per the spec).
+- Re-exported the four new types from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (102 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

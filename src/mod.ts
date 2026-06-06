@@ -33,6 +33,10 @@ export type {
   V1CompletionsChunk,
   V1CompletionsRequest,
   V1CompletionsResponse,
+  V1Embedding,
+  V1EmbeddingsRequest,
+  V1EmbeddingsResponse,
+  V1EmbeddingsUsage,
   V1Model,
   V1ModelsResponse,
 } from "./v1/mod.ts";
