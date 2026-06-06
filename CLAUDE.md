@@ -41,6 +41,11 @@ A Deno/JSR TypeScript module that wraps llama.cpp's llama-server REST API.
 - Push back on questionable specs or tasks; raise findings during implementation
   rather than silently agreeing.
 - Read the relevant spec section before implementing.
+- Verify before asserting. Base any claim, finding, or decision on the current
+  state of the source: re-read the file, re-run the check, re-confirm, rather
+  than relying on memory or an earlier read, which may be stale. Files can
+  change mid-session, including from another Claude session working this project
+  concurrently. When raising a finding, cite the current source.
 - Before implementing a change to a wire type (a request, response, or chunk
   field crossing the HTTP boundary), verify each field's name, type, and shape
   against the reference in `specs/references.md`. On an unstated contradiction
