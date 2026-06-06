@@ -1667,3 +1667,14 @@ status: done
 ## T-061: Implement /embedding
 
 Per `specs/endpoints/embedding.md`.
+
+status: done
+
+- Added the `EmbeddingRequest`, `EmbeddingResponse`, and `Embedding` types to
+  `src/llama/mod.ts`, and an `embedding` method on `Llama` (beside `health`,
+  `tokenize`, `completion`) that issues `POST /embedding` and returns the parsed
+  `EmbeddingResponse` (a bare array, non-streaming, per the spec).
+- Re-exported the three new types from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (107 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

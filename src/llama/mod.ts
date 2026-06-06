@@ -216,6 +216,43 @@ export interface Timings {
   predicted_per_second: number;
 }
 
+/**
+ * A request to generate embedding vectors for one or more inputs using
+ * llama-server's native API.
+ *
+ * This is a native-family type and carries no prefix per the API-families rule
+ * in `specs/conventions.md`; field names coincide with the `/v1/embeddings`
+ * types only where the server defines them identically, not because the types
+ * are shared. Omitted optional fields use llama-server defaults.
+ */
+export interface EmbeddingRequest {
+  /**
+   * The input to embed: a single string, or an array of strings to embed in one
+   * request (a batch). Each input produces one entry in the response.
+   */
+  content: string | string[];
+}
+
+/**
+ * The response to an {@link EmbeddingRequest}: a JSON array of {@link Embedding}
+ * entries, one per input, not an object wrapper. It carries no `object`,
+ * `model`, or `usage` fields.
+ */
+export type EmbeddingResponse = Embedding[];
+
+/** A single embedding entry in an {@link EmbeddingResponse}. */
+export interface Embedding {
+  /** The position matching the order of `content`. */
+  index: number;
+  /**
+   * A two-dimensional array of floats. Under `--pooling none` each inner array
+   * is the vector for one token of the input, in order; under a pooling type
+   * such as `--pooling mean` there is a single inner array, the pooled vector
+   * for the input.
+   */
+  embedding: number[][];
+}
+
 const DEFAULT_BASE_URL = "http://localhost:8080";
 
 function normalizeBaseUrl(baseUrl: string | undefined): string {
@@ -328,5 +365,26 @@ export class Llama {
       body: request,
       signal: options?.signal,
     }) as Promise<CompletionResponse>;
+  }
+
+  /**
+   * Generates embedding vectors for one or more inputs using llama-server's
+   * native API.
+   *
+   * Issues `POST /embedding` with `request` as the JSON-serialized body and
+   * returns the parsed JSON as an {@link EmbeddingResponse}. Embeddings are not
+   * streamed. Errors are handled per `specs/core/request.md`.
+   */
+  async embedding(
+    request: EmbeddingRequest,
+    options?: { signal?: AbortSignal },
+  ): Promise<EmbeddingResponse> {
+    return await sendRequest({
+      config: this.#config,
+      method: "POST",
+      path: "/embedding",
+      body: request,
+      signal: options?.signal,
+    }) as EmbeddingResponse;
   }
 }
