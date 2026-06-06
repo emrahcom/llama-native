@@ -1700,3 +1700,8 @@ status: done
   `deno check integration/embedding.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (112 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-063: Example for /embedding
+
+Per `specs/endpoints/embedding.md` and the example conventions in
+`specs/conventions.md`.
