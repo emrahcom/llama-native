@@ -8,6 +8,7 @@ import {
   type V1ChatCompletionsResponse,
   type V1CompletionsChunk,
   type V1CompletionsResponse,
+  type V1EmbeddingsResponse,
 } from "@emrahcom/llama-native";
 
 const originalFetch = globalThis.fetch;
@@ -1180,6 +1181,134 @@ Deno.test("completion with stream: true forwards the signal option to fetch", as
         signal: controller.signal,
       }),
     );
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.embeddings issues POST /v1/embeddings against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          object: "list",
+          data: [],
+          model: "my-model",
+          usage: { prompt_tokens: 0, total_tokens: 0 },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.v1.embeddings({ input: "Hello" });
+    assertEquals(seenUrl, "http://example.com:9000/v1/embeddings");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.embeddings sends the V1EmbeddingsRequest as the JSON body, preserving the model field and batch input", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          object: "list",
+          data: [],
+          model: "my-model",
+          usage: { prompt_tokens: 0, total_tokens: 0 },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.embeddings({
+      input: ["Hello", "World"],
+      model: "my-model",
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({ input: ["Hello", "World"], model: "my-model" }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.embeddings omits the optional model field from the body when not provided", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          object: "list",
+          data: [],
+          model: "my-model",
+          usage: { prompt_tokens: 0, total_tokens: 0 },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.embeddings({ input: "Hello" });
+    assertEquals(seenBody, JSON.stringify({ input: "Hello" }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.embeddings returns the parsed JSON body as V1EmbeddingsResponse on HTTP 200", async () => {
+  const payload: V1EmbeddingsResponse = {
+    object: "list",
+    data: [
+      { object: "embedding", index: 0, embedding: [0.1, 0.2, 0.3] },
+      { object: "embedding", index: 1, embedding: [0.4, 0.5, 0.6] },
+    ],
+    model: "my-model",
+    usage: { prompt_tokens: 4, total_tokens: 4 },
+  };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.v1.embeddings({ input: ["Hello", "World"] });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.embeddings forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          object: "list",
+          data: [],
+          model: "my-model",
+          usage: { prompt_tokens: 0, total_tokens: 0 },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.v1.embeddings({ input: "Hello" }, {
+      signal: controller.signal,
+    });
     assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();

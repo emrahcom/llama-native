@@ -1609,3 +1609,17 @@ status: done
 
 Per `specs/endpoints/v1-embeddings.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added five `v1.embeddings` unit tests to `tests/llama.test.ts` (POST path and
+  method, body serialization preserving `model` and batch `input`, omission of
+  the optional `model`, parsed `V1EmbeddingsResponse` on HTTP 200, and signal
+  forwarding), mirroring the `v1.completions` non-streaming tests.
+- Added `integration/v1-embeddings.test.ts` with one test for a single input and
+  one for a batch input (verifying one indexed embedding per input, in order).
+  The header notes the server must be started with embedding support.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/v1-embeddings.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (107 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.
