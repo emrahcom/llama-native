@@ -104,8 +104,15 @@ Rules that every spec and the implementation inherit.
 
 ## Testing
 
-- **Test files live under `tests/`**\
-  Tests for `src/<component>/` go in `tests/<component>.test.ts`.
+- **Test files live under `tests/`, one per component**\
+  Each component (a folder under `src/` with a `mod.ts`) has its own test file:
+  tests for `src/<path>/` go in `tests/<path>.test.ts`, with slashes in the
+  component path replaced by hyphens. So `src/llama/` → `tests/llama.test.ts`,
+  `src/v1/` → `tests/v1.test.ts`, and `src/v1/chat/` → `tests/v1-chat.test.ts`.
+  A component's tests live only in its own file and are never folded into
+  another component's; in particular, tests for endpoints reached through a
+  sub-group (`llama.v1.models`, `llama.v1.chat.completions`, and the like)
+  belong to that sub-group's component file, not `tests/llama.test.ts`.
 
 - **Duplication between test files is acceptable**\
   Shared test scaffolding (e.g. `fetch` stubs, helper types) may be repeated
