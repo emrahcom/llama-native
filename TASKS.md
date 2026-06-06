@@ -1640,3 +1640,9 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check examples/v1-embeddings.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (107 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-060: Split unit tests into per-component files
+
+Per the testing conventions in `specs/conventions.md`. `tests/llama.test.ts`
+currently also holds tests for `src/v1/` and `src/v1/chat/`; move those into
+`tests/v1.test.ts` and `tests/v1-chat.test.ts` respectively.
