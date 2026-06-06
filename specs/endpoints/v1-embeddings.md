@@ -12,6 +12,15 @@ This endpoint adds an `embeddings` method to the existing `V1` sub-group,
 accessed as `llama.v1.embeddings`. All types below are specific to this endpoint
 and live in `src/v1/mod.ts`.
 
+## Server requirements
+
+This endpoint requires llama-server to be started in embedding mode with a
+pooling type other than `none`, for example `--embedding --pooling mean`. With
+pooling type `none` the server produces unpooled, per-token output that is not
+OpenAI-compatible and rejects the request with HTTP 400 (message
+`Pooling type 'none' is not OAI compatible`), surfaced as `LlamaHTTPError` per
+`specs/core/request.md`.
+
 ## TypeScript surface
 
 ```ts

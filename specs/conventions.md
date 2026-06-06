@@ -115,7 +115,10 @@ Rules that every spec and the implementation inherit.
   Integration tests exercise endpoints against a running llama-server instead of
   stubbed `fetch`, confirming that real server output matches the typed shapes.
   They target the default local server (`new Llama()` with no arguments) and are
-  not gated on any environment variable. One file per endpoint, named by the
+  not gated on any environment variable. The llama-server they run against must
+  be started with whatever launch flags the endpoint's spec requires; the client
+  configuration stays at the `new Llama()` default. One file per endpoint, named
+  by the
   endpoint path with slashes replaced by hyphens (e.g.
   `integration/v1-chat-completions.test.ts`), with one test per endpoint case
   (each endpoint, each mode). They are not part of the default `deno test` run,
@@ -136,11 +139,10 @@ Rules that every spec and the implementation inherit.
   command includes both `--allow-net` and `--allow-env`.
 
 - **Server launch requirements documented in the header**\
-  When the endpoint needs llama-server to be started with flags beyond a plain
-  launch, the example's header notes how the server must be started for the
-  example to run (for example, `/v1/embeddings` needs `--embedding` and a
-  non-`none` `--pooling` type such as `--pooling mean`). When a default launch
-  serves the endpoint, no note is needed.
+  When an endpoint's spec states server requirements beyond a plain launch, the
+  example's header notes how llama-server must be started for the example to
+  run, using the launch flags that endpoint's spec calls for. When a default
+  launch serves the endpoint, no note is needed.
 
 - **Examples stay minimal**\
   An example demonstrates the endpoint's core usage and nothing more: the call,
