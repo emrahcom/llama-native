@@ -29,7 +29,6 @@ export interface V1CompletionsResponse {
 export interface V1Choice {
   index: number;
   text: string;
-  logprobs: null;
   finish_reason: "stop" | "length";
 }
 
@@ -46,7 +45,6 @@ export interface V1CompletionsChunk {
 export interface V1ChunkChoice {
   index: number;
   text: string;
-  logprobs: null;
   finish_reason: "stop" | "length" | null;
 }
 
@@ -124,8 +122,6 @@ Each `V1Choice` has:
 
 - an `index` (position in the choices array)
 - a `text` (the generated text)
-- a `logprobs` field, always `null` in the current scope (request-side
-  `logprobs` not yet supported)
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`)
 
@@ -146,7 +142,7 @@ chunk depending on configuration).
 
 Each `V1ChunkChoice` has:
 
-- an `index`, `text`, and `logprobs` field with the same meaning as `V1Choice`
+- an `index` and `text` field with the same meaning as `V1Choice`
 - a `finish_reason` that is `null` while generation is in progress and becomes
   `"stop"` or `"length"` on the final chunk
 
