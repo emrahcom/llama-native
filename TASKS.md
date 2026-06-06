@@ -1623,3 +1623,8 @@ status: done
   `deno check integration/v1-embeddings.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (107 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-059: Example for /v1/embeddings
+
+Per `specs/endpoints/v1-embeddings.md` and the example conventions in
+`specs/conventions.md`.
