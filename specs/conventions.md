@@ -135,6 +135,13 @@ Rules that every spec and the implementation inherit.
   (client defaults apply when unset), so they call `Deno.env.get` and the
   command includes both `--allow-net` and `--allow-env`.
 
+- **Server launch requirements documented in the header**\
+  When the endpoint needs llama-server to be started with flags beyond a plain
+  launch, the example's header notes how the server must be started for the
+  example to run (for example, `/v1/embeddings` needs `--embedding` and a
+  non-`none` `--pooling` type such as `--pooling mean`). When a default launch
+  serves the endpoint, no note is needed.
+
 - **Examples stay minimal**\
   An example demonstrates the endpoint's core usage and nothing more: the call,
   its essential options, and reading the result. Examples are learning material,
