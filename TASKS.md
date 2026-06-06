@@ -1646,3 +1646,20 @@ status: done
 Per the testing conventions in `specs/conventions.md`. `tests/llama.test.ts`
 currently also holds tests for `src/v1/` and `src/v1/chat/`; move those into
 `tests/v1.test.ts` and `tests/v1-chat.test.ts` respectively.
+
+status: done
+
+- Moved the `src/v1/` tests (`v1.models`, `v1.completions` non-streaming and
+  streaming, `v1.embeddings`) from `tests/llama.test.ts` into the new
+  `tests/v1.test.ts`, and the `src/v1/chat/` tests (`v1.chat.completions`
+  non-streaming and streaming) into the new `tests/v1-chat.test.ts`.
+  `tests/llama.test.ts` now holds only the `src/llama/` tests (config, health,
+  tokenize, native completion).
+- Each file carries its own copy of the `fetch` stub scaffolding and the
+  `sseResponse`/`collect` streaming helpers it needs, per the convention that
+  test scaffolding may be duplicated rather than extracted into a shared helper.
+- Pure move: no test was added, removed, or changed. `deno test` reports the
+  same 107 passing tests as before.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (107 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
