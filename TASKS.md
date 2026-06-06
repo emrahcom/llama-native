@@ -1705,3 +1705,15 @@ status: done
 
 Per `specs/endpoints/embedding.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/embedding.ts` demonstrating a single-input call and a batch
+  (array `content`) call, reading `baseUrl`/`apiKey` from the
+  `LLAMA_BASE_URL`/`LLAMA_API_KEY` environment variables. The header documents
+  the `deno run --allow-net --allow-env` command and the server launch
+  requirement (`--embedding`, with the `--pooling` note), sourced from the
+  spec's "Server requirements" section.
+- Ran `deno fmt`, `deno lint`, `deno check examples/embedding.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (112 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
