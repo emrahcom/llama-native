@@ -118,8 +118,7 @@ Rules that every spec and the implementation inherit.
   not gated on any environment variable. The llama-server they run against must
   be started with whatever launch flags the endpoint's spec requires; the client
   configuration stays at the `new Llama()` default. One file per endpoint, named
-  by the
-  endpoint path with slashes replaced by hyphens (e.g.
+  by the endpoint path with slashes replaced by hyphens (e.g.
   `integration/v1-chat-completions.test.ts`), with one test per endpoint case
   (each endpoint, each mode). They are not part of the default `deno test` run,
   require a running server, and are not published.
