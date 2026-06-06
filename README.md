@@ -10,6 +10,21 @@ completions.
 
 Assuming that `llama-server` is running in your local environment...
 
+Native completion:
+
+```ts
+import { Llama } from "jsr:@emrahcom/llama-native";
+
+const llama = new Llama();
+const res = await llama.completion({
+  prompt: "The capital of France is",
+});
+
+console.log(res.content);
+```
+
+OpenAI-compatible chat completion:
+
 ```ts
 import { Llama } from "jsr:@emrahcom/llama-native";
 
