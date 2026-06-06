@@ -1678,3 +1678,8 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (107 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-062: Tests for /embedding
+
+Per `specs/endpoints/embedding.md` and the testing conventions in
+`specs/conventions.md`. Covers both the unit test and the integration test.
