@@ -1569,3 +1569,7 @@ findings:
   (e.g. omits a `timings` sub-field), that is a spec/type mismatch to reconcile
   in the spec first, as noted for the streaming chunk shapes in T-038's
   findings.
+
+## T-056: Drop logprobs from v1.completions choices
+
+Per `specs/endpoints/v1-completions.md`.
