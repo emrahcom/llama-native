@@ -1771,3 +1771,14 @@ status: done
 ## T-067: Sync LlamaStreamError JSDoc to errors.md
 
 Per `specs/core/errors.md`.
+
+status: done
+
+- Updated the `LlamaStreamError` JSDoc in `src/errors/mod.ts` to match the
+  spec's three cases: it previously listed only the JSON-parse failure and the
+  missing-`[DONE]` terminator. Added the no-body case (`response.body` is
+  `null`) and qualified the terminator case as sentinel-mode only, noting that
+  native-mode streams end cleanly without a sentinel.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (116 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
