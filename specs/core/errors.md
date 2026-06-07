@@ -79,7 +79,10 @@ HTTP {status} from {method} {path}
 Thrown for failures specific to consuming an SSE stream from llama-server:
 
 - when a `data:` payload cannot be parsed as JSON
-- when the response body ends without the `data: [DONE]` terminator.
+- when the streaming response has no body (`response.body` is `null`)
+- in sentinel mode, when the response body ends without the `data: [DONE]`
+  terminator. Native-mode streams have no sentinel and end cleanly at end of
+  stream, so this case does not apply to them.
 
 See `specs/core/streaming.md` for the conditions under which each case applies.
 
