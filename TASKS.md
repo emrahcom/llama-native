@@ -1782,3 +1782,7 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (116 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-068: Sync tokenize add_special JSDoc to tokenize.md
+
+Per `specs/endpoints/tokenize.md`.
