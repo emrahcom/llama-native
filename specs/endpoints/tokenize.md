@@ -31,7 +31,7 @@ llama.tokenize(
 - `content`\
   is the input text
 - `add_special`\
-  controls whether the model's special tokens like BOS/EOS are prepended
+  controls whether the model's special tokens (such as a leading BOS) are added
 - `tokens`\
   is the resulting list of model token IDs
 
