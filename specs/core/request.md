@@ -41,8 +41,11 @@ helper is internal infrastructure; endpoint methods import it directly from
 The helper translates failures into the library's error types per
 `specs/core/errors.md`:
 
-- **`fetch` rejection that is `AbortError`**\
-  Re-thrown unchanged. The consumer's `AbortController` semantics are preserved.
+- **`AbortError` (from the `fetch` or from reading the success body)**\
+  Re-thrown unchanged, so the consumer's `AbortController` semantics are
+  preserved. This covers both an abort during the initial `fetch` and an abort
+  raised by `response.json()` while the body is still being read. Recognized per
+  the abort rule in `specs/core/errors.md`.
 
 - **`fetch` rejection that is not `AbortError`**\
   Wrapped in `LlamaError` with the original error attached via `cause`. Message:
@@ -57,4 +60,6 @@ The helper translates failures into the library's error types per
 
 - **Success response with unparseable body**\
   Wrapped in `LlamaError` with `JSON.parse`'s error attached via `cause`.
-  Message: `Failed to parse {method} {path} response body`.
+  Message: `Failed to parse {method} {path} response body`. This applies only to
+  a genuine parse failure; an `AbortError` raised while reading the body is
+  re-thrown unchanged per the abort bullet above, not wrapped here.
