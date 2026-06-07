@@ -279,6 +279,24 @@ Deno.test("request throws LlamaError when a success response body fails to parse
   }
 });
 
+Deno.test("request propagates an AbortError raised while reading the success body unchanged", async () => {
+  const abort = new DOMException("aborted", "AbortError");
+  const body = new ReadableStream({
+    start(controller) {
+      controller.error(abort);
+    },
+  });
+  stubFetch(() => Promise.resolve(new Response(body)));
+  try {
+    const error = await assertRejects(() =>
+      request({ config, method: "GET", path: "/health" })
+    );
+    assertStrictEquals(error, abort);
+  } finally {
+    restoreFetch();
+  }
+});
+
 const encoder = new TextEncoder();
 
 // Builds a streaming Response whose body emits the given chunks in order,

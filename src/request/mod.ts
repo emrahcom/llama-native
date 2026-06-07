@@ -85,6 +85,9 @@ export async function request(options: RequestOptions): Promise<unknown> {
   try {
     return await response.json();
   } catch (cause) {
+    if (cause instanceof DOMException && cause.name === "AbortError") {
+      throw cause;
+    }
     throw new LlamaError(
       `Failed to parse ${method} ${path} response body`,
       { cause },

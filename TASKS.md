@@ -1799,3 +1799,19 @@ status: done
 ## T-069: Propagate AbortError from the response-body read in request()
 
 Per `specs/core/request.md`.
+
+status: done
+
+- In `request()` in `src/request/mod.ts`, the success-body `response.json()`
+  catch now re-throws an `AbortError` (`DOMException` with
+  `name === "AbortError"`) unchanged instead of wrapping it as a parse failure,
+  matching the abort bullets in `specs/core/request.md`. Genuine parse failures
+  are still wrapped in `LlamaError`. Mirrors the existing abort handling in
+  `sendRequest` and the stream reader.
+- Added a regression test to `tests/request.test.ts` ("request propagates an
+  AbortError raised while reading the success body unchanged"): a 200 response
+  whose body stream errors with an `AbortError` must reject with that exact
+  error. The pre-existing abort test only covered a `fetch`-level abort.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (117 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
