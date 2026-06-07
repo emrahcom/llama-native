@@ -2,6 +2,7 @@ import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
   type CompletionChunk,
   type CompletionResponse,
+  type DetokenizeResponse,
   type EmbeddingResponse,
   Llama,
   type LlamaOptions,
@@ -235,6 +236,69 @@ Deno.test("tokenize forwards the signal option to fetch", async () => {
     const llama = new Llama();
     const controller = new AbortController();
     await llama.tokenize({ content: "hello" }, {
+      signal: controller.signal,
+    });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("detokenize issues POST /detokenize against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    return Promise.resolve(new Response(JSON.stringify({ content: "" })));
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.detokenize({ tokens: [1, 2, 3] });
+    assertEquals(seenUrl, "http://example.com:9000/detokenize");
+    assertEquals(seenMethod, "POST");
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("detokenize sends the DetokenizeRequest as the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify({ content: "" })));
+  });
+  try {
+    const llama = new Llama();
+    await llama.detokenize({ tokens: [1, 2, 3] });
+    assertEquals(seenBody, JSON.stringify({ tokens: [1, 2, 3] }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("detokenize returns the parsed JSON body as DetokenizeResponse on HTTP 200", async () => {
+  const payload: DetokenizeResponse = { content: "hello" };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.detokenize({ tokens: [1, 2, 3] });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("detokenize forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(new Response(JSON.stringify({ content: "" })));
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.detokenize({ tokens: [1, 2, 3] }, {
       signal: controller.signal,
     });
     assertStrictEquals(seenSignal, controller.signal);

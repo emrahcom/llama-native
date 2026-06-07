@@ -1736,3 +1736,17 @@ status: done
 
 Per `specs/endpoints/detokenize.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added four `detokenize` unit tests to `tests/llama.test.ts`, beside the
+  `tokenize` tests (POST path and method, body serialization, parsed
+  `DetokenizeResponse` on HTTP 200, and signal forwarding). `DetokenizeRequest`
+  has only the required `tokens` field, so there is no optional-field-omission
+  test.
+- Added `integration/detokenize.test.ts` with one test asserting the response
+  shape and one that round-trips tokens produced by `tokenize`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/detokenize.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (116 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.
