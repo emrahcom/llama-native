@@ -1755,3 +1755,15 @@ status: done
 
 Per `specs/endpoints/detokenize.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/detokenize.ts`, reading `baseUrl`/`apiKey` from the
+  `LLAMA_BASE_URL`/`LLAMA_API_KEY` environment variables and documenting the
+  `deno run --allow-net --allow-env` command in the header. Since token IDs are
+  model-specific, the example obtains a valid set from `/tokenize` first, then
+  converts them back with `detokenize`. A default launch serves the endpoint, so
+  the header carries no server-requirement note.
+- Ran `deno fmt`, `deno lint`, `deno check examples/detokenize.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (116 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
