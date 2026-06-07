@@ -1750,3 +1750,8 @@ status: done
   `deno check integration/detokenize.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (116 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-066: Example for /detokenize
+
+Per `specs/endpoints/detokenize.md` and the example conventions in
+`specs/conventions.md`.
