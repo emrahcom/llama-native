@@ -64,8 +64,12 @@ For each event with a data payload:
 The stream terminates cleanly only after a `data: [DONE]` event. If the response
 body ends without `[DONE]`, the iterator throws `LlamaStreamError`.
 
-Content remaining in the buffer at end of stream without a terminating `\n\n` is
-treated as an incomplete event and discarded.
+Events are recognized only when terminated by `\n\n`. Content remaining in the
+buffer at end of stream without a terminating `\n\n` is treated as an incomplete
+event and discarded. This includes the sentinel: a trailing `data: [DONE]` not
+followed by `\n\n` is discarded rather than recognized, so in sentinel mode the
+stream is treated as ending without `[DONE]` and the iterator throws
+`LlamaStreamError`.
 
 The rules above describe the sentinel mode used by the OpenAI-compatible
 endpoints, where `data: [DONE]` marks the end of the stream. The native
