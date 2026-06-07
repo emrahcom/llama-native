@@ -33,7 +33,8 @@ export interface TokenizeRequest {
   /** The input text. */
   content: string;
   /**
-   * Controls whether the model's special tokens like BOS/EOS are prepended.
+   * Controls whether the model's special tokens (such as a leading BOS) are
+   * added.
    */
   add_special?: boolean;
 }
