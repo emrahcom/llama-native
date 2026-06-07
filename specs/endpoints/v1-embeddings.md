@@ -9,8 +9,9 @@ retrieval, clustering, and similar tasks.
 `src/v1/`
 
 This endpoint adds an `embeddings` method to the existing `V1` sub-group,
-accessed as `llama.v1.embeddings`. All types below are specific to this endpoint
-and live in `src/v1/mod.ts`.
+accessed as `llama.v1.embeddings`. The endpoint-specific types declared below
+live in `src/v1/mod.ts` (the shared `V1Usage`, mentioned only for contrast, is
+the exception and lives in `src/types/v1.ts`).
 
 ## Server requirements
 
