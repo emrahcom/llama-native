@@ -19,7 +19,7 @@ on response handling.
 function requestStream<T>(
   options: RequestOptions,
   termination?: "sentinel" | "native",
-): AsyncIterable<T>;
+): AsyncGenerator<T>;
 ```
 
 `requestStream` is internal. It is not re-exported from `src/mod.ts`. Endpoint
@@ -33,10 +33,13 @@ termination mode described in the Termination section and defaults to
 - Sends a fetch request as specified by `options`, using the same URL,
   authorization, content-type, body serialization, and signal forwarding rules
   as `request()`.
-- Returns an `AsyncIterable<T>` that yields parsed event payloads in the order
-  the server emits them. Iteration is lazy: the underlying `fetch` runs on the
-  first `next()` call on the iterator, so all errors below surface during
-  iteration rather than synchronously from `requestStream` itself.
+- Implemented as an async generator (`async function*`), so it returns an
+  `AsyncGenerator<T>` (which is an `AsyncIterable<T>`) that yields parsed event
+  payloads in the order the server emits them. Iteration is lazy: the underlying
+  `fetch` runs on the first `next()` call on the iterator, so all errors below
+  surface during iteration rather than synchronously from `requestStream`
+  itself. The lazy-fetch and early-break cancellation behavior (see the
+  Cancellation section) rely on these generator semantics.
 
 ### SSE parsing
 
