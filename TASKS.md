@@ -1767,3 +1767,7 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check examples/detokenize.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (116 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-067: Sync LlamaStreamError JSDoc to errors.md
+
+Per `specs/core/errors.md`.
