@@ -197,7 +197,7 @@ stated deviation per the wire-types rule in `specs/conventions.md`.
 Each `CompletionChunk` carries a `content` delta and a `stop` flag. While
 generation is in progress, `stop` is `false` and only the delta fields are
 present. The final chunk has `stop: true` and carries the completion fields
-(`stop_type`, the token counts, `timings`), which is why those fields are
+(every field other than `content` and `stop`), which is why those fields are
 optional on the chunk type.
 
 Consumers reconstruct the full output by concatenating `content` across chunks.
