@@ -20,6 +20,8 @@ export type {
   CompletionChunk,
   CompletionRequest,
   CompletionResponse,
+  DetokenizeRequest,
+  DetokenizeResponse,
   Embedding,
   EmbeddingRequest,
   EmbeddingResponse,

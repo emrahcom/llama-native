@@ -1721,3 +1721,13 @@ status: done
 ## T-064: Implement /detokenize
 
 Per `specs/endpoints/detokenize.md`.
+
+status: done
+
+- Added the `DetokenizeRequest` and `DetokenizeResponse` types to
+  `src/llama/mod.ts`, and a `detokenize` method on `Llama` (beside `tokenize`)
+  that issues `POST /detokenize` and returns the parsed `DetokenizeResponse`.
+- Re-exported the two new types from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (112 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

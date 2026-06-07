@@ -44,6 +44,18 @@ export interface TokenizeResponse {
   tokens: number[];
 }
 
+/** Converts a list of model token IDs back into text. The inverse of tokenize. */
+export interface DetokenizeRequest {
+  /** The list of model token IDs to convert back to text. */
+  tokens: number[];
+}
+
+/** The result of a {@link DetokenizeRequest}. */
+export interface DetokenizeResponse {
+  /** The resulting text. */
+  content: string;
+}
+
 /**
  * A request to generate a text completion for a prompt using llama-server's
  * native API.
@@ -318,6 +330,27 @@ export class Llama {
       body: request,
       signal: options?.signal,
     }) as TokenizeResponse;
+  }
+
+  /**
+   * Converts a list of model token IDs back into text. The inverse of
+   * {@link tokenize}.
+   *
+   * Issues `POST /detokenize` with `request` as the JSON-serialized body and
+   * returns the parsed JSON as a {@link DetokenizeResponse}. Errors are handled
+   * per `specs/core/request.md`.
+   */
+  async detokenize(
+    request: DetokenizeRequest,
+    options?: { signal?: AbortSignal },
+  ): Promise<DetokenizeResponse> {
+    return await sendRequest({
+      config: this.#config,
+      method: "POST",
+      path: "/detokenize",
+      body: request,
+      signal: options?.signal,
+    }) as DetokenizeResponse;
   }
 
   /**
