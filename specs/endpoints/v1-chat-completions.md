@@ -71,6 +71,10 @@ export interface V1Delta {
 }
 ```
 
+`V1Usage` is the shared v1 type defined in `src/types/v1.ts` (per the
+shared-types rule in `specs/conventions.md`), not in `src/v1/chat/`. It is
+referenced by the chat completions response and chunk here, not re-declared.
+
 Called as
 
 ```
