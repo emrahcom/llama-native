@@ -115,13 +115,21 @@ export interface V1ChatCompletionsChunk {
 export interface V1ChatChunkChoice {
   index: number;
   delta: V1Delta;
-  finish_reason: "stop" | "length" | null;
+  finish_reason: "stop" | "length" | "tool_calls" | null;
 }
 
 export interface V1Delta {
   role?: "assistant";
   content?: string | null;
   reasoning_content?: string;
+  tool_calls?: V1DeltaToolCall[];
+}
+
+export interface V1DeltaToolCall {
+  index: number;
+  id?: string;
+  type?: "function";
+  function?: { name?: string; arguments?: string };
 }
 ```
 
@@ -164,8 +172,7 @@ The overload selected depends on the literal type of `request.stream`:
   controls whether and which tool the model calls (a `V1ToolChoice`)
 - `stream`\
   selects streaming mode when `true`; non-streaming when `false`, omitted, or
-  `undefined`. Tool calling is modeled on the non-streaming path only; the
-  streaming shape of tool calls is not yet modeled.
+  `undefined`
 
 The shared request fields are documented in
 `specs/core/v1-generation-params.md`.
@@ -248,7 +255,7 @@ Each `V1ChatChunkChoice` has:
 - an `index` with the same meaning as `V1ChatChoice`
 - a `delta` (a `V1Delta`: the incremental piece of the assistant's reply)
 - a `finish_reason` that is `null` while generation is in progress and becomes
-  `"stop"` or `"length"` on the final chunk
+  `"stop"`, `"length"`, or `"tool_calls"` on the final chunk
 
 Each `V1Delta` has:
 
@@ -259,10 +266,24 @@ Each `V1Delta` has:
   any text is produced)
 - an optional `reasoning_content`, the reasoning text fragment for this chunk;
   present for reasoning models
+- an optional `tool_calls`, incremental tool-call fragments for this chunk (a
+  list of `V1DeltaToolCall`); present when the model is calling tools
+
+Each `V1DeltaToolCall` has:
+
+- an `index` identifying which tool call in the assistant's reply the fragment
+  belongs to (distinct from the choice `index`)
+- an optional `id`, present on the first fragment for that tool call
+- an optional `type`, always `"function"` when present
+- an optional `function` with an optional `name` (present on the first fragment)
+  and an optional `arguments` (a fragment of the JSON-encoded arguments string)
 
 Consumers reconstruct the full reply by concatenating the non-null
-`delta.content` values across chunks for each `index`, and the reasoning trace
-by concatenating `delta.reasoning_content` the same way.
+`delta.content` values across chunks for each choice `index`, and the reasoning
+trace by concatenating `delta.reasoning_content` the same way. Tool calls are
+reconstructed per `tool_calls` `index`: take `id` and `function.name` from the
+first fragment that provides them, and concatenate the `function.arguments`
+fragments in order to form the complete JSON-encoded arguments string.
 
 ## Request
 
