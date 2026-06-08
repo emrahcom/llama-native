@@ -1870,3 +1870,19 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Extended `examples/v1-chat-completions.ts` (one file per endpoint, so tool
+  calling joins the existing chat example rather than getting its own file) with
+  a tool-calling section: a first request supplying a `get_weather` tool with
+  `tool_choice: "required"`, reading the returned `tool_calls`, then a follow-up
+  request that replays the assistant turn and a `tool` result message to get the
+  final reply. This exercises `V1Tool`, `tool_choice`, the response
+  `tool_calls`, and the assistant/tool message union variants.
+- Updated the file header to note the tool-calling section requires the server
+  started with `--jinja` and a tool-capable model, while the other sections run
+  on a default launch (sourced from the spec's server requirements).
+- Ran `deno fmt`, `deno lint`, `deno check examples/v1-chat-completions.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (120 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
