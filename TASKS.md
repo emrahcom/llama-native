@@ -1927,3 +1927,8 @@ status: done
   `deno check integration/v1-chat-completions.test.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-075: Example for streaming tool calls on /v1/chat/completions
+
+Per `specs/endpoints/v1-chat-completions.md` and the example conventions in
+`specs/conventions.md`.
