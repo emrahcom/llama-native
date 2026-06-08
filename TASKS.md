@@ -1815,3 +1815,8 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (117 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-070: Implement tool calling on /v1/chat/completions (non-streaming)
+
+Per `specs/endpoints/v1-chat-completions.md`. Non-streaming only; streaming tool
+calls are a later increment.
