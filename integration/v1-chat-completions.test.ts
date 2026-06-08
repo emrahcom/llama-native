@@ -1,5 +1,8 @@
 // Integration tests for /v1/chat/completions, one per mode (non-streaming and
-// streaming). Requires a running llama-server on the default local address.
+// streaming), plus tool calling. Requires a running llama-server on the default
+// local address; the tool-calling test additionally requires the server to be
+// started with `--jinja` and a model whose chat template supports tool use (see
+// the server requirements in specs/endpoints/v1-chat-completions.md).
 // Run with: deno test --allow-net integration/v1-chat-completions.test.ts
 import { assert, assertEquals } from "@std/assert";
 import {
@@ -43,6 +46,39 @@ Deno.test("v1.chat.completions (non-streaming) returns a V1ChatCompletionsRespon
       typeof response.usage.prompt_tokens_details.cached_tokens,
       "number",
     );
+  }
+});
+
+Deno.test("v1.chat.completions (non-streaming) returns tool calls when a tool is required", async () => {
+  const llama = new Llama();
+  const response: V1ChatCompletionsResponse = await llama.v1.chat.completions({
+    messages: [{ role: "user", content: "What is the weather in Paris?" }],
+    tools: [{
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Get the current weather for a city.",
+        parameters: {
+          type: "object",
+          properties: { city: { type: "string" } },
+          required: ["city"],
+        },
+      },
+    }],
+    tool_choice: "required",
+    seed: 42,
+  });
+  assert(response.choices.length > 0);
+  const choice = response.choices[0];
+  assertEquals(choice.finish_reason, "tool_calls");
+  assertEquals(choice.message.role, "assistant");
+  const toolCalls = choice.message.tool_calls;
+  assert(Array.isArray(toolCalls) && toolCalls.length > 0);
+  for (const call of toolCalls) {
+    assertEquals(typeof call.id, "string");
+    assertEquals(call.type, "function");
+    assertEquals(typeof call.function.name, "string");
+    assertEquals(typeof call.function.arguments, "string");
   }
 });
 

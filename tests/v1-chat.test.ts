@@ -369,3 +369,147 @@ Deno.test("v1.chat.completions with stream: true forwards the signal option to f
     restoreFetch();
   }
 });
+
+// A representative tool definition, reused across the tool-calling tests.
+const weatherTool = {
+  type: "function" as const,
+  function: {
+    name: "get_weather",
+    description: "Get the current weather for a city.",
+    parameters: {
+      type: "object",
+      properties: { city: { type: "string" } },
+      required: ["city"],
+    },
+  },
+};
+
+Deno.test("v1.chat.completions sends tools and tool_choice in the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Weather in Paris?" }],
+      tools: [weatherTool],
+      tool_choice: "auto",
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        messages: [{ role: "user", content: "Weather in Paris?" }],
+        tools: [weatherTool],
+        tool_choice: "auto",
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions sends an assistant tool_calls message and a tool result message in the body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const messages = [
+      { role: "user" as const, content: "Weather in Paris?" },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [{
+          id: "call_1",
+          type: "function" as const,
+          function: { name: "get_weather", arguments: '{"city":"Paris"}' },
+        }],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "call_1",
+        content: '{"temp_c":18}',
+      },
+    ];
+    await llama.v1.chat.completions({ messages });
+    assertEquals(seenBody, JSON.stringify({ messages }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("v1.chat.completions returns a tool-call response with finish_reason tool_calls, null content, and tool_calls", async () => {
+  const payload: V1ChatCompletionsResponse = {
+    id: "chatcmpl-1",
+    object: "chat.completion",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        message: {
+          role: "assistant",
+          content: null,
+          tool_calls: [
+            {
+              id: "call_1",
+              type: "function",
+              function: { name: "get_weather", arguments: '{"city":"Paris"}' },
+            },
+          ],
+        },
+        finish_reason: "tool_calls",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+  };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.v1.chat.completions({
+      messages: [{ role: "user", content: "Weather in Paris?" }],
+      tools: [weatherTool],
+    });
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});

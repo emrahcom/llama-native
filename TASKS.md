@@ -1847,3 +1847,21 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added three tool-calling unit tests to `tests/v1-chat.test.ts`: `tools` and
+  `tool_choice` are serialized into the request body; an assistant `tool_calls`
+  message and a `tool` result message (the union variants) serialize correctly;
+  and a tool-call response parses with `finish_reason: "tool_calls"`, null
+  `content`, and `tool_calls`. A shared `weatherTool` fixture backs the request
+  tests.
+- Added one integration test to `integration/v1-chat-completions.test.ts` that
+  forces a call with `tool_choice: "required"` and asserts the response has
+  `finish_reason: "tool_calls"` and well-formed `tool_calls`. Updated the file
+  header to note the tool-calling test requires the server started with
+  `--jinja` and a tool-capable model.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/v1-chat-completions.test.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (120 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
