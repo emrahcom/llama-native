@@ -130,3 +130,58 @@ Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a r
     }
   }
 });
+
+Deno.test("v1.chat.completions (streaming) yields tool-call deltas when a tool is required", async () => {
+  const llama = new Llama();
+  const chunks: V1ChatCompletionsChunk[] = [];
+  for await (
+    const chunk of llama.v1.chat.completions({
+      messages: [{ role: "user", content: "What is the weather in Paris?" }],
+      tools: [{
+        type: "function",
+        function: {
+          name: "get_weather",
+          description: "Get the current weather for a city.",
+          parameters: {
+            type: "object",
+            properties: { city: { type: "string" } },
+            required: ["city"],
+          },
+        },
+      }],
+      tool_choice: "required",
+      seed: 42,
+      stream: true,
+    })
+  ) {
+    chunks.push(chunk);
+  }
+  assert(chunks.length > 0);
+  let sawToolCallFragment = false;
+  let finishReason: string | null = null;
+  for (const chunk of chunks) {
+    for (const choice of chunk.choices) {
+      for (const fragment of choice.delta.tool_calls ?? []) {
+        assertEquals(typeof fragment.index, "number");
+        if (fragment.id !== undefined) {
+          assertEquals(typeof fragment.id, "string");
+        }
+        if (fragment.type !== undefined) {
+          assertEquals(fragment.type, "function");
+        }
+        if (fragment.function?.name !== undefined) {
+          assertEquals(typeof fragment.function.name, "string");
+        }
+        if (fragment.function?.arguments !== undefined) {
+          assertEquals(typeof fragment.function.arguments, "string");
+        }
+        sawToolCallFragment = true;
+      }
+      if (choice.finish_reason !== null) {
+        finishReason = choice.finish_reason;
+      }
+    }
+  }
+  assert(sawToolCallFragment);
+  assertEquals(finishReason, "tool_calls");
+});

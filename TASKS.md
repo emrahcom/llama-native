@@ -1909,3 +1909,21 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added a streaming tool-calls unit test to `tests/v1-chat.test.ts`: a stubbed
+  SSE stream of three chunks (first fragment carrying `index`/`id`/`type`/
+  `function.name`, a second carrying an `arguments` fragment, and a final chunk
+  with `finish_reason: "tool_calls"`) parses into the expected
+  `V1ChatCompletionsChunk` values in order, exercising `V1DeltaToolCall`.
+- Added a streaming integration test to
+  `integration/v1-chat-completions.test.ts` that forces a call with
+  `tool_choice: "required"` and `stream: true`, asserting at least one chunk
+  carries well-formed `delta.tool_calls` fragments and the final `finish_reason`
+  is `"tool_calls"`. The file header already documents the `--jinja`
+  requirement.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/v1-chat-completions.test.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

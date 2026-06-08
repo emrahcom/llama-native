@@ -513,3 +513,89 @@ Deno.test("v1.chat.completions returns a tool-call response with finish_reason t
     restoreFetch();
   }
 });
+
+Deno.test("v1.chat.completions with stream: true yields tool-call delta fragments and a tool_calls finish_reason", async () => {
+  const first: V1ChatCompletionsChunk = {
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          role: "assistant",
+          content: null,
+          tool_calls: [
+            {
+              index: 0,
+              id: "call_1",
+              type: "function",
+              function: { name: "get_weather", arguments: "" },
+            },
+          ],
+        },
+        finish_reason: null,
+      },
+    ],
+  };
+  const second: V1ChatCompletionsChunk = {
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        delta: {
+          tool_calls: [
+            { index: 0, function: { arguments: '{"city":"Paris"}' } },
+          ],
+        },
+        finish_reason: null,
+      },
+    ],
+  };
+  const last: V1ChatCompletionsChunk = {
+    id: "chatcmpl-1",
+    object: "chat.completion.chunk",
+    created: 1700000000,
+    model: "my-model",
+    choices: [
+      {
+        index: 0,
+        delta: {},
+        finish_reason: "tool_calls",
+      },
+    ],
+    usage: {
+      prompt_tokens: 1,
+      completion_tokens: 2,
+      total_tokens: 3,
+    },
+  };
+  stubFetch(() =>
+    Promise.resolve(
+      sseResponse([
+        `data: ${JSON.stringify(first)}\n\n`,
+        `data: ${JSON.stringify(second)}\n\n`,
+        `data: ${JSON.stringify(last)}\n\n`,
+        "data: [DONE]\n\n",
+      ]),
+    )
+  );
+  try {
+    const llama = new Llama();
+    const chunks = await collect(
+      llama.v1.chat.completions({
+        messages: [{ role: "user", content: "Weather in Paris?" }],
+        tools: [weatherTool],
+        tool_choice: "required",
+        stream: true,
+      }),
+    );
+    assertEquals(chunks, [first, second, last]);
+  } finally {
+    restoreFetch();
+  }
+});
