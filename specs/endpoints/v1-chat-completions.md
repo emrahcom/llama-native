@@ -13,17 +13,70 @@ template in `specs/core/llama.md`. `V1` gains a `readonly chat: Chat` property;
 `Chat` is constructed with the same `Config` that `V1` holds, the same way
 `Llama` constructs `V1`. The template applies recursively, one level deeper.
 
+## Server requirements
+
+The endpoint works on a default launch for ordinary chat. Tool calling (sending
+`tools` / `tool_choice`) additionally requires llama-server to be started with
+`--jinja` and a model whose chat template supports tool use; without `--jinja`
+the server does not emit `tool_calls`.
+
 ## TypeScript surface
 
 ```ts
 export interface V1ChatCompletionsRequest extends V1GenerationParams {
   messages: V1Message[];
+  tools?: V1Tool[];
+  tool_choice?: V1ToolChoice;
   stream?: boolean;
 }
 
-export interface V1Message {
-  role: "system" | "user" | "assistant";
+export type V1Message =
+  | V1SystemMessage
+  | V1UserMessage
+  | V1AssistantInputMessage
+  | V1ToolMessage;
+
+export interface V1SystemMessage {
+  role: "system";
   content: string;
+}
+
+export interface V1UserMessage {
+  role: "user";
+  content: string;
+}
+
+export interface V1AssistantInputMessage {
+  role: "assistant";
+  content: string | null;
+  tool_calls?: V1ToolCall[];
+}
+
+export interface V1ToolMessage {
+  role: "tool";
+  tool_call_id: string;
+  content: string;
+}
+
+export interface V1Tool {
+  type: "function";
+  function: {
+    name: string;
+    description?: string;
+    parameters: Record<string, unknown>;
+  };
+}
+
+export type V1ToolChoice =
+  | "auto"
+  | "none"
+  | "required"
+  | { type: "function"; function: { name: string } };
+
+export interface V1ToolCall {
+  id: string;
+  type: "function";
+  function: { name: string; arguments: string };
 }
 
 export interface V1ChatCompletionsResponse {
@@ -39,13 +92,14 @@ export interface V1ChatCompletionsResponse {
 export interface V1ChatChoice {
   index: number;
   message: V1AssistantMessage;
-  finish_reason: "stop" | "length";
+  finish_reason: "stop" | "length" | "tool_calls";
 }
 
 export interface V1AssistantMessage {
   role: "assistant";
-  content: string;
+  content: string | null;
   reasoning_content?: string;
+  tool_calls?: V1ToolCall[];
 }
 
 export interface V1ChatCompletionsChunk {
@@ -103,17 +157,46 @@ The overload selected depends on the literal type of `request.stream`:
 
 - `messages`\
   is the conversation so far, an ordered list of `V1Message` objects
+- `tools`\
+  is the list of functions the model may call, each a `V1Tool`; omit to disable
+  tool calling
+- `tool_choice`\
+  controls whether and which tool the model calls (a `V1ToolChoice`)
 - `stream`\
   selects streaming mode when `true`; non-streaming when `false`, omitted, or
-  `undefined`
+  `undefined`. Tool calling is modeled on the non-streaming path only; the
+  streaming shape of tool calls is not yet modeled.
 
 The shared request fields are documented in
 `specs/core/v1-generation-params.md`.
 
-Each `V1Message` has:
+`V1Message` is a role-discriminated union; each variant carries only the fields
+valid for its role:
 
-- a `role`: `"system"`, `"user"`, or `"assistant"`
-- a `content`: the message text
+- a `V1SystemMessage` (`role: "system"`) with a `content` string
+- a `V1UserMessage` (`role: "user"`) with a `content` string
+- a `V1AssistantInputMessage` (`role: "assistant"`) with a `content` that is a
+  string or `null` (null when the turn produced only tool calls) and an optional
+  `tool_calls`; used to replay a prior assistant turn that called tools
+- a `V1ToolMessage` (`role: "tool"`) carrying a tool result: a `tool_call_id`
+  matching the call it answers and a `content` string
+
+Each `V1Tool` describes one callable function:
+
+- a `type`, always `"function"`
+- a `function` with a `name`, an optional `description`, and `parameters` (a
+  JSON Schema object describing the arguments)
+
+`V1ToolChoice` is one of `"auto"` (the model decides), `"none"` (never call a
+tool), `"required"` (must call some tool), or
+`{ type: "function"; function: { name } }` to force a specific function.
+
+Each `V1ToolCall` (carried on an assistant message) has:
+
+- an `id` used to correlate the matching `V1ToolMessage` result
+- a `type`, always `"function"`
+- a `function` with the `name` called and `arguments`, a JSON-encoded string of
+  the arguments (the library does not parse it)
 
 Omitted optional fields use llama-server defaults.
 
@@ -139,20 +222,19 @@ Each `V1ChatChoice` has:
 - an `index` (position in the choices array)
 - a `message` (the assistant's reply, a `V1AssistantMessage`)
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
-  of output, `"length"` when it halted at `max_tokens`)
-
-The server's `"tool_calls"` finish reason is intentionally excluded: this
-endpoint exposes no tool inputs, so the server never emits it. It would be added
-alongside tool support.
+  of output, `"length"` when it halted at `max_tokens`, `"tool_calls"` when the
+  model stopped to call one or more tools)
 
 Each `V1AssistantMessage` has:
 
 - a `role`, always `"assistant"`
-- a `content`, the reply text; may be an empty string when the model produced no
-  reply text (for example, a reasoning model whose output was cut off during
-  reasoning)
+- a `content`, the reply text; `null` when the turn produced only tool calls,
+  and may be an empty string when the model produced no reply text (for example,
+  a reasoning model whose output was cut off during reasoning)
 - an optional `reasoning_content`, the model's reasoning output; present for
   reasoning models, absent otherwise
+- an optional `tool_calls`, the functions the model chose to call (a list of
+  `V1ToolCall`); present when `finish_reason` is `"tool_calls"`
 
 ### Streaming chunk fields
 
