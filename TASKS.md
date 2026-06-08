@@ -1890,3 +1890,17 @@ status: done
 ## T-073: Implement streaming tool calls on /v1/chat/completions
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- In `src/v1/chat/mod.ts`: `V1ChatChunkChoice.finish_reason` gained
+  `"tool_calls"`; `V1Delta` gained an optional `tool_calls: V1DeltaToolCall[]`
+  and its reconstruction JSDoc now covers reassembling tool calls per
+  `tool_calls` index; added the `V1DeltaToolCall` type (`index`, optional `id`,
+  optional `type`, optional `function` with optional `name`/`arguments`). The
+  `completions` method needed no change; streaming already passes the body
+  through `requestStream<V1ChatCompletionsChunk>`.
+- Re-exported `V1DeltaToolCall` from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (120 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

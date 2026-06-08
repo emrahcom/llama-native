@@ -55,6 +55,7 @@ export type {
   V1ChatCompletionsRequest,
   V1ChatCompletionsResponse,
   V1Delta,
+  V1DeltaToolCall,
   V1Message,
   V1SystemMessage,
   V1Tool,

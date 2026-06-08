@@ -202,18 +202,21 @@ export interface V1ChatChunkChoice {
   /** The incremental piece of the assistant's reply. */
   delta: V1Delta;
   /**
-   * `null` while generation is in progress; becomes `"stop"` or `"length"` on
-   * the final chunk.
+   * `null` while generation is in progress; becomes `"stop"`, `"length"`, or
+   * `"tool_calls"` on the final chunk.
    */
-  finish_reason: "stop" | "length" | null;
+  finish_reason: "stop" | "length" | "tool_calls" | null;
 }
 
 /**
  * The incremental piece of an assistant's reply in a {@link V1ChatChunkChoice}.
  *
- * Consumers reconstruct the full reply by concatenating the non-null
- * `content` values across chunks for each `index`, and the reasoning trace by
- * concatenating `reasoning_content` the same way.
+ * Consumers reconstruct the full reply by concatenating the non-null `content`
+ * values across chunks for each choice `index`, and the reasoning trace by
+ * concatenating `reasoning_content` the same way. Tool calls are reconstructed
+ * per `tool_calls` `index`: take `id` and `function.name` from the first
+ * fragment that provides them, and concatenate the `function.arguments`
+ * fragments in order to form the complete JSON-encoded arguments string.
  */
 export interface V1Delta {
   /** Present only on the first chunk for a choice, always `"assistant"`. */
@@ -228,6 +231,34 @@ export interface V1Delta {
    * The reasoning text fragment for this chunk; present for reasoning models.
    */
   reasoning_content?: string;
+  /**
+   * Incremental tool-call fragments for this chunk; present when the model is
+   * calling tools.
+   */
+  tool_calls?: V1DeltaToolCall[];
+}
+
+/**
+ * An incremental tool-call fragment in a {@link V1Delta}. See {@link V1Delta}
+ * for how fragments are reassembled into a complete tool call.
+ */
+export interface V1DeltaToolCall {
+  /**
+   * Identifies which tool call in the assistant's reply this fragment belongs
+   * to (distinct from the choice `index`).
+   */
+  index: number;
+  /** Present on the first fragment for this tool call. */
+  id?: string;
+  /** Always `"function"` when present. */
+  type?: "function";
+  /** The function fragment for this chunk. */
+  function?: {
+    /** The function name; present on the first fragment. */
+    name?: string;
+    /** A fragment of the JSON-encoded arguments string. */
+    arguments?: string;
+  };
 }
 
 /** The `/v1/chat/*` sub-group of {@link Llama}. */
