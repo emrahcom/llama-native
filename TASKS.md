@@ -1820,3 +1820,25 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md`. Non-streaming only; streaming tool
 calls are a later increment.
+
+status: done
+
+- In `src/v1/chat/mod.ts`: added `tools?: V1Tool[]` and
+  `tool_choice?: V1ToolChoice` to `V1ChatCompletionsRequest`; replaced the
+  single `V1Message` interface with the role-discriminated union
+  (`V1SystemMessage`, `V1UserMessage`, `V1AssistantInputMessage`,
+  `V1ToolMessage`); added the `V1Tool`, `V1ToolChoice`, and `V1ToolCall` types.
+  On the response side, `V1ChatChoice.finish_reason` gained `"tool_calls"` and
+  `V1AssistantMessage` now has `content: string | null` plus an optional
+  `tool_calls`.
+- The streaming chunk types (`V1ChatCompletionsChunk`, `V1ChatChunkChoice`,
+  `V1Delta`) are unchanged: tool calling is modeled on the non-streaming path
+  only, per the spec. The `completions` method needed no change; it passes the
+  request body through and returns `V1ChatCompletionsResponse`.
+- Re-exported the seven new types from `src/mod.ts`.
+- The type changes are backward-compatible with the existing v1-chat unit-test
+  fixtures (user/system messages and string assistant content), which still pass
+  unchanged.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (117 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
