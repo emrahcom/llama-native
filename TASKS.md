@@ -1865,3 +1865,8 @@ status: done
   `deno check integration/v1-chat-completions.test.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (120 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-072: Example for /v1/chat/completions tool calling
+
+Per `specs/endpoints/v1-chat-completions.md` and the example conventions in
+`specs/conventions.md`.
