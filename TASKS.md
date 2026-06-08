@@ -1932,3 +1932,18 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Extended `examples/v1-chat-completions.ts` (one file per endpoint) with a
+  streaming tool-calls section: a `stream: true` request with a tool and
+  `tool_choice: "required"`, reassembling each call per its `tool_calls` index
+  (taking `id`/`function.name` from the first fragment and concatenating
+  `function.arguments` fragments), per the reconstruction guidance in the spec.
+  The tool literal is inlined again rather than refactoring the existing
+  non-streaming section (additive change; duplication is allowed by convention).
+- Updated the header from "The final section" to "The final sections ...
+  non-streaming and streaming" to reflect both tool-calling demonstrations.
+- Ran `deno fmt`, `deno lint`, `deno check examples/v1-chat-completions.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

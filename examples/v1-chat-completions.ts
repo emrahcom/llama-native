@@ -1,8 +1,9 @@
 // Generates a chat completion from a list of messages via
-// POST /v1/chat/completions. The final section demonstrates tool calling, which
-// requires the server started with --jinja and a model whose chat template
-// supports tool use (see specs/endpoints/v1-chat-completions.md); the other
-// sections run on a default launch.
+// POST /v1/chat/completions. The final sections demonstrate tool calling,
+// non-streaming and streaming, which requires the server started with --jinja
+// and a model whose chat template supports tool use (see
+// specs/endpoints/v1-chat-completions.md); the other sections run on a default
+// launch.
 //
 // Run against a local server on the default http://localhost:8080:
 //
@@ -95,3 +96,46 @@ const finalReply = await llama.v1.chat.completions({
   ],
 });
 console.log(finalReply.choices[0].message.content);
+
+// Streaming tool calls: with stream: true the tool call arrives as fragments
+// across chunks. Reassemble each per its tool_calls index: take id and
+// function.name from the first fragment that provides them, and concatenate the
+// function.arguments fragments in order. Requires --jinja (see the header).
+const toolStream = llama.v1.chat.completions({
+  messages: [question],
+  tools: [
+    {
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Get the current weather for a city.",
+        parameters: {
+          type: "object",
+          properties: { city: { type: "string" } },
+          required: ["city"],
+        },
+      },
+    },
+  ],
+  tool_choice: "required",
+  stream: true,
+});
+
+const streamedCalls: { id: string; name: string; arguments: string }[] = [];
+for await (const chunk of toolStream) {
+  for (const fragment of chunk.choices[0].delta.tool_calls ?? []) {
+    const c = (streamedCalls[fragment.index] ??= {
+      id: "",
+      name: "",
+      arguments: "",
+    });
+    if (fragment.id) c.id = fragment.id;
+    if (fragment.function?.name) c.name = fragment.function.name;
+    if (fragment.function?.arguments) {
+      c.arguments += fragment.function.arguments;
+    }
+  }
+}
+for (const c of streamedCalls) {
+  console.log(`model called ${c.name} with ${c.arguments}`);
+}
