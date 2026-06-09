@@ -1996,3 +1996,21 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added a content-parts unit test to `tests/v1-chat.test.ts`: a user message
+  whose `content` is an array of text, `image_url` (with `detail`), and
+  `input_audio` parts serializes verbatim into the request body, exercising all
+  three `V1ContentPart` members.
+- Added an image integration test to `integration/v1-chat-completions.test.ts`
+  that sends a 1x1 PNG as a base64 data-URI `image_url` part and asserts a
+  normal assistant text response. Updated the file header to note the image test
+  requires a multimodal model started with `--mmproj FILE`.
+- Scope note: audio input is covered at the unit level only; an audio
+  integration test would need a bulky valid wav/mp3 fixture and an audio-capable
+  projector, so it was left out deliberately.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/v1-chat-completions.test.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

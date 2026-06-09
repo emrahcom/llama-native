@@ -599,3 +599,52 @@ Deno.test("v1.chat.completions with stream: true yields tool-call delta fragment
     restoreFetch();
   }
 });
+
+Deno.test("v1.chat.completions serializes a user message with text, image, and audio content parts", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "chatcmpl-1",
+          object: "chat.completion",
+          created: 1700000000,
+          model: "my-model",
+          choices: [],
+          usage: {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+          },
+        }),
+      ),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const messages = [
+      {
+        role: "user" as const,
+        content: [
+          { type: "text" as const, text: "What is in this image?" },
+          {
+            type: "image_url" as const,
+            image_url: {
+              url: "https://example.com/cat.png",
+              detail: "low" as const,
+            },
+          },
+          {
+            type: "input_audio" as const,
+            input_audio: { data: "QUJD", format: "wav" as const },
+          },
+        ],
+      },
+    ];
+    await llama.v1.chat.completions({ messages });
+    assertEquals(seenBody, JSON.stringify({ messages }));
+  } finally {
+    restoreFetch();
+  }
+});

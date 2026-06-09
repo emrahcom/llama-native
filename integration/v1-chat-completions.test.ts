@@ -1,8 +1,10 @@
 // Integration tests for /v1/chat/completions, one per mode (non-streaming and
-// streaming), plus tool calling. Requires a running llama-server on the default
-// local address; the tool-calling test additionally requires the server to be
-// started with `--jinja` and a model whose chat template supports tool use (see
-// the server requirements in specs/endpoints/v1-chat-completions.md).
+// streaming), plus tool calling and image input. Requires a running
+// llama-server on the default local address; the tool-calling tests
+// additionally require the server started with `--jinja` and a model whose chat
+// template supports tool use, and the image test requires a multimodal model
+// started with a projector (`--mmproj FILE`) (see the server requirements in
+// specs/endpoints/v1-chat-completions.md).
 // Run with: deno test --allow-net integration/v1-chat-completions.test.ts
 import { assert, assertEquals } from "@std/assert";
 import {
@@ -80,6 +82,32 @@ Deno.test("v1.chat.completions (non-streaming) returns tool calls when a tool is
     assertEquals(typeof call.function.name, "string");
     assertEquals(typeof call.function.arguments, "string");
   }
+});
+
+Deno.test("v1.chat.completions (non-streaming) accepts an image content part", async () => {
+  const llama = new Llama();
+  // A 1x1 transparent PNG, inlined as a base64 data URI.
+  const png =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  const response: V1ChatCompletionsResponse = await llama.v1.chat.completions({
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: "Describe this image in one word." },
+          {
+            type: "image_url",
+            image_url: { url: `data:image/png;base64,${png}` },
+          },
+        ],
+      },
+    ],
+    max_tokens: 64,
+    seed: 42,
+  });
+  assert(response.choices.length > 0);
+  assertEquals(response.choices[0].message.role, "assistant");
+  assertEquals(typeof response.choices[0].message.content, "string");
 });
 
 Deno.test("v1.chat.completions (streaming) yields ChatCompletionsChunks from a running server", async () => {
