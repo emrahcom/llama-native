@@ -63,11 +63,11 @@ Endpoints are accessed via methods derived from their URL path:
 
 Examples:
 
-- `/health` → `llama.health()`
-- `/tokenize` → `llama.tokenize()`
-- `/apply-template` → `llama.applyTemplate()`
-- `/v1/models` → `llama.v1.models()`
-- `/v1/chat/completions` → `llama.v1.chat.completions()`
+- `/health` -> `llama.health()`
+- `/tokenize` -> `llama.tokenize()`
+- `/apply-template` -> `llama.applyTemplate()`
+- `/v1/models` -> `llama.v1.models()`
+- `/v1/chat/completions` -> `llama.v1.chat.completions()`
 
 Single-segment URLs become methods on `Llama` directly. Multi-segment URLs
 introduce sub-groups for each prefix segment.

@@ -107,12 +107,13 @@ Rules that every spec and the implementation inherit.
 - **Test files live under `tests/`, one per component**\
   Each component (a folder under `src/` with a `mod.ts`) has its own test file:
   tests for `src/<path>/` go in `tests/<path>.test.ts`, with slashes in the
-  component path replaced by hyphens. So `src/llama/` → `tests/llama.test.ts`,
-  `src/v1/` → `tests/v1.test.ts`, and `src/v1/chat/` → `tests/v1-chat.test.ts`.
-  A component's tests live only in its own file and are never folded into
-  another component's; in particular, tests for endpoints reached through a
-  sub-group (`llama.v1.models`, `llama.v1.chat.completions`, and the like)
-  belong to that sub-group's component file, not `tests/llama.test.ts`.
+  component path replaced by hyphens. So `src/llama/` -> `tests/llama.test.ts`,
+  `src/v1/` -> `tests/v1.test.ts`, and `src/v1/chat/` ->
+  `tests/v1-chat.test.ts`. A component's tests live only in its own file and are
+  never folded into another component's; in particular, tests for endpoints
+  reached through a sub-group (`llama.v1.models`, `llama.v1.chat.completions`,
+  and the like) belong to that sub-group's component file, not
+  `tests/llama.test.ts`.
 
 - **Duplication between test files is acceptable**\
   Shared test scaffolding (e.g. `fetch` stubs, helper types) may be repeated
@@ -135,11 +136,11 @@ Rules that every spec and the implementation inherit.
 - **One file per use-case under `examples/`**\
   Each example demonstrates a single use-case. The file name is the endpoint
   path with slashes replaced by hyphens, plus a `-<use-case>` suffix when an
-  endpoint has more than one (e.g. `/v1/chat/completions` →
+  endpoint has more than one (e.g. `/v1/chat/completions` ->
   `examples/v1-chat-completions-basic.ts`,
   `examples/v1-chat-completions-tools.ts`,
   `examples/v1-chat-completions-streaming-tools.ts`). An endpoint with a single
-  use-case keeps the plain `<endpoint>.ts` name (`/health` →
+  use-case keeps the plain `<endpoint>.ts` name (`/health` ->
   `examples/health.ts`).
 
 - **Run command matches the permissions used**\
@@ -159,7 +160,7 @@ Rules that every spec and the implementation inherit.
   An example demonstrates one use-case and nothing more: the call, its essential
   options, and reading the result. Do not combine multiple features in one file;
   a separate use-case is a separate file. Examples are learning material, so
-  clarity beats completeness — avoid presentation logic and edge-case handling,
+  clarity beats completeness; avoid presentation logic and edge-case handling,
   and note less-common fields in a comment rather than building logic around
   them.
 
