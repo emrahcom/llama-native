@@ -3,8 +3,9 @@
 // carry audio with an input_audio part (base64 data plus a "wav"/"mp3" format);
 // see specs/endpoints/v1-chat-completions.md.
 //
-// Requires a multimodal model started with a projector (--mmproj FILE) (see the
-// server requirements in specs/endpoints/v1-chat-completions.md).
+// Requires a multimodal model with its projector loaded: with -hf the projector
+// loads automatically (--mmproj-auto, on by default), or pass --mmproj FILE for
+// a local projector (see specs/endpoints/v1-chat-completions.md).
 //
 // Run against such a server on the default http://localhost:8080:
 //
@@ -25,10 +26,10 @@ const llama = new Llama({
   apiKey: Deno.env.get("LLAMA_API_KEY"),
 });
 
-// The image source is an https URL or a base64 data URI; this 1x1 PNG keeps the
-// example self-contained. Replace it with your own image.
+// The image source is an https URL or a base64 data URI. Replace this with your
+// own image.
 const imageUrl =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/media/llama0-logo.png";
 
 // A user message whose content is an array of parts: text plus an image.
 const result = await llama.v1.chat.completions({

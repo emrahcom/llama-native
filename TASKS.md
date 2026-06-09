@@ -2042,3 +2042,21 @@ Per `specs/endpoints/v1-chat-completions.md` and the conventions in
 `specs/conventions.md`. Both `examples/v1-chat-completions-multimodal.ts` and
 `integration/v1-chat-completions.test.ts` currently inline a 1x1 PNG and
 document `--mmproj FILE`, which no longer match the spec and conventions.
+
+status: done
+
+- Replaced the inlined 1x1 PNG in both files with a real, decodable image
+  referenced by URL (the llama.cpp project logo,
+  `https://raw.githubusercontent.com/ggml-org/llama.cpp/master/media/llama0-logo.png`),
+  per the new "real media" conventions; a 1x1 placeholder works only against a
+  stubbed unit test, not a real server. Verified the URL returns HTTP 200 with
+  `content-type: image/png` before using it.
+- Updated the projector wording in both headers to match the spec's revised
+  server requirements: the projector loads automatically with `-hf`
+  (`--mmproj-auto`, on by default), or via `--mmproj FILE` for a local
+  projector, rather than only `--mmproj FILE`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check examples/v1-chat-completions-multimodal.ts`
+  `integration/v1-chat-completions.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (122 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.

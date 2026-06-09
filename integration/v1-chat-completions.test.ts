@@ -3,7 +3,8 @@
 // llama-server on the default local address; the tool-calling tests
 // additionally require the server started with `--jinja` and a model whose chat
 // template supports tool use, and the image test requires a multimodal model
-// started with a projector (`--mmproj FILE`) (see the server requirements in
+// with its projector loaded (with `-hf` it loads automatically via
+// `--mmproj-auto`, or pass `--mmproj FILE`) (see the server requirements in
 // specs/endpoints/v1-chat-completions.md).
 // Run with: deno test --allow-net integration/v1-chat-completions.test.ts
 import { assert, assertEquals } from "@std/assert";
@@ -86,19 +87,16 @@ Deno.test("v1.chat.completions (non-streaming) returns tool calls when a tool is
 
 Deno.test("v1.chat.completions (non-streaming) accepts an image content part", async () => {
   const llama = new Llama();
-  // A 1x1 transparent PNG, inlined as a base64 data URI.
-  const png =
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+  // A real, decodable image (the llama.cpp project logo) referenced by URL.
+  const imageUrl =
+    "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/media/llama0-logo.png";
   const response: V1ChatCompletionsResponse = await llama.v1.chat.completions({
     messages: [
       {
         role: "user",
         content: [
           { type: "text", text: "Describe this image in one word." },
-          {
-            type: "image_url",
-            image_url: { url: `data:image/png;base64,${png}` },
-          },
+          { type: "image_url", image_url: { url: imageUrl } },
         ],
       },
     ],
