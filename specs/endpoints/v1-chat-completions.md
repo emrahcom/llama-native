@@ -18,7 +18,9 @@ template in `specs/core/llama.md`. `V1` gains a `readonly chat: Chat` property;
 The endpoint works on a default launch for ordinary chat. Tool calling (sending
 `tools` / `tool_choice`) additionally requires llama-server to be started with
 `--jinja` and a model whose chat template supports tool use; without `--jinja`
-the server does not emit `tool_calls`.
+the server does not emit `tool_calls`. Image and audio input (an `image_url` or
+`input_audio` content part) additionally require a multimodal model started with
+a projector (`--mmproj FILE`).
 
 ## TypeScript surface
 
@@ -43,7 +45,7 @@ export interface V1SystemMessage {
 
 export interface V1UserMessage {
   role: "user";
-  content: string;
+  content: string | V1ContentPart[];
 }
 
 export interface V1AssistantInputMessage {
@@ -56,6 +58,23 @@ export interface V1ToolMessage {
   role: "tool";
   tool_call_id: string;
   content: string;
+}
+
+export type V1ContentPart = V1TextPart | V1ImagePart | V1AudioPart;
+
+export interface V1TextPart {
+  type: "text";
+  text: string;
+}
+
+export interface V1ImagePart {
+  type: "image_url";
+  image_url: { url: string; detail?: "auto" | "low" | "high" | "original" };
+}
+
+export interface V1AudioPart {
+  type: "input_audio";
+  input_audio: { data: string; format: "wav" | "mp3" };
 }
 
 export interface V1Tool {
@@ -181,12 +200,23 @@ The shared request fields are documented in
 valid for its role:
 
 - a `V1SystemMessage` (`role: "system"`) with a `content` string
-- a `V1UserMessage` (`role: "user"`) with a `content` string
+- a `V1UserMessage` (`role: "user"`) with a `content` that is a string or an
+  array of `V1ContentPart` (text, image, and audio parts), so a user turn can
+  carry images or audio alongside text
 - a `V1AssistantInputMessage` (`role: "assistant"`) with a `content` that is a
   string or `null` (null when the turn produced only tool calls) and an optional
   `tool_calls`; used to replay a prior assistant turn that called tools
 - a `V1ToolMessage` (`role: "tool"`) carrying a tool result: a `tool_call_id`
   matching the call it answers and a `content` string
+
+A `V1ContentPart` (an element of a `V1UserMessage` `content` array) is one of:
+
+- a `V1TextPart` (`type: "text"`) with a `text` string
+- a `V1ImagePart` (`type: "image_url"`) with an `image_url` carrying a `url` (an
+  https URL or a base64 data URI) and an optional `detail` (`"auto"`, `"low"`,
+  `"high"`, or `"original"`)
+- a `V1AudioPart` (`type: "input_audio"`) with an `input_audio` carrying a
+  base64-encoded `data` string and a `format` (`"wav"` or `"mp3"`)
 
 Each `V1Tool` describes one callable function:
 
