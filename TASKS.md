@@ -1947,3 +1947,7 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check examples/v1-chat-completions.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-076: Restructure examples to one file per use-case
+
+Per the example conventions in `specs/conventions.md`.
