@@ -50,8 +50,11 @@ export interface V1SystemMessage {
 export interface V1UserMessage {
   /** Always `"user"`. */
   role: "user";
-  /** The message text. */
-  content: string;
+  /**
+   * The message text, or an array of {@link V1ContentPart} so a user turn can
+   * carry images or audio alongside text.
+   */
+  content: string | V1ContentPart[];
 }
 
 /**
@@ -75,6 +78,49 @@ export interface V1ToolMessage {
   tool_call_id: string;
   /** The tool result text. */
   content: string;
+}
+
+/** One part of a {@link V1UserMessage} `content` array. */
+export type V1ContentPart = V1TextPart | V1ImagePart | V1AudioPart;
+
+/** A text content part. */
+export interface V1TextPart {
+  /** Always `"text"`. */
+  type: "text";
+  /** The text. */
+  text: string;
+}
+
+/**
+ * An image content part. Image input requires a multimodal model started with
+ * a projector (`--mmproj FILE`).
+ */
+export interface V1ImagePart {
+  /** Always `"image_url"`. */
+  type: "image_url";
+  /** The image source. */
+  image_url: {
+    /** An https URL or a base64 data URI. */
+    url: string;
+    /** The requested detail level. */
+    detail?: "auto" | "low" | "high" | "original";
+  };
+}
+
+/**
+ * An audio content part. Audio input requires a multimodal model started with
+ * a projector (`--mmproj FILE`).
+ */
+export interface V1AudioPart {
+  /** Always `"input_audio"`. */
+  type: "input_audio";
+  /** The audio source. */
+  input_audio: {
+    /** The base64-encoded audio data. */
+    data: string;
+    /** The audio format. */
+    format: "wav" | "mp3";
+  };
 }
 
 /** One callable function the model may call. */

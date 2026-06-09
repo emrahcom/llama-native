@@ -1974,3 +1974,20 @@ status: done
 ## T-077: Implement multimodal content parts on /v1/chat/completions
 
 Per `specs/endpoints/v1-chat-completions.md`.
+
+status: done
+
+- In `src/v1/chat/mod.ts`: `V1UserMessage.content` is now
+  `string | V1ContentPart[]`, so a user turn can carry images or audio alongside
+  text. Added the `V1ContentPart` union and its members: `V1TextPart`
+  (`type: "text"`), `V1ImagePart` (`type: "image_url"` with `url` and optional
+  `detail` of `"auto"`/`"low"`/`"high"`/`"original"`), and `V1AudioPart`
+  (`type: "input_audio"` with base64 `data` and `format` `"wav"`/`"mp3"`). No
+  method change; the request body passes through.
+- Re-exported `V1ContentPart`, `V1TextPart`, `V1ImagePart`, and `V1AudioPart`
+  from `src/mod.ts`.
+- The `"original"` detail value is a llama-server extension beyond the OpenAI
+  set (`"auto"`/`"low"`/`"high"`); kept because the spec lists it explicitly.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
