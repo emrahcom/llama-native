@@ -2035,3 +2035,10 @@ status: done
   `deno check examples/v1-chat-completions-multimodal.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-080: Align the multimodal example and image integration test with the spec
+
+Per `specs/endpoints/v1-chat-completions.md` and the conventions in
+`specs/conventions.md`. Both `examples/v1-chat-completions-multimodal.ts` and
+`integration/v1-chat-completions.test.ts` currently inline a 1x1 PNG and
+document `--mmproj FILE`, which no longer match the spec and conventions.
