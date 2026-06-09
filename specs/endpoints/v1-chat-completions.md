@@ -19,8 +19,9 @@ The endpoint works on a default launch for ordinary chat. Tool calling (sending
 `tools` / `tool_choice`) additionally requires llama-server to be started with
 `--jinja` and a model whose chat template supports tool use; without `--jinja`
 the server does not emit `tool_calls`. Image and audio input (an `image_url` or
-`input_audio` content part) additionally require a multimodal model started with
-a projector (`--mmproj FILE`).
+`input_audio` content part) additionally require a multimodal model with its
+projector loaded: with `-hf` the projector loads automatically (`--mmproj-auto`,
+on by default), or pass `--mmproj FILE` for a local projector.
 
 ## TypeScript surface
 

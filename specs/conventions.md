@@ -131,6 +131,12 @@ Rules that every spec and the implementation inherit.
   (each endpoint, each mode). They are not part of the default `deno test` run,
   require a running server, and are not published.
 
+- **Real media in integration tests**\
+  An integration test that sends an image or audio uses a real, decodable
+  fixture (a small real file, or a remote URL). The server loads the media and
+  rejects what it cannot decode, so a degenerate placeholder such as a 1x1 PNG
+  that works in a stubbed unit test fails against a real server.
+
 ## Examples
 
 - **One file per use-case under `examples/`**\
@@ -155,6 +161,11 @@ Rules that every spec and the implementation inherit.
   example's header notes how llama-server must be started for the example to
   run, using the launch flags that endpoint's spec calls for. When a default
   launch serves the endpoint, no note is needed.
+
+- **Real media in runnable examples**\
+  An example that sends an image or audio uses a real, decodable file (or a
+  remote URL), not a placeholder the server cannot load (such as a 1x1 PNG), so
+  the example runs end to end against a real server.
 
 - **Examples stay minimal**\
   An example demonstrates one use-case and nothing more: the call, its essential
