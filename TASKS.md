@@ -2019,3 +2019,19 @@ status: done
 
 Per `specs/endpoints/v1-chat-completions.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/v1-chat-completions-multimodal.ts` (a new use-case, so its own
+  file per the one-file-per-use-case convention): a user message whose `content`
+  is a `V1ContentPart` array of a text part and an `image_url` part, with the
+  image inlined as a 1x1 PNG base64 data URI to keep it self-contained. Reads
+  `baseUrl`/`apiKey` from the environment and documents the
+  `deno run --allow-net --allow-env` command.
+- The header notes the multimodal server requirement (a multimodal model started
+  with `--mmproj FILE`) and mentions audio input (`input_audio`) as the other
+  content-part kind, demonstrating only the image case to stay minimal.
+- Ran `deno fmt`, `deno lint`,
+  `deno check examples/v1-chat-completions-multimodal.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
