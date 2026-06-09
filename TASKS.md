@@ -1970,3 +1970,7 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check` on the three new examples,
   `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-077: Implement multimodal content parts on /v1/chat/completions
+
+Per `specs/endpoints/v1-chat-completions.md`.
