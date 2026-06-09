@@ -132,10 +132,15 @@ Rules that every spec and the implementation inherit.
 
 ## Examples
 
-- **One file per endpoint under `examples/`**\
-  The file name is the endpoint path with slashes replaced by hyphens (e.g.,
-  `/health` → `examples/health.ts`, `/v1/chat/completions` →
-  `examples/v1-chat-completions.ts`).
+- **One file per use-case under `examples/`**\
+  Each example demonstrates a single use-case. The file name is the endpoint
+  path with slashes replaced by hyphens, plus a `-<use-case>` suffix when an
+  endpoint has more than one (e.g. `/v1/chat/completions` →
+  `examples/v1-chat-completions-basic.ts`,
+  `examples/v1-chat-completions-tools.ts`,
+  `examples/v1-chat-completions-streaming-tools.ts`). An endpoint with a single
+  use-case keeps the plain `<endpoint>.ts` name (`/health` →
+  `examples/health.ts`).
 
 - **Run command matches the permissions used**\
   Each example's header documents a `deno run` command whose flags are exactly
@@ -151,11 +156,12 @@ Rules that every spec and the implementation inherit.
   launch serves the endpoint, no note is needed.
 
 - **Examples stay minimal**\
-  An example demonstrates the endpoint's core usage and nothing more: the call,
-  its essential options, and reading the result. Examples are learning material,
-  so clarity beats completeness — avoid presentation logic and edge-case
-  handling, and note less-common fields in a comment rather than building logic
-  around them.
+  An example demonstrates one use-case and nothing more: the call, its essential
+  options, and reading the result. Do not combine multiple features in one file;
+  a separate use-case is a separate file. Examples are learning material, so
+  clarity beats completeness — avoid presentation logic and edge-case handling,
+  and note less-common fields in a comment rather than building logic around
+  them.
 
 ## Publishing
 
