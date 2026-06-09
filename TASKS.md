@@ -1951,3 +1951,22 @@ status: done
 ## T-076: Restructure examples to one file per use-case
 
 Per the example conventions in `specs/conventions.md`.
+
+status: done
+
+- Split `examples/v1-chat-completions.ts` (which combined four sections) into
+  the three use-case files the convention names: `v1-chat-completions-basic.ts`
+  (ordinary chat, non-streaming and streaming), `v1-chat-completions-tools.ts`
+  (non-streaming tool calling), and `v1-chat-completions-streaming-tools.ts`
+  (streaming tool calls). Removed the old combined file. Each new file is
+  self-contained (own header, client setup) with the `--jinja` server note on
+  the two tool files only.
+- The other examples were left unchanged: `v1-completions.ts`, `completion.ts`,
+  `v1-embeddings.ts`, and `embedding.ts` each demonstrate a single use-case
+  shown in multiple modes (streaming/non-streaming) or inputs (single/batch),
+  which is not "combining features"; per the convention's chat enumeration
+  (which lists no separate plain-`streaming` use-case), modes and input variants
+  stay within one use-case file and keep the plain `<endpoint>.ts` name.
+- Ran `deno fmt`, `deno lint`, `deno check` on the three new examples,
+  `deno doc --lint src/mod.ts`, `deno test` (121 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
