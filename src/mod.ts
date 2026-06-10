@@ -27,6 +27,7 @@ export type {
   EmbeddingResponse,
   HealthResponse,
   LlamaOptions,
+  PropsResponse,
   Timings,
   TokenizeRequest,
   TokenizeResponse,

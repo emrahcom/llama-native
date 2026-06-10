@@ -28,6 +28,15 @@ export interface HealthResponse {
   status: string;
 }
 
+/** Server properties reported by the llama-server. */
+export interface PropsResponse {
+  /**
+   * The server's media placeholder string: the marker that stands in for one
+   * media item within a multimodal prompt.
+   */
+  media_marker: string;
+}
+
 /** Tokenizes input text into model token IDs. */
 export interface TokenizeRequest {
   /** The input text. */
@@ -311,6 +320,23 @@ export class Llama {
       path: "/health",
       signal: options?.signal,
     }) as HealthResponse;
+  }
+
+  /**
+   * Reports server properties.
+   *
+   * Issues `GET /props` with no body and returns the parsed JSON as a
+   * {@link PropsResponse}. Errors are handled per `specs/core/request.md`.
+   */
+  async props(
+    options?: { signal?: AbortSignal },
+  ): Promise<PropsResponse> {
+    return await sendRequest({
+      config: this.#config,
+      method: "GET",
+      path: "/props",
+      signal: options?.signal,
+    }) as PropsResponse;
   }
 
   /**

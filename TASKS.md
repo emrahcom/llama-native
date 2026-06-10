@@ -2221,3 +2221,16 @@ status: done
 ## T-088: Implement /props
 
 Per `specs/endpoints/props.md`.
+
+status: done
+
+- Added the `PropsResponse` type (`media_marker: string`) to `src/llama/mod.ts`
+  and a `props` method on `Llama` (beside `health`) that issues `GET /props`
+  with no body and returns the parsed `PropsResponse`.
+- Re-exported `PropsResponse` from `src/mod.ts`.
+- Per the spec, only `media_marker` is modeled; the server's other properties
+  (`default_generation_settings`, `total_slots`, `model_path`, etc.) are a
+  stated omission.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
