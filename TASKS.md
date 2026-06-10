@@ -2141,8 +2141,8 @@ status: done
 
 - `src/llama/mod.ts`: restored the single `CompletionRequest` interface (the
   `prompt` field plus the shared sampling params and `stream`), removing
-  `CompletionParams`, `CompletionTextRequest`, `CompletionMultimodalRequest`, and
-  the union. `src/mod.ts`: dropped the three re-exports, keeping
+  `CompletionParams`, `CompletionTextRequest`, `CompletionMultimodalRequest`,
+  and the union. `src/mod.ts`: dropped the three re-exports, keeping
   `CompletionRequest`.
 - Removed the multimodal unit test from `tests/llama.test.ts` and the multimodal
   integration test from `integration/completion.test.ts`, and reverted the
