@@ -1,15 +1,15 @@
 // Generates a text completion for a prompt via POST /completion, llama-server's
-// native completion API.
+// native completion API, shown non-streaming and streaming.
 //
 // Run against a local server on the default http://localhost:8080:
 //
-//   deno run --allow-net --allow-env examples/completion.ts
+//   deno run --allow-net --allow-env examples/completion-basic.ts
 //
 // Override the server URL and supply an API key with environment variables:
 //
 //   LLAMA_BASE_URL=http://localhost:8080 \
 //   LLAMA_API_KEY=secret \
-//   deno run --allow-net --allow-env examples/completion.ts
+//   deno run --allow-net --allow-env examples/completion-basic.ts
 
 import { Llama } from "@emrahcom/llama-native";
 

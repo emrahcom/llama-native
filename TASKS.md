@@ -2111,3 +2111,19 @@ status: done
 
 Per `specs/endpoints/completion.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/completion-multimodal.ts`: a native multimodal request using
+  `prompt_string` with one `<__media__>` marker and `multimodal_data` carrying a
+  base64-encoded image. Since the native endpoint takes base64 media (not a
+  URL), the example fetches a real image (the llama.cpp logo) and base64-encodes
+  it, per the "real media" convention. Header documents the multimodal server
+  requirement (projector via `-hf`/`--mmproj-auto` or `--mmproj FILE`).
+- Because `/completion` now has more than one use-case, applied the suffix
+  naming: renamed the existing `examples/completion.ts` (text completion) to
+  `examples/completion-basic.ts` and removed the old plain-named file, matching
+  the one-file-per-use-case convention (cf. the `v1-chat-completions-*` split).
+- Ran `deno fmt`, `deno lint`, `deno check` on both new examples,
+  `deno doc --lint src/mod.ts`, `deno test` (123 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
