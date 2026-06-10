@@ -2251,3 +2251,8 @@ status: done
   `deno check integration/props.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (125 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-090: Example for /props
+
+Per `specs/endpoints/props.md` and the example conventions in
+`specs/conventions.md`.
