@@ -2181,3 +2181,19 @@ status: done
 Per `specs/endpoints/v1-chat-completions.md`. The request union member is now
 `V1AssistantMessage` (was `V1AssistantInputMessage`) and the response type is
 `V1AssistantResponseMessage` (was `V1AssistantMessage`).
+
+status: done
+
+- In `src/v1/chat/mod.ts`, performed the name swap in collision-safe order:
+  first renamed the response interface `V1AssistantMessage` ->
+  `V1AssistantResponseMessage` (its declaration and the `V1ChatChoice.message`
+  reference), freeing the name, then renamed the request union member
+  `V1AssistantInputMessage` -> `V1AssistantMessage` (its declaration and the
+  `V1Message` union member). Field shapes are unchanged.
+- Updated the two re-exports in `src/mod.ts` accordingly.
+- No tests or examples referenced these type names (they use inline object
+  literals via `V1ChatCompletionsResponse`/`V1Message`); verified no
+  `V1AssistantInputMessage` references remain.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

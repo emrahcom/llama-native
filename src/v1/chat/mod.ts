@@ -35,7 +35,7 @@ export interface V1ChatCompletionsRequest extends V1GenerationParams {
 export type V1Message =
   | V1SystemMessage
   | V1UserMessage
-  | V1AssistantInputMessage
+  | V1AssistantMessage
   | V1ToolMessage;
 
 /** A system message. */
@@ -61,7 +61,7 @@ export interface V1UserMessage {
  * A prior assistant turn replayed as input; used to replay a turn that called
  * tools.
  */
-export interface V1AssistantInputMessage {
+export interface V1AssistantMessage {
   /** Always `"assistant"`. */
   role: "assistant";
   /** The reply text; `null` when the turn produced only tool calls. */
@@ -187,7 +187,7 @@ export interface V1ChatChoice {
   /** The position in the choices array. */
   index: number;
   /** The assistant's reply. */
-  message: V1AssistantMessage;
+  message: V1AssistantResponseMessage;
   /**
    * `"stop"` when generation halted at a stop sequence or end of output,
    * `"length"` when it halted at `max_tokens`, `"tool_calls"` when the model
@@ -197,7 +197,7 @@ export interface V1ChatChoice {
 }
 
 /** The assistant's reply in a {@link V1ChatChoice}. */
-export interface V1AssistantMessage {
+export interface V1AssistantResponseMessage {
   /** Always `"assistant"`. */
   role: "assistant";
   /**

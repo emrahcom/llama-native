@@ -47,8 +47,8 @@ export type {
 } from "./v1/mod.ts";
 export { Chat } from "./v1/chat/mod.ts";
 export type {
-  V1AssistantInputMessage,
   V1AssistantMessage,
+  V1AssistantResponseMessage,
   V1AudioPart,
   V1ChatChoice,
   V1ChatChunkChoice,
