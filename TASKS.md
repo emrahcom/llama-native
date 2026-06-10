@@ -2127,3 +2127,12 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check` on both new examples,
   `deno doc --lint src/mod.ts`, `deno test` (123 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-084: Revert native /completion multimodal
+
+Per `specs/endpoints/completion.md` (multimodal removed). Undo
+T-081/T-082/T-083: restore the single `CompletionRequest` interface and its
+`src/mod.ts` re-exports, remove the multimodal unit and integration tests,
+delete `examples/completion-multimodal.ts`, and rename
+`examples/completion-basic.ts` back to `examples/completion.ts` (a single
+use-case again).
