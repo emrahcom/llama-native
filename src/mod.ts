@@ -22,7 +22,7 @@ export type {
   CompletionResponse,
   DetokenizeRequest,
   DetokenizeResponse,
-  Embedding,
+  EmbeddingEntry,
   EmbeddingRequest,
   EmbeddingResponse,
   HealthResponse,

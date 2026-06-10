@@ -247,14 +247,14 @@ export interface EmbeddingRequest {
 }
 
 /**
- * The response to an {@link EmbeddingRequest}: a JSON array of {@link Embedding}
- * entries, one per input, not an object wrapper. It carries no `object`,
- * `model`, or `usage` fields.
+ * The response to an {@link EmbeddingRequest}: a JSON array of
+ * {@link EmbeddingEntry} items, one per input, not an object wrapper. It carries
+ * no `object`, `model`, or `usage` fields.
  */
-export type EmbeddingResponse = Embedding[];
+export type EmbeddingResponse = EmbeddingEntry[];
 
 /** A single embedding entry in an {@link EmbeddingResponse}. */
-export interface Embedding {
+export interface EmbeddingEntry {
   /** The position matching the order of `content`. */
   index: number;
   /**

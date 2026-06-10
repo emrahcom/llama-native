@@ -2162,3 +2162,16 @@ status: done
 ## T-085: Rename the native Embedding type to EmbeddingEntry
 
 Per `specs/endpoints/embedding.md`.
+
+status: done
+
+- Renamed the `Embedding` interface to `EmbeddingEntry` in `src/llama/mod.ts`,
+  updated `EmbeddingResponse = EmbeddingEntry[]`, and adjusted the JSDoc
+  references. Updated the re-export in `src/mod.ts` (`Embedding` ->
+  `EmbeddingEntry`).
+- No tests or examples referenced the bare `Embedding` type (they use
+  `EmbeddingResponse` and inline object literals), so none needed changes;
+  verified no bare `Embedding` references remain anywhere.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
