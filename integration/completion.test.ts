@@ -1,5 +1,9 @@
 // Integration tests for /completion, one per mode (non-streaming and
-// streaming). Requires a running llama-server on the default local address.
+// streaming), plus multimodal input. Requires a running llama-server on the
+// default local address; the multimodal test additionally requires a multimodal
+// model with its projector loaded (with `-hf` it loads automatically via
+// `--mmproj-auto`, or pass `--mmproj FILE`) (see the server requirements in
+// specs/endpoints/completion.md).
 // Run with: deno test --allow-net integration/completion.test.ts
 import { assert, assertEquals } from "@std/assert";
 import {
@@ -93,4 +97,27 @@ Deno.test("completion (streaming) yields CompletionChunks from a running server"
   }
   // Native streams end after a stop: true chunk; no [DONE] sentinel.
   assertEquals(chunks[chunks.length - 1].stop, true);
+});
+
+Deno.test("completion (non-streaming) accepts multimodal input from a running server", async () => {
+  const llama = new Llama();
+  // A real, decodable image (the llama.cpp project logo), base64-encoded into
+  // multimodal_data; the native endpoint takes base64 media, not a URL.
+  const imageUrl =
+    "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/media/llama0-logo.png";
+  const bytes = new Uint8Array(await (await fetch(imageUrl)).arrayBuffer());
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  }
+  const base64 = btoa(binary);
+  const response: CompletionResponse = await llama.completion({
+    prompt_string: "<__media__>\nDescribe this image in one word.",
+    multimodal_data: [base64],
+    n_predict: 64,
+    seed: 42,
+  });
+  assertEquals(typeof response.content, "string");
+  assertEquals(response.stop, true);
+  assertTimings(response.timings);
 });

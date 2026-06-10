@@ -2088,3 +2088,21 @@ status: done
 
 Per `specs/endpoints/completion.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added a multimodal unit test to `tests/llama.test.ts`: a request with
+  `prompt_string` (carrying a `<__media__>` marker) and `multimodal_data`
+  serializes verbatim into the request body. The stubbed test uses a placeholder
+  base64 string, since the real-media rule applies only to integration tests.
+- Added a multimodal integration test to `integration/completion.test.ts`: it
+  fetches a real image (the llama.cpp logo) and base64-encodes it into
+  `multimodal_data` (the native endpoint takes base64 media, not a URL like the
+  v1 chat endpoint), then asserts a normal `CompletionResponse`. Base64 encoding
+  is done inline with chunked `btoa` to avoid adding a dependency beyond
+  `@std/assert`. Updated the file header to note the multimodal server
+  requirement (projector via `-hf`/`--mmproj-auto` or `--mmproj FILE`).
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/completion.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (123 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.

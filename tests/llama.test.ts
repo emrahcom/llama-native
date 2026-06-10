@@ -572,6 +572,32 @@ Deno.test("completion with stream: true forwards the signal option to fetch", as
   }
 });
 
+Deno.test("completion sends a multimodal request (prompt_string and multimodal_data) as the JSON body", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    await llama.completion({
+      prompt_string: "<__media__>\nWhat is in this image?",
+      multimodal_data: ["QUJD"],
+      n_predict: 64,
+    });
+    assertEquals(
+      seenBody,
+      JSON.stringify({
+        prompt_string: "<__media__>\nWhat is in this image?",
+        multimodal_data: ["QUJD"],
+        n_predict: 64,
+      }),
+    );
+  } finally {
+    restoreFetch();
+  }
+});
+
 Deno.test("embedding issues POST /embedding against the configured baseUrl", async () => {
   let seenUrl: string | undefined;
   let seenMethod: string | undefined;
