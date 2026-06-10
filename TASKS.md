@@ -2256,3 +2256,13 @@ status: done
 
 Per `specs/endpoints/props.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/props.ts` (single use-case, plain name): issues `GET /props`
+  and prints `media_marker`, reading `baseUrl`/`apiKey` from the environment and
+  documenting the `deno run --allow-net --allow-env` command. A default launch
+  serves the endpoint, so the header carries no server-requirement note.
+- Ran `deno fmt`, `deno lint`, `deno check examples/props.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (125 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
