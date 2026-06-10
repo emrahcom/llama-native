@@ -36,7 +36,7 @@ export interface V1ChatCompletionsRequest extends V1GenerationParams {
 export type V1Message =
   | V1SystemMessage
   | V1UserMessage
-  | V1AssistantInputMessage
+  | V1AssistantMessage
   | V1ToolMessage;
 
 export interface V1SystemMessage {
@@ -49,7 +49,7 @@ export interface V1UserMessage {
   content: string | V1ContentPart[];
 }
 
-export interface V1AssistantInputMessage {
+export interface V1AssistantMessage {
   role: "assistant";
   content: string | null;
   tool_calls?: V1ToolCall[];
@@ -111,11 +111,11 @@ export interface V1ChatCompletionsResponse {
 
 export interface V1ChatChoice {
   index: number;
-  message: V1AssistantMessage;
+  message: V1AssistantResponseMessage;
   finish_reason: "stop" | "length" | "tool_calls";
 }
 
-export interface V1AssistantMessage {
+export interface V1AssistantResponseMessage {
   role: "assistant";
   content: string | null;
   reasoning_content?: string;
@@ -204,8 +204,8 @@ valid for its role:
 - a `V1UserMessage` (`role: "user"`) with a `content` that is a string or an
   array of `V1ContentPart` (text, image, and audio parts), so a user turn can
   carry images or audio alongside text
-- a `V1AssistantInputMessage` (`role: "assistant"`) with a `content` that is a
-  string or `null` (null when the turn produced only tool calls) and an optional
+- a `V1AssistantMessage` (`role: "assistant"`) with a `content` that is a string
+  or `null` (null when the turn produced only tool calls) and an optional
   `tool_calls`; used to replay a prior assistant turn that called tools
 - a `V1ToolMessage` (`role: "tool"`) carrying a tool result: a `tool_call_id`
   matching the call it answers and a `content` string
@@ -258,12 +258,12 @@ Omitted optional fields use llama-server defaults.
 Each `V1ChatChoice` has:
 
 - an `index` (position in the choices array)
-- a `message` (the assistant's reply, a `V1AssistantMessage`)
+- a `message` (the assistant's reply, a `V1AssistantResponseMessage`)
 - a `finish_reason` (`"stop"` when generation halted at a stop sequence or end
   of output, `"length"` when it halted at `max_tokens`, `"tool_calls"` when the
   model stopped to call one or more tools)
 
-Each `V1AssistantMessage` has:
+Each `V1AssistantResponseMessage` has:
 
 - a `role`, always `"assistant"`
 - a `content`, the reply text; `null` when the turn produced only tool calls,

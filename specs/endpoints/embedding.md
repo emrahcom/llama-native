@@ -34,9 +34,9 @@ export interface EmbeddingRequest {
   content: string | string[];
 }
 
-export type EmbeddingResponse = Embedding[];
+export type EmbeddingResponse = EmbeddingEntry[];
 
-export interface Embedding {
+export interface EmbeddingEntry {
   index: number;
   embedding: number[][];
 }
@@ -69,10 +69,10 @@ a need shows up; this is a stated deviation per the wire-types rule in
 
 ### Response fields
 
-The response is a JSON array of `Embedding` entries, one per input, not an
+The response is a JSON array of `EmbeddingEntry` objects, one per input, not an
 object wrapper. It carries no `object`, `model`, or `usage` fields.
 
-Each `Embedding` has:
+Each `EmbeddingEntry` has:
 
 - an `index` (position matching the order of `content`)
 - an `embedding` (a two-dimensional array of floats). Under `--pooling none`
