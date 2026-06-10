@@ -2064,3 +2064,22 @@ status: done
 ## T-081: Implement multimodal input on /completion
 
 Per `specs/endpoints/completion.md`.
+
+status: done
+
+- In `src/llama/mod.ts`: split the former single `CompletionRequest` interface
+  into a shared `CompletionParams` (all sampling fields plus `stream`, minus
+  `prompt`), a `CompletionTextRequest extends CompletionParams` (adds `prompt`),
+  and a new `CompletionMultimodalRequest extends CompletionParams` (adds
+  `prompt_string` and `multimodal_data: string[]`). `CompletionRequest` is now
+  the union `CompletionTextRequest | CompletionMultimodalRequest`.
+- The `completion` method needed no change: its overloads intersect
+  `CompletionRequest` with the `stream` literal (which distributes over the
+  union), and the body passes the request through and reads `.stream` (present
+  on both variants via `CompletionParams`). Existing `{ prompt: ... }` call
+  sites match `CompletionTextRequest`, so all current tests pass unchanged.
+- Re-exported `CompletionParams`, `CompletionTextRequest`, and
+  `CompletionMultimodalRequest` from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

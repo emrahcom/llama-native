@@ -58,22 +58,15 @@ export interface DetokenizeResponse {
 }
 
 /**
- * A request to generate a text completion for a prompt using llama-server's
- * native API.
+ * The shared parameters of a {@link CompletionRequest}, carried by both the
+ * text and multimodal variants.
  *
  * The sampling fields coincide in name with `V1GenerationParams` because the
  * server defines them identically, not because the types are shared; this is a
  * native-family type and carries no prefix per the API-families rule in
  * `specs/conventions.md`. Omitted optional fields use llama-server defaults.
  */
-export interface CompletionRequest {
-  /**
-   * The input to generate from: a single string, or an array whose elements are
-   * text segments (strings) and token IDs (numbers) that the server assembles
-   * into one prompt. Unlike `/v1/completions`, the array form is one prompt
-   * built from pieces, not a batch.
-   */
-  prompt: string | (string | number)[];
+export interface CompletionParams {
   /** The maximum number of tokens to predict; -1 means unlimited. */
   n_predict?: number;
   /**
@@ -143,6 +136,45 @@ export interface CompletionRequest {
    */
   stream?: boolean;
 }
+
+/** A text {@link CompletionRequest}: input supplied via `prompt`. */
+export interface CompletionTextRequest extends CompletionParams {
+  /**
+   * The input to generate from: a single string, or an array whose elements are
+   * text segments (strings) and token IDs (numbers) that the server assembles
+   * into one prompt. Unlike `/v1/completions`, the array form is one prompt
+   * built from pieces, not a batch.
+   */
+  prompt: string | (string | number)[];
+}
+
+/**
+ * A multimodal {@link CompletionRequest}: input supplied via `prompt_string`
+ * with `multimodal_data`. Requires a multimodal model with its projector loaded
+ * (see the endpoint's server requirements).
+ */
+export interface CompletionMultimodalRequest extends CompletionParams {
+  /**
+   * The text of a multimodal request. It must contain one media marker per
+   * entry in `multimodal_data` as a placeholder for that media; the server's
+   * default marker is `<__media__>`. The library sends it verbatim.
+   */
+  prompt_string: string;
+  /**
+   * An array of base64-encoded media (images or audio), one entry per marker in
+   * `prompt_string`.
+   */
+  multimodal_data: string[];
+}
+
+/**
+ * A request to generate a text completion using llama-server's native API:
+ * either a text request ({@link CompletionTextRequest}) or a multimodal request
+ * ({@link CompletionMultimodalRequest}).
+ */
+export type CompletionRequest =
+  | CompletionTextRequest
+  | CompletionMultimodalRequest;
 
 /** A non-streaming text completion response. */
 export interface CompletionResponse {
