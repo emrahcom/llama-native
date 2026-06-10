@@ -2239,3 +2239,15 @@ status: done
 
 Per `specs/endpoints/props.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added three `props` unit tests to `tests/llama.test.ts`, beside the `health`
+  tests (GET path/method with no body, parsed `PropsResponse` on HTTP 200, and
+  signal forwarding), plus the `PropsResponse` import.
+- Added `integration/props.test.ts` asserting the response's `media_marker` is a
+  string, mirroring `integration/health.test.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/props.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (125 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.

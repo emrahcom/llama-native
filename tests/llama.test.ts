@@ -6,6 +6,7 @@ import {
   type EmbeddingResponse,
   Llama,
   type LlamaOptions,
+  type PropsResponse,
 } from "@emrahcom/llama-native";
 
 const originalFetch = globalThis.fetch;
@@ -156,6 +157,59 @@ Deno.test("health forwards the signal option to fetch", async () => {
     const llama = new Llama();
     const controller = new AbortController();
     await llama.health({ signal: controller.signal });
+    assertStrictEquals(seenSignal, controller.signal);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("props issues GET /props against the configured baseUrl", async () => {
+  let seenUrl: string | undefined;
+  let seenMethod: string | undefined;
+  let seenBody: BodyInit | null | undefined;
+  stubFetch((input, init) => {
+    seenUrl = input.toString();
+    seenMethod = init?.method;
+    seenBody = init?.body;
+    return Promise.resolve(
+      new Response(JSON.stringify({ media_marker: "<__media__>" })),
+    );
+  });
+  try {
+    const llama = new Llama({ baseUrl: "http://example.com:9000" });
+    await llama.props();
+    assertEquals(seenUrl, "http://example.com:9000/props");
+    assertEquals(seenMethod, "GET");
+    assertEquals(seenBody, undefined);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("props returns the parsed JSON body as PropsResponse on HTTP 200", async () => {
+  const payload: PropsResponse = { media_marker: "<__media__>" };
+  stubFetch(() => Promise.resolve(new Response(JSON.stringify(payload))));
+  try {
+    const llama = new Llama();
+    const result = await llama.props();
+    assertEquals(result, payload);
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("props forwards the signal option to fetch", async () => {
+  let seenSignal: AbortSignal | null | undefined;
+  stubFetch((_input, init) => {
+    seenSignal = init?.signal;
+    return Promise.resolve(
+      new Response(JSON.stringify({ media_marker: "<__media__>" })),
+    );
+  });
+  try {
+    const llama = new Llama();
+    const controller = new AbortController();
+    await llama.props({ signal: controller.signal });
     assertStrictEquals(seenSignal, controller.signal);
   } finally {
     restoreFetch();
