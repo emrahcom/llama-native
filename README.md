@@ -1,10 +1,11 @@
 # llama-native
 
-**Still in alpha**
-
 A lightweight, typed Deno client for [llama-server], the HTTP server in
-[llama.cpp]. No third-party dependencies, with OpenAI-compatible chat and text
-completions.
+[llama.cpp]. No third-party dependencies.
+
+It wraps both the native and OpenAI-compatible (`/v1`) API families: text
+generation with streaming, chat with tool calling and multimodal (image and
+audio) input, embeddings, tokenize/detokenize, model listing, and health.
 
 ## Usage
 

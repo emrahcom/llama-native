@@ -2204,3 +2204,16 @@ Drop the "Still in alpha" line and update the description to reflect the current
 surface (native and `/v1` families: text generation with streaming, chat with
 tool calling and multimodal input, embeddings, tokenize/detokenize, models,
 health). Keep the usage section minimal and point to `examples/`.
+
+status: done
+
+- Removed the "**Still in alpha**" line from `README.md`.
+- Rewrote the description to cover both API families and the full surface: text
+  generation with streaming, chat with tool calling and multimodal (image and
+  audio) input, embeddings, tokenize/detokenize, model listing, and health.
+- Left the usage section as-is (two minimal examples, native completion and
+  OpenAI-compatible chat) with the existing pointer to `examples/`, which
+  already satisfies "keep it minimal and point to examples/".
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
