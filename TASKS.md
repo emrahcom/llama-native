@@ -2106,3 +2106,8 @@ status: done
   `deno check integration/completion.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (123 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-083: Example for multimodal input on /completion
+
+Per `specs/endpoints/completion.md` and the example conventions in
+`specs/conventions.md`.
