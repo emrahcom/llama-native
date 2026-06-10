@@ -2060,3 +2060,7 @@ status: done
   `integration/v1-chat-completions.test.ts`, `deno doc --lint src/mod.ts`,
   `deno test` (122 passed), and `deno publish --dry-run --allow-dirty`
   (success); all pass.
+
+## T-081: Implement multimodal input on /completion
+
+Per `specs/endpoints/completion.md`.
