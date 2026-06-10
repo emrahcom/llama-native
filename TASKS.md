@@ -2136,3 +2136,25 @@ T-081/T-082/T-083: restore the single `CompletionRequest` interface and its
 delete `examples/completion-multimodal.ts`, and rename
 `examples/completion-basic.ts` back to `examples/completion.ts` (a single
 use-case again).
+
+status: done
+
+- `src/llama/mod.ts`: restored the single `CompletionRequest` interface (the
+  `prompt` field plus the shared sampling params and `stream`), removing
+  `CompletionParams`, `CompletionTextRequest`, `CompletionMultimodalRequest`, and
+  the union. `src/mod.ts`: dropped the three re-exports, keeping
+  `CompletionRequest`.
+- Removed the multimodal unit test from `tests/llama.test.ts` and the multimodal
+  integration test from `integration/completion.test.ts`, and reverted the
+  integration file header to its pre-T-082 text.
+- Deleted `examples/completion-multimodal.ts` and renamed
+  `examples/completion-basic.ts` back to `examples/completion.ts` with its
+  original content (single use-case, plain name).
+- Verified no stray references to the removed symbols
+  (`CompletionParams`/`CompletionTextRequest`/`CompletionMultimodalRequest`/
+  `prompt_string`/`multimodal_data`/`completion-basic`/`completion-multimodal`)
+  remain in `src/`, `tests/`, `integration/`, or `examples/`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/completion.test.ts examples/completion.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.

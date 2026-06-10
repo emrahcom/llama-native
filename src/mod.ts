@@ -18,11 +18,8 @@
 export { Llama } from "./llama/mod.ts";
 export type {
   CompletionChunk,
-  CompletionMultimodalRequest,
-  CompletionParams,
   CompletionRequest,
   CompletionResponse,
-  CompletionTextRequest,
   DetokenizeRequest,
   DetokenizeResponse,
   Embedding,
