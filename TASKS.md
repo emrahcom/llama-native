@@ -2158,3 +2158,7 @@ status: done
   `deno check integration/completion.test.ts examples/completion.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-085: Rename the native Embedding type to EmbeddingEntry
+
+Per `specs/endpoints/embedding.md`.
