@@ -2197,3 +2197,10 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (122 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-087: Finalize the README for 1.0
+
+Drop the "Still in alpha" line and update the description to reflect the current
+surface (native and `/v1` families: text generation with streaming, chat with
+tool calling and multimodal input, embeddings, tokenize/detokenize, models,
+health). Keep the usage section minimal and point to `examples/`.
