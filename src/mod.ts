@@ -18,6 +18,7 @@
 export { Llama } from "./llama/mod.ts";
 export type {
   CompletionChunk,
+  CompletionMultimodalPrompt,
   CompletionRequest,
   CompletionResponse,
   DetokenizeRequest,

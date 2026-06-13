@@ -77,12 +77,13 @@ export interface DetokenizeResponse {
  */
 export interface CompletionRequest {
   /**
-   * The input to generate from: a single string, or an array whose elements are
+   * The input to generate from: a single string; an array whose elements are
    * text segments (strings) and token IDs (numbers) that the server assembles
-   * into one prompt. Unlike `/v1/completions`, the array form is one prompt
-   * built from pieces, not a batch.
+   * into one prompt (unlike `/v1/completions`, the array form is one prompt
+   * built from pieces, not a batch); or a {@link CompletionMultimodalPrompt} for
+   * multimodal input.
    */
-  prompt: string | (string | number)[];
+  prompt: string | (string | number)[] | CompletionMultimodalPrompt;
   /** The maximum number of tokens to predict; -1 means unlimited. */
   n_predict?: number;
   /**
@@ -151,6 +152,25 @@ export interface CompletionRequest {
    * `undefined`.
    */
   stream?: boolean;
+}
+
+/**
+ * A multimodal prompt for {@link CompletionRequest}. Requires a server with the
+ * `multimodal` capability.
+ */
+export interface CompletionMultimodalPrompt {
+  /**
+   * The prompt text. It must contain one media marker per entry in
+   * `multimodal_data` as a placeholder for that media. The marker is the
+   * server's `media_marker`, read from `GET /props` ({@link Llama.props}); the
+   * consumer places it in `prompt_string` and the library sends it verbatim.
+   */
+  prompt_string: string;
+  /**
+   * An array of base64-encoded media (images or audio), one entry per marker in
+   * `prompt_string`.
+   */
+  multimodal_data: string[];
 }
 
 /** A non-streaming text completion response. */

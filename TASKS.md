@@ -2270,3 +2270,16 @@ status: done
 ## T-091: Implement multimodal input on /completion
 
 Per `specs/endpoints/completion.md`.
+
+status: done
+
+- Added the `CompletionMultimodalPrompt` interface (`prompt_string: string`,
+  `multimodal_data: string[]`) to `src/llama/mod.ts` and widened
+  `CompletionRequest.prompt` to
+  `string | (string | number)[] | CompletionMultimodalPrompt`.
+- Re-exported `CompletionMultimodalPrompt` from `src/mod.ts`.
+- No method-body change: the prompt is serialized into the `/completion` request
+  body as-is, so the multimodal form crosses the wire without extra logic.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (125 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
