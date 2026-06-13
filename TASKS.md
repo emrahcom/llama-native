@@ -2288,3 +2288,19 @@ status: done
 
 Per `specs/endpoints/completion.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added a `completion` unit test to `tests/llama.test.ts`, beside the array
+  prompt-form test, asserting a `CompletionMultimodalPrompt` (`prompt_string` +
+  `multimodal_data`) is serialized verbatim as the body's `prompt`, plus the
+  `CompletionMultimodalPrompt` import.
+- Added a multimodal case to `integration/completion.test.ts`: reads the
+  server's `media_marker` via `llama.props()`, base64-encodes the real llama.cpp
+  logo PNG (per the real-media rule), sends it as `multimodal_data`, and asserts
+  the response shape. Updated the file header to note the multimodal model +
+  projector launch requirement.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/completion.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (126 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.

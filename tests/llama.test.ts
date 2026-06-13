@@ -1,6 +1,7 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
 import {
   type CompletionChunk,
+  type CompletionMultimodalPrompt,
   type CompletionResponse,
   type DetokenizeResponse,
   type EmbeddingResponse,
@@ -483,6 +484,25 @@ Deno.test("completion accepts the array prompt form built from text and token ID
       seenBody,
       JSON.stringify({ prompt: ["Hello", 123, " world"] }),
     );
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("completion accepts the multimodal prompt form, sending it verbatim as the body's prompt", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify(completionResponse)));
+  });
+  try {
+    const llama = new Llama();
+    const prompt: CompletionMultimodalPrompt = {
+      prompt_string: "Describe this <__media__>",
+      multimodal_data: ["aGVsbG8="],
+    };
+    await llama.completion({ prompt });
+    assertEquals(seenBody, JSON.stringify({ prompt }));
   } finally {
     restoreFetch();
   }
