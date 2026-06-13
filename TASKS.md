@@ -2309,3 +2309,21 @@ status: done
 
 Per `specs/endpoints/completion.md` and the Examples convention in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/completion-multimodal.ts`: reads the server's `media_marker`
+  via `llama.props()`, base64-encodes the real llama.cpp logo PNG (per the
+  real-media rule), places the marker once in `prompt_string`, and sends the
+  image in `multimodal_data`, printing the response's `content`. The header
+  notes the multimodal model + projector launch requirement.
+- Renamed the existing `examples/completion.ts` to
+  `examples/completion-basic.ts`: adding this second use-case makes
+  `/completion` a multi-use-case endpoint, so both files carry a `-<use-case>`
+  suffix per the Examples naming convention (mirroring
+  `v1-chat-completions-basic.ts` / `v1-chat-completions-multimodal.ts`). Updated
+  the run-command references in the renamed file's header.
+- Ran `deno fmt`, `deno lint`,
+  `deno check examples/completion-basic.ts examples/completion-multimodal.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (126 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
