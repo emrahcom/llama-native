@@ -8,13 +8,13 @@
 //
 // Run against such a server on the default http://localhost:8080:
 //
-//   deno run --allow-net --allow-env examples/embedding.ts
+//   deno run --allow-net --allow-env examples/embedding-basic.ts
 //
 // Override the server URL and supply an API key with environment variables:
 //
 //   LLAMA_BASE_URL=http://localhost:8080 \
 //   LLAMA_API_KEY=secret \
-//   deno run --allow-net --allow-env examples/embedding.ts
+//   deno run --allow-net --allow-env examples/embedding-basic.ts
 
 import { Llama } from "@emrahcom/llama-native";
 

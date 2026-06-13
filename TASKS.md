@@ -2373,3 +2373,20 @@ status: done
 
 Per `specs/endpoints/embedding.md` and the example conventions in
 `specs/conventions.md`.
+
+status: done
+
+- Added `examples/embedding-multimodal.ts`: reads the server's `media_marker`
+  via `llama.props()`, base64-encodes the real llama.cpp logo PNG (per the
+  real-media rule), places the marker once in `prompt_string`, sends the image
+  in `multimodal_data`, and prints the response's embedding length. The header
+  notes the `--embedding` plus multimodal model + projector launch requirement.
+- Renamed the existing `examples/embedding.ts` to `examples/embedding-basic.ts`:
+  adding this second use-case makes `/embedding` a multi-use-case endpoint, so
+  both files carry a `-<use-case>` suffix per the Examples naming convention
+  (mirroring `completion-basic.ts` / `completion-multimodal.ts`). Updated the
+  run-command references in the renamed file's header.
+- Ran `deno fmt`, `deno lint`,
+  `deno check examples/embedding-basic.ts examples/embedding-multimodal.ts`,
+  `deno doc --lint src/mod.ts`, `deno test` (127 passed), and
+  `deno publish --dry-run --allow-dirty` (success); all pass.
