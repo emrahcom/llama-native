@@ -2346,3 +2346,8 @@ status: done
   src/mod.ts`, `deno test` (126 passed), and
   `deno publish --dry-run
   --allow-dirty` (success); all pass.
+
+## T-095: Tests for multimodal input on /embedding
+
+Per `specs/endpoints/embedding.md` and the testing conventions in
+`specs/conventions.md`. Covers both the unit test and the integration test.
