@@ -17,11 +17,18 @@ This endpoint adds a `completion` method to `Llama`, beside `health` and
 `tokenize`. All types below are specific to this endpoint and live in
 `src/llama/mod.ts`.
 
+## Server requirements
+
+Text completion works on a default launch. Multimodal input (a
+`CompletionMultimodalPrompt`) additionally requires a multimodal model with its
+projector loaded: with `-hf` the projector loads automatically (`--mmproj-auto`,
+on by default), or pass `--mmproj FILE` for a local projector.
+
 ## TypeScript surface
 
 ```ts
 export interface CompletionRequest {
-  prompt: string | (string | number)[];
+  prompt: string | (string | number)[] | CompletionMultimodalPrompt;
   n_predict?: number;
   stop?: string[];
   temperature?: number;
@@ -36,6 +43,11 @@ export interface CompletionRequest {
   json_schema?: Record<string, unknown>;
   cache_prompt?: boolean;
   stream?: boolean;
+}
+
+export interface CompletionMultimodalPrompt {
+  prompt_string: string;
+  multimodal_data: string[];
 }
 
 export interface CompletionResponse {
@@ -103,10 +115,10 @@ The overload selected depends on the literal type of `request.stream`:
 ### Request fields
 
 - `prompt`\
-  is the input to generate from: a single string, or an array whose elements are
+  is the input to generate from: a single string; an array whose elements are
   text segments (strings) and token IDs (numbers) that the server assembles into
-  one prompt. Unlike `/v1/completions`, the array form is one prompt built from
-  pieces, not a batch.
+  one prompt (unlike `/v1/completions`, this array form is one prompt built from
+  pieces, not a batch); or a `CompletionMultimodalPrompt` for multimodal input.
 - `n_predict`\
   is the maximum number of tokens to predict; -1 means unlimited
 - `stop`\
@@ -151,6 +163,17 @@ The overload selected depends on the literal type of `request.stream`:
   `undefined`
 
 Omitted optional fields use llama-server defaults.
+
+A `CompletionMultimodalPrompt` carries:
+
+- a `prompt_string`: the prompt text. It must contain one media marker per entry
+  in `multimodal_data` as a placeholder for that media. The marker is the
+  server's `media_marker`, read from `GET /props` (`llama.props()`); the
+  consumer places it in `prompt_string` and the library sends it verbatim.
+- a `multimodal_data`: an array of base64-encoded media (images or audio), one
+  entry per marker in `prompt_string`.
+
+A multimodal prompt requires a server with the `multimodal` capability.
 
 ### Non-streaming response fields
 
