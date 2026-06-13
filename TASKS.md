@@ -2266,3 +2266,7 @@ status: done
 - Ran `deno fmt`, `deno lint`, `deno check examples/props.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (125 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-091: Implement multimodal input on /completion
+
+Per `specs/endpoints/completion.md`.
