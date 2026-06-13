@@ -2331,3 +2331,18 @@ status: done
 ## T-094: Implement multimodal input on /embedding
 
 Per `specs/endpoints/embedding.md`.
+
+status: done
+
+- Added the `EmbeddingMultimodalContent` interface (`prompt_string`,
+  `multimodal_data`) to `src/llama/mod.ts` and widened
+  `EmbeddingRequest.content` to
+  `string | string[] | EmbeddingMultimodalContent`, mirroring the existing
+  `CompletionMultimodalPrompt`. The `embedding` method passes the body through
+  unchanged, so no method logic changed.
+- Re-exported `EmbeddingMultimodalContent` from `src/mod.ts`.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno doc --lint
+  src/mod.ts`, `deno test` (126 passed), and
+  `deno publish --dry-run
+  --allow-dirty` (success); all pass.

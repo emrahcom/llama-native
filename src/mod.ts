@@ -24,6 +24,7 @@ export type {
   DetokenizeRequest,
   DetokenizeResponse,
   EmbeddingEntry,
+  EmbeddingMultimodalContent,
   EmbeddingRequest,
   EmbeddingResponse,
   HealthResponse,

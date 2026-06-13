@@ -269,10 +269,30 @@ export interface Timings {
  */
 export interface EmbeddingRequest {
   /**
-   * The input to embed: a single string, or an array of strings to embed in one
-   * request (a batch). Each input produces one entry in the response.
+   * The input to embed: a single string; an array of strings to embed in one
+   * request (a batch), each producing one entry in the response; or an
+   * {@link EmbeddingMultimodalContent} for multimodal input.
    */
-  content: string | string[];
+  content: string | string[] | EmbeddingMultimodalContent;
+}
+
+/**
+ * Multimodal content for an {@link EmbeddingRequest}. Requires a server with the
+ * `multimodal` capability.
+ */
+export interface EmbeddingMultimodalContent {
+  /**
+   * The input text. It must contain one media marker per entry in
+   * `multimodal_data` as a placeholder for that media. The marker is the
+   * server's `media_marker`, read from `GET /props` ({@link Llama.props}); the
+   * consumer places it in `prompt_string` and the library sends it verbatim.
+   */
+  prompt_string: string;
+  /**
+   * An array of base64-encoded media (images or audio), one entry per marker in
+   * `prompt_string`.
+   */
+  multimodal_data: string[];
 }
 
 /**
