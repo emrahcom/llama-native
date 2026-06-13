@@ -27,11 +27,21 @@ yields a single pooled vector per input. Both are accepted; unlike
 `embedding` is a two-dimensional array (one inner vector per token, or a single
 inner vector when pooled) in either case.
 
+Multimodal input (an `EmbeddingMultimodalContent`) additionally requires a
+multimodal model with its projector loaded: with `-hf` the projector loads
+automatically (`--mmproj-auto`, on by default), or pass `--mmproj FILE` for a
+local projector.
+
 ## TypeScript surface
 
 ```ts
 export interface EmbeddingRequest {
-  content: string | string[];
+  content: string | string[] | EmbeddingMultimodalContent;
+}
+
+export interface EmbeddingMultimodalContent {
+  prompt_string: string;
+  multimodal_data: string[];
 }
 
 export type EmbeddingResponse = EmbeddingEntry[];
@@ -57,8 +67,20 @@ endpoint has no `stream` field and no streaming overload.
 ### Request fields
 
 - `content`\
-  is the input to embed: a single string, or an array of strings to embed in one
-  request (a batch). Each input produces one entry in the response.
+  is the input to embed: a single string; an array of strings to embed in one
+  request (a batch), each producing one entry in the response; or an
+  `EmbeddingMultimodalContent` for multimodal input.
+
+An `EmbeddingMultimodalContent` carries:
+
+- a `prompt_string`: the input text. It must contain one media marker per entry
+  in `multimodal_data` as a placeholder for that media. The marker is the
+  server's `media_marker`, read from `GET /props` (`llama.props()`); the
+  consumer places it in `prompt_string` and the library sends it verbatim.
+- a `multimodal_data`: an array of base64-encoded media (images or audio), one
+  entry per marker in `prompt_string`.
+
+A multimodal request requires a server with the `multimodal` capability.
 
 Omitted optional fields use llama-server defaults.
 
