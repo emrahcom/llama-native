@@ -2327,3 +2327,7 @@ status: done
   `deno check examples/completion-basic.ts examples/completion-multimodal.ts`,
   `deno doc --lint src/mod.ts`, `deno test` (126 passed), and
   `deno publish --dry-run --allow-dirty` (success); all pass.
+
+## T-094: Implement multimodal input on /embedding
+
+Per `specs/endpoints/embedding.md`.
