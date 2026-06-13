@@ -4,6 +4,7 @@ import {
   type CompletionMultimodalPrompt,
   type CompletionResponse,
   type DetokenizeResponse,
+  type EmbeddingMultimodalContent,
   type EmbeddingResponse,
   Llama,
   type LlamaOptions,
@@ -689,6 +690,25 @@ Deno.test("embedding sends the EmbeddingRequest as the JSON body for a batch inp
     const llama = new Llama();
     await llama.embedding({ content: ["Hello", "World"] });
     assertEquals(seenBody, JSON.stringify({ content: ["Hello", "World"] }));
+  } finally {
+    restoreFetch();
+  }
+});
+
+Deno.test("embedding accepts the multimodal content form, sending it verbatim as the body's content", async () => {
+  let seenBody: string | undefined;
+  stubFetch((_input, init) => {
+    seenBody = init?.body as string | undefined;
+    return Promise.resolve(new Response(JSON.stringify([])));
+  });
+  try {
+    const llama = new Llama();
+    const content: EmbeddingMultimodalContent = {
+      prompt_string: "Embed this <__media__>",
+      multimodal_data: ["aGVsbG8="],
+    };
+    await llama.embedding({ content });
+    assertEquals(seenBody, JSON.stringify({ content }));
   } finally {
     restoreFetch();
   }

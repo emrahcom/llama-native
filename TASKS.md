@@ -2351,3 +2351,20 @@ status: done
 
 Per `specs/endpoints/embedding.md` and the testing conventions in
 `specs/conventions.md`. Covers both the unit test and the integration test.
+
+status: done
+
+- Added a unit test to `tests/llama.test.ts`: `embedding` accepts the
+  `EmbeddingMultimodalContent` form (`prompt_string` + `multimodal_data`) and
+  sends it verbatim as the body's `content`, mirroring the completion multimodal
+  unit test. Imported the `EmbeddingMultimodalContent` type.
+- Added an integration test to `integration/embedding.test.ts`: reads the
+  server's `media_marker` via `llama.props()`, base64-encodes the real llama.cpp
+  logo PNG (per the real-media rule), places the marker once in `prompt_string`,
+  sends the image in `multimodal_data`, and asserts the response shape (a
+  non-empty array of float arrays). Updated the file header to note the
+  multimodal model + projector launch requirement.
+- Ran `deno fmt`, `deno lint`, `deno check src/mod.ts`,
+  `deno check integration/embedding.test.ts`, `deno doc --lint src/mod.ts`,
+  `deno test` (127 passed), and `deno publish --dry-run --allow-dirty`
+  (success); all pass.
